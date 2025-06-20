@@ -1,4 +1,5 @@
 import { logger } from '@configs/logger';
+import { asyncLocalStorage } from '@configs/async.context';
 
 export type DataLogOutput = {
   data?: any;
@@ -37,11 +38,15 @@ export function LoggerMixin<T extends new (...args: any[]) => {}>(Base: T) {
     }
 
     loggerInfo(message: string, data?: DataLogOutput) {
-      return this.logging.info(message, data);
+      const store = asyncLocalStorage.getStore();
+      const requestId = store?.requestId || 'no-request-id';
+      return this.logging.info(message, { ...data, requestId });
     }
 
     loggerError(message: string, data?: DataLogOutput) {
-      return this.logging.error(message, data);
+      const store = asyncLocalStorage.getStore();
+      const requestId = store?.requestId || 'no-request-id';
+      return this.logging.error(message, { ...data, requestId });
     }
   };
 }
