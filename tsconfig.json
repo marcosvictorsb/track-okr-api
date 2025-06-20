@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "allowJs": true,
+    "checkJs": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "strictNullChecks": true,
+    "resolveJsonModule": true,
+    "sourceMap": true,
+    "typeRoots": ["./node_modules/@types", "./src/@types"],
+    "baseUrl": "./src",
+    "paths": {
+      "@adapters/*": ["adapters/*"],
+      "@configs/*": ["configs/*"],
+      "@domains/*": ["domains/*"],
+      "@infra/*": ["infra/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@protocols/*": ["protocols/*"],
+      "@tasks/*": ["tasks/*"],
+      "@shared/*": ["shared/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

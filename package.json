@@ -1,0 +1,66 @@
+{
+  "name": "track-okr-api",
+  "version": "1.0.0",
+  "description": "api de gestão de okr",
+  "main": "index.js",
+  "_moduleAliases": {
+    "@adapters": "src/adapters",
+    "@configs": "src/configs",
+    "@domains": "src/domains",
+    "@common": "src/common",
+    "@infra": "src/infra",
+    "@middlewares": "src/middlewares",
+    "@protocols": "src/protocols",
+    "@tasks": "src/tasks",
+    "@shared": "src/shared"
+  },
+  "scripts": {
+    "start": "nodemon --watch src --ext ts --exec ts-node -r module-alias/register src/server.ts",
+    "lint": "eslint --ext .js,.ts .",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|json)\"",
+    "migration": "npx sequelize-cli db:migrate",
+    "migration:create": "npx sequelize-cli migration:generate --name"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcosvictorsb/track-okr-api.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/marcosvictorsb/track-okr-api/issues"
+  },
+  "homepage": "https://github.com/marcosvictorsb/track-okr-api#readme",
+   "dependencies": {   
+    "bcryptjs": "^3.0.2",
+    "dotenv": "^16.5.0",
+    "express": "^4.19.2",
+    "ioredis": "^5.6.1",
+    "jsonwebtoken": "^9.0.2",
+    "module-alias": "^2.2.3",
+    "mysql2": "^3.14.1",
+    "nodemon": "^3.1.10",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7",
+    "typescript": "^5.8.3",
+    "uuid4": "^2.0.3",
+    "winston": "^3.17.0",
+    "zod": "^3.25.28"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/uuid4": "^2.0.3",
+    "@typescript-eslint/eslint-plugin": "^8.32.1",
+    "@typescript-eslint/parser": "^8.32.1",
+    "@types/request": "^2.48.12",
+    "eslint": "^9.27.0",
+    "eslint-config-prettier": "^10.1.5",
+    "globals": "^16.1.0",
+    "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "typescript-eslint": "^8.32.1",
+    "vitest": "^3.1.4"
+  }
+}
