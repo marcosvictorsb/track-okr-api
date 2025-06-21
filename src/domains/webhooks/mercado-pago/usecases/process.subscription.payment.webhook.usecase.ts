@@ -6,6 +6,9 @@ import {
 } from '../interfaces/';
 import { ProcessSubscriptionPaymentGateway } from '../gateways';
 import { SubscriptionStatus } from '@domains/api/subscriptions/interfaces/default.interfaces';
+import { Utils } from '@shared/utils/utils';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 export class ProcessSubscriptionPaymentWebhookInteractor {
   protected gateway: ProcessSubscriptionPaymentGateway;
@@ -29,20 +32,8 @@ export class ProcessSubscriptionPaymentWebhookInteractor {
         return this.presenter.ok('Ignoring non-payment event');
       }
 
-      const paymentId = data.id;
-      const paymentDetails = {
-        status: 'approved',
-        transaction_amount: 150,
-        payer: {
-          email: 'cliente@empresa.com.br',
-          first_name: 'Empresa',
-          last_name: 'Exemplo LTDA',
-          identification: {
-            type: 'CNPJ',
-            number: '12345678000199'
-          }
-        }
-      };
+      const paymentId = Math.floor(Math.random() * 10000);
+      const paymentDetails = this.getRandomPaymentDetails();
 
       if (paymentDetails.status !== 'approved') {
         return this.presenter.ok('Payment not approved, ignoring');
@@ -101,20 +92,46 @@ export class ProcessSubscriptionPaymentWebhookInteractor {
         email: paymentDetails.payer.email
       });
 
-      await this.gateway.createUser({
+      const randomPassword = Utils.generateRandomPassword();
+      const user = await this.gateway.createUser({
         email: paymentDetails.payer.email,
         id_company: company.id as number,
         name: `${paymentDetails.payer.first_name} ${paymentDetails.payer.last_name}`,
-        password_hash: 'temporario',
+        password_hash: randomPassword,
         role: 'admin',
         status: 'pending_activation'
       });
+
+      if (!user) {
+        this.gateway.loggerInfo('Erro ao criar usuário admin');
+        return this.presenter.ok('Erro ao criar usuário admin');
+      }
+
+      this.gateway.loggerInfo('Assinatura e usuário criados com sucesso', {
+        id_company: company.id,
+        amount_users: amountUsers
+      });
+
+      const templateName = 'admin-created.template.html';
+      const variables = {
+        companyName: company.name,
+        adminName: user.name as string,
+        adminEmail: user.email as string,
+        adminPassword: randomPassword,
+        baseUrl:
+          process.env.NODE_ENV === 'production'
+            ? (process.env.PRODUCTION_BASE_URL as string)
+            : (process.env.DEVELOPMENT_BASE_URL as string)
+      };
+      const emailContent = Utils.loadEmailTemplate(templateName, variables);
+
+      const subject = 'Usuário administrador criado com sucesso';
+      this.gateway.sendEmail(subject, 'marcosvictorsb@gmail.com', emailContent);
 
       return this.presenter.ok({
         message: 'Company, admin user, and subscription created successfully.'
       });
     } catch (error) {
-      console.log(error);
       this.gateway.loggerError('Erro no processo de assinatura do cliente', {
         error
       });
@@ -122,5 +139,34 @@ export class ProcessSubscriptionPaymentWebhookInteractor {
         'Erro no processo de assinatura do cliente'
       );
     }
+  }
+
+  private getRandomPaymentDetails() {
+    const randomId = Math.floor(Math.random() * 10000);
+
+    // Gera um CNPJ válido (formato válido, mas números aleatórios)
+    function generateRandomCNPJ() {
+      let cnpj = '';
+      for (let i = 0; i < 12; i++) {
+        cnpj += Math.floor(Math.random() * 10);
+      }
+      // Calcula os dígitos verificadores (simplificado para exemplo)
+      cnpj += '0001';
+      return cnpj;
+    }
+
+    return {
+      status: 'approved',
+      transaction_amount: 150,
+      payer: {
+        email: `cliente${randomId}@empresa.com.br`,
+        first_name: `Empresa${randomId}`,
+        last_name: `Exemplo LTDA ${randomId}`,
+        identification: {
+          type: 'CNPJ',
+          number: generateRandomCNPJ()
+        }
+      }
+    };
   }
 }

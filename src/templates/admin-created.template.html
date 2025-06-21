@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sua conta no {{companyName}} foi criada!</title>
+    <style type="text/css">
+        /* Reset styles */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { margin: 0 !important; padding: 0 !important; width: 100% !important; }
+        
+        /* iOS BLUE LINKS */
+        a[x-apple-data-detectors] {
+            color: inherit !important;
+            text-decoration: none !important;
+            font-size: inherit !important;
+            font-family: inherit !important;
+            font-weight: inherit !important;
+            line-height: inherit !important;
+        }
+        
+        /* Main styles */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #333333;
+            background-color: #f7f7f7;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            background-color: #4a6baf;
+            padding: 30px 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+        }
+        
+        .content {
+            background-color: #ffffff;
+            padding: 30px 20px;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            background-color: #f1f5f9;
+            padding: 20px;
+            text-align: center;
+            border-radius: 0 0 5px 5px;
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .button {
+            display: inline-block;
+            background-color: #4a6baf;
+            color: #ffffff !important;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .credentials-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .credentials-item {
+            margin-bottom: 10px;
+        }
+        
+        .credentials-label {
+            font-weight: bold;
+            color: #475569;
+            display: inline-block;
+            width: 100px;
+        }
+        
+        .logo {
+            max-width: 180px;
+            height: auto;
+        }
+        
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+            }
+            .content, .header, .footer {
+                padding: 15px !important;
+            }
+            .button {
+                display: block !important;
+                margin: 15px auto !important;
+                text-align: center !important;
+            }
+            .credentials-label {
+                display: block;
+                width: auto;
+                margin-bottom: 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td align="center" valign="top">
+                <table class="container" border="0" cellpadding="0" cellspacing="0" width="600">
+                    <tr>
+                        <td class="header">
+                            <h1>Sua conta na Gunno foi criada!</h1>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="content">
+                            <p>Olá {{adminName}},</p>
+                            <p>Estamos felizes em informar que sua conta de administrador no Gunno foi criada com sucesso!</p>
+                            
+                            <div class="credentials-box">
+                                <div class="credentials-item">
+                                    <span class="credentials-label">E-mail:</span>
+                                    <span>{{adminEmail}}</span>
+                                </div>
+                                <div class="credentials-item">
+                                    <span class="credentials-label">Senha:</span>
+                                    <span>{{adminPassword}}</span>
+                                </div>
+                            </div>
+                            
+                            <p>Por questões de segurança, recomendamos que você altere sua senha após o primeiro login.</p>
+                            
+                            <p align="center">
+                                <a href="{{baseUrl}}/rizz_v/auth/sign-in" class="button">Acessar Minha Conta</a>
+                            </p>
+                            
+                            <p>Se o botão acima não funcionar, copie e cole o seguinte link no seu navegador:</p>
+                            <p><small>{{baseUrl}}/rizz_v/auth/sign-in</small></p>
+                            
+                            <p>Em caso de dúvidas ou problemas com o acesso, nossa equipe de suporte está à disposição para ajudar.</p>
+                            
+                            <p>Atenciosamente,<br>Equipe Gunno</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="footer">
+                            <p>&copy; Todos os direitos reservados</p>
+                            <p>Este é um e-mail automático. Por segurança, não compartilhe suas credenciais com terceiros.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

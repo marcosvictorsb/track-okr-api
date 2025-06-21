@@ -31,7 +31,7 @@
     "url": "https://github.com/marcosvictorsb/track-okr-api/issues"
   },
   "homepage": "https://github.com/marcosvictorsb/track-okr-api#readme",
-   "dependencies": {   
+  "dependencies": {
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
     "express": "^4.19.2",
@@ -40,6 +40,7 @@
     "module-alias": "^2.2.3",
     "mysql2": "^3.14.1",
     "nodemon": "^3.1.10",
+    "resend": "^4.6.0",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7",
     "typescript": "^5.8.3",
@@ -51,10 +52,10 @@
     "@eslint/js": "^9.27.0",
     "@types/express": "^4.17.21",
     "@types/jsonwebtoken": "^9.0.9",
+    "@types/request": "^2.48.12",
     "@types/uuid4": "^2.0.3",
     "@typescript-eslint/eslint-plugin": "^8.32.1",
     "@typescript-eslint/parser": "^8.32.1",
-    "@types/request": "^2.48.12",
     "eslint": "^9.27.0",
     "eslint-config-prettier": "^10.1.5",
     "globals": "^16.1.0",

@@ -7,19 +7,25 @@ import { CreateSubscriptionCriteria, ISubscriptionRepository } from "@domains/ap
 import { UserEntity } from "@domains/api/users/entity/user.entity";
 import { CreateUserCriteria, IUserRepository } from "@domains/api/users/interfaces";
 import { sequelize } from '@infra/database/connection/mysql';
-import { Transaction } from 'sequelize';
 
 export interface IProcessSubscriptionPaymentGateway {
-  findCompany(criteria: FindCompanyCriteria): Promise<CompanyEntity | undefined>
-  createCompany(criteria: CreateCompanyCriteria): Promise<CompanyEntity  | undefined>
-  createSubscription(criteria: CreateSubscriptionCriteria): Promise<SubscriptionEntity | undefined>
-  createUser(criteria: CreateUserCriteria): Promise<UserEntity | undefined>
+  findCompany(
+    criteria: FindCompanyCriteria
+  ): Promise<CompanyEntity | undefined>;
+  createCompany(
+    criteria: CreateCompanyCriteria
+  ): Promise<CompanyEntity | undefined>;
+  createSubscription(
+    criteria: CreateSubscriptionCriteria
+  ): Promise<SubscriptionEntity | undefined>;
+  createUser(criteria: CreateUserCriteria): Promise<UserEntity | undefined>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
+  sendEmail(subject: string, to: string, emailContent: string): Promise<void>;
+
   // startTransaction(): Promise<Transaction>;
   // commitTransaction(transaction: Transaction): Promise<void>;
   // rollbackTransaction(transaction: Transaction): Promise<void>;
-
 }
 
 export type IProcessSubscriptionPaymentGatewayDependencies = {
