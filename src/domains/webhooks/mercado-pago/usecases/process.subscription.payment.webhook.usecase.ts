@@ -113,7 +113,11 @@ export class ProcessSubscriptionPaymentWebhookInteractor {
       });
 
       const templateName = 'admin-created.template.html';
-      const token = this.gateway.signToken(user);
+      const token = this.gateway.signToken({
+        email: user.email as string,
+        id: user.id as number,
+        id_company: user.id_company as number
+      });
       const variables = {
         companyName: company.name,
         adminName: user.name as string,
