@@ -1,8 +1,8 @@
-import { LoggerMixin, EmailService } from '../../services';
+import { LoggerMixin, EmailService, TokenService } from '../../services';
 
 class BaseGateway {
   constructor(...args: any[]) {}
 }
-export const MixProcessSubscriptionPayment = EmailService(
-  LoggerMixin(BaseGateway)
+export const MixProcessSubscriptionPayment = TokenService(
+  EmailService(LoggerMixin(BaseGateway))
 );

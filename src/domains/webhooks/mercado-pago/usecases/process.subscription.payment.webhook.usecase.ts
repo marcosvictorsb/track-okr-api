@@ -113,6 +113,7 @@ export class ProcessSubscriptionPaymentWebhookInteractor {
       });
 
       const templateName = 'admin-created.template.html';
+      const token = this.gateway.signToken(user);
       const variables = {
         companyName: company.name,
         adminName: user.name as string,
@@ -121,7 +122,8 @@ export class ProcessSubscriptionPaymentWebhookInteractor {
         baseUrl:
           process.env.NODE_ENV === 'production'
             ? (process.env.PRODUCTION_BASE_URL as string)
-            : (process.env.DEVELOPMENT_BASE_URL as string)
+            : (process.env.DEVELOPMENT_BASE_URL as string),
+        token: token
       };
       const emailContent = Utils.loadEmailTemplate(templateName, variables);
 

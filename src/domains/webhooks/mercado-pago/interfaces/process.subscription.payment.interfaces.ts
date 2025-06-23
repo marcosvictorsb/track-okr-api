@@ -22,6 +22,7 @@ export interface IProcessSubscriptionPaymentGateway {
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
   sendEmail(subject: string, to: string, emailContent: string): Promise<void>;
+  signToken(user: Partial<UserEntity>): string;
 
   // startTransaction(): Promise<Transaction>;
   // commitTransaction(transaction: Transaction): Promise<void>;
