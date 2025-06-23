@@ -60,8 +60,8 @@ export class UserRepository implements IUserRepository {
   }
 
   public async update(
-    criteria: UpdateUserCriteria,
-    data: Partial<UpdateUserCriteria>
+    data: Partial<UpdateUserCriteria>,
+    criteria: UpdateUserCriteria
   ): Promise<boolean> {
     const [affectedRows] = await this.model.update(data, {
       where: { id: criteria.id }

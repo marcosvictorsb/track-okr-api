@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 import routerMercadoPago from '@domains/webhooks/mercado-pago/routers';
-
+import routerUser from '@domains/api/users/routers';
 const routers = Router();
 
 routers.get('/health-check', (request: Request, response: Response) => {
@@ -8,7 +8,7 @@ routers.get('/health-check', (request: Request, response: Response) => {
 });
 
 routers.use('/webhook', routerMercadoPago);
-// routers.use('/projects', projectRoutes);
+routers.use('/user', routerUser);
 // routers.use('/authenticate', authRoutes);
 // routers.use('/feature-flags', featureFlagRoutes);
 

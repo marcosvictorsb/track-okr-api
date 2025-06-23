@@ -2,10 +2,10 @@ import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { ModelStatic } from 'sequelize';
 import UserModel from '@domains/api/users/model/user.model';
 
-export type UserStatus = {
-  ACTIVE: 'active';
-  CANCELLED: 'cancelled';
-};
+export enum UserStatus {
+  ACTIVE = 'active',
+  CANCELLED = 'cancelled'
+}
 
 export type CreateUserCriteria = {
   name: string;
@@ -21,12 +21,11 @@ export type CreateUserCriteria = {
 
 export type FindUserCriteria = {
   id?: number;
-  name: string;
-  email: string;
-  password_hash: string;
-  role: string;
-  status: string;
-  id_company: number;
+  name?: string;
+  email?: string;
+  role?: string;
+  status?: string;
+  id_company?: number;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
