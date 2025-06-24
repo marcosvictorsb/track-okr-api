@@ -24,6 +24,10 @@ export class UserRepository implements IUserRepository {
       whereConditions['id'] = criteria.id;
     }
 
+    if (criteria.email) {
+      whereConditions['email'] = criteria.email;
+    }
+
     return whereConditions;
   }
 
