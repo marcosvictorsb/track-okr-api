@@ -13,7 +13,7 @@
     "strictNullChecks": true,
     "resolveJsonModule": true,
     "sourceMap": true,
-    "typeRoots": ["./node_modules/@types", "./src/@types"],
+    "typeRoots": ["node_modules/@types", "./src/@types"],
     "baseUrl": "./src",
     "paths": {
       "@adapters/*": ["adapters/*"],
