@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { logger } from '@configs/logger';
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ export const authMiddleware = (
       }
     );
   } catch (error: unknown) {
+    logger.error('Error in auth middleware:', error);
     return response
       .status(500)
       .json({ error: 'Internal server error during token validation' });

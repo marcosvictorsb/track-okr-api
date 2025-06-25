@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { logger } from '@configs/logger';
 import { asyncLocalStorage } from '@configs/async.context';
 
 export type DataLogOutput = {
-  data?: any;
+  data?: string;
   teamsIds?: number[];
-  error?: any;
-  input?: any;
+  error?: string;
+  input?: string;
   requestTxt?: string;
 
   id_user?: number;
@@ -16,6 +17,11 @@ export type DataLogOutput = {
   // company
   id_company?: number;
   amount_users?: number;
+
+  // planner
+  title?: string;
+  description?: string;
+  year?: number;
 };
 
 type LoggerServiceDependencies = {

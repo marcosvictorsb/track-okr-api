@@ -7,8 +7,7 @@ export type HttpResponse = {
 
 // Option 1: Add a 'user' property to the request, which is a common pattern
 export interface CustomRequest extends Request {
-  user?: {
+  user: {
     id: number;
-    // add other user properties if needed
   };
 }
