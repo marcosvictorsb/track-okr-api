@@ -1,12 +1,8 @@
 import { IPresenter } from '@protocols/presenter';
-import {
-  FindPlannerCriteria,
-  GetPlannerCriteria,
-  IPlannerRepository
-} from './default.interfaces';
+import { FindPlannerCriteria, IPlannerRepository } from './default.interfaces';
 import { DataLogOutput } from '@adapters/services';
 import { PlannerEntity } from '../entity/planner.entity';
-import { GetPlannerGateway } from '../gateways/Get.planner';
+import { GetPlannerGateway } from '../gateways/get.planner';
 import { GetPlannerInteractor } from '../usecases';
 import { IUserRepository } from '@domains/api/users/interfaces';
 import { logger } from '@configs/logger';
