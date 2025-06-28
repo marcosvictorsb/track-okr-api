@@ -3,6 +3,7 @@ export class PlannerEntity {
   public readonly title: string;
   public readonly description: string;
   public readonly id_company: number;
+  public readonly year?: number;
   public readonly created_at?: Date;
   public readonly updated_at?: Date | null;
   public readonly deleted_at?: Date | null;
@@ -12,6 +13,7 @@ export class PlannerEntity {
     title: string;
     description: string;
     id_company: number;
+    year?: number;
     created_at?: Date;
     updated_at?: Date | null;
     deleted_at?: Date | null;
@@ -20,6 +22,7 @@ export class PlannerEntity {
     this.title = params.title;
     this.description = params.description;
     this.id_company = params.id_company;
+    this.year = params.year;
     this.created_at = params.created_at;
     this.updated_at = params.updated_at;
     this.deleted_at = params.deleted_at;

@@ -65,8 +65,10 @@ export class PlannerRepository implements IPlannerRepository {
     return new PlannerEntity(Planner);
   }
 
-  public async findAll(criteria: FindPlannerCriteria): Promise<PlannerEntity[]> {
-    const Planners = await this.model.findAll({
+  public async findAll(
+    criteria: FindPlannerCriteria
+  ): Promise<PlannerEntity[]> {
+    const planners = await this.model.findAll({
       where: this.getConditions(criteria),
       attributes: {
         exclude: ['password_hash']
@@ -74,9 +76,18 @@ export class PlannerRepository implements IPlannerRepository {
       raw: true
     });
 
-    if (!Planners || Planners.length === 0) return [];
+    if (!planners || planners.length === 0) return [];
 
-    return Planners.map((Planner: any) => new PlannerEntity(Planner));
+    return planners.map(
+      (planner: PlannerEntity) =>
+        new PlannerEntity({
+          id: planner.id,
+          title: planner.title,
+          description: planner.description,
+          year: planner.year,
+          id_company: planner.id_company
+        })
+    );
   }
 
   public async update(

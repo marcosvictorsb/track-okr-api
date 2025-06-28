@@ -30,7 +30,7 @@ export type DeletePlannerCriteria = {
 };
 
 export type UpdatePlannerCriteria = {
-  id?: number
+  id?: number;
   title?: string;
   description?: string;
   year?: number;
@@ -39,10 +39,8 @@ export type UpdatePlannerCriteria = {
 
 export interface IPlannerRepository {
   create(criteria: CreatePlannerCriteria): Promise<PlannerEntity>;
-  find(
-    criteria: FindPlannerCriteria
-  ): Promise<PlannerEntity | undefined>;
-  // findAll(criteria: FindPlannerCriteria): Promise<PlannerEntity[]>;
+  find(criteria: FindPlannerCriteria): Promise<PlannerEntity | undefined>;
+  findAll(criteria: FindPlannerCriteria): Promise<PlannerEntity[]>;
   update(
     criteria: UpdatePlannerCriteria,
     data: Partial<PlannerEntity>
