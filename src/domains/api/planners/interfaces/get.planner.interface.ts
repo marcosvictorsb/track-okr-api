@@ -11,6 +11,7 @@ export type InputGetPlanner = {
   id_company: number;
   id_user: number;
   limite?: number;
+  year?: number;
 };
 
 export type GetPlannerInteractorDependencies = {
