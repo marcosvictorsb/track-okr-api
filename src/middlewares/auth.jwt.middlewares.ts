@@ -8,6 +8,7 @@ dotenv.config();
 export interface UserPayload extends Request {
   user: {
     id: number;
+    id_company: number;
   };
 }
 
@@ -35,8 +36,8 @@ export const authMiddleware = (
       (error, decoded) => {
         if (error) return response.status(401).json({ error: 'Invalid token' });
 
-        const payload = decoded as { id: number };
-        request.user = { id: payload.id };
+        const payload = decoded as { id: number; id_company: number };
+        request.user = { id: payload.id, id_company: payload.id_company };
 
         return next();
       }

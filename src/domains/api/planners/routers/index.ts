@@ -4,7 +4,7 @@ import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
 import { createPlannerSchema } from '../schemas';
 
-const { createPlannerController } = factories;
+const { createPlannerController, getPlannerController } = factories;
 
 const router = Router();
 
@@ -14,6 +14,10 @@ router.post(
   validateSchema(createPlannerSchema),
   (request: UserPayload, response: Response) =>
     createPlannerController.createPlanner(request, response)
+);
+
+router.get('/', authMiddleware, (request: UserPayload, response: Response) =>
+  getPlannerController.getPlanner(request, response)
 );
 
 export default router;

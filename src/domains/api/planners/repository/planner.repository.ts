@@ -36,6 +36,14 @@ export class PlannerRepository implements IPlannerRepository {
       whereConditions['year'] = criteria.year;
     }
 
+    if (criteria.id_company) {
+      whereConditions['id_company'] = criteria.id_company;
+    }
+
+    if (criteria.id_user) {
+      whereConditions['id_user'] = criteria.id_user;
+    }
+
     return whereConditions;
   }
 

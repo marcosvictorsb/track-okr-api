@@ -42,7 +42,8 @@ export class AuthenticationInteractor {
       const credential = this.gateway.signToken({
         name: user.name,
         email: user.email,
-        id: user.id
+        id: user.id,
+        id_company: user.id_company
       });
 
       return this.presenter.ok({
