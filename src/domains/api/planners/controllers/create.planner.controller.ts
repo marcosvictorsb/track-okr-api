@@ -21,7 +21,8 @@ export class CreatePlannerController {
       title: request.body.title,
       description: request.body.description,
       year: parseInt(request.body.year as string),
-      id_company: request.user.id_company
+      id_company: request.user.id_company,
+      id_user: request.user.id
     };
     const httpResponse = await this.interactor.execute(input);
     return response.status(httpResponse.status).json(httpResponse.body);

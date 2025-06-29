@@ -13,7 +13,6 @@ export const createPlannerSchema = z.object({
     year: z
       .number()
       .int()
-      .min(1900, 'O ano deve ser válido')
-      .max(new Date().getFullYear(), 'O ano não pode estar no futuro')
+      .min(new Date().getFullYear(), 'O ano minimo deve ser o ano atual')
   })
 });
