@@ -7,7 +7,8 @@ import { createPlannerSchema, updatePlannerSchema } from '../schemas';
 const {
   createPlannerController,
   getPlannerController,
-  updatePlannerController
+  updatePlannerController,
+  deletePlannerController
 } = factories;
 
 const router = Router();
@@ -30,6 +31,13 @@ router.put(
   validateSchema(updatePlannerSchema),
   (request: UserPayload, response: Response) =>
     updatePlannerController.updatePlanner(request, response)
+);
+
+router.delete(
+  '/:id',
+  authMiddleware,
+  (request: UserPayload, response: Response) =>
+    deletePlannerController.deletePlanner(request, response)
 );
 
 export default router;
