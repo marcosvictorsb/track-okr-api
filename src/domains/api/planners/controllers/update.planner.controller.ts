@@ -1,28 +1,32 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import {
-  CreatePlannerControllerDependencies,
-  InputCreatePlanner
+  UpdatePlannerControllerDependencies,
+  InputUpdatePlanner
 } from '../interfaces';
-import { CreatePlannerInteractor } from '../usecases';
 import { Response } from 'express';
 
-export class CreatePlannerController {
-  protected interactor: CreatePlannerInteractor;
+export class UpdatePlannerController {
+  protected interactor: UpdatePlannerControllerDependencies['interactor'];
 
-  constructor(params: CreatePlannerControllerDependencies) {
+  constructor(params: UpdatePlannerControllerDependencies) {
     this.interactor = params.interactor;
   }
 
-  public async createPlanner(
+  public async updatePlanner(
     request: UserPayload,
     response: Response
   ): Promise<Response> {
-    const input: InputCreatePlanner = {
+    const plannerId = parseInt(request.params.id as string);
+
+    const input: InputUpdatePlanner = {
+      id: plannerId,
       title: request.body.title,
       description: request.body.description,
       year: parseInt(request.body.year as string),
-      id_company: request.user.id_company
+      id_company: request.user.id_company,
+      id_user: request.user.id
     };
+
     const httpResponse = await this.interactor.execute(input);
     return response.status(httpResponse.status).json(httpResponse.body);
   }

@@ -55,14 +55,14 @@ export class PlannerRepository implements IPlannerRepository {
   public async find(
     criteria: FindPlannerCriteria
   ): Promise<PlannerEntity | undefined> {
-    const Planner = await this.model.findOne({
+    const planner = await this.model.findOne({
       where: this.getConditions(criteria),
       raw: true
     });
 
-    if (!Planner) return undefined;
+    if (!planner) return undefined;
 
-    return new PlannerEntity(Planner);
+    return new PlannerEntity(planner);
   }
 
   public async findAll(
@@ -85,7 +85,8 @@ export class PlannerRepository implements IPlannerRepository {
           title: planner.title,
           description: planner.description,
           year: planner.year,
-          id_company: planner.id_company
+          id_company: planner.id_company,
+          created_at: planner.created_at
         })
     );
   }
