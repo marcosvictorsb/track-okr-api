@@ -12,7 +12,7 @@ import {
   ICreatePlannerGateway,
   ICreatePlannerGatewayDependencies
 } from '../interfaces/create.planner.interface';
-import { MixCreatePlanner } from '@adapters/gateways/planners/';
+import { MixCreatePlanner } from '@adapters/gateways/api/planners';
 import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 

@@ -13,6 +13,7 @@ import {
 } from '@domains/api/users/interfaces';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { logger } from '@configs/logger';
+import { UserCompanyValidationInteractor } from '@domains/common';
 
 export type InputCreatePlanner = {
   title: string;
@@ -25,6 +26,7 @@ export type InputCreatePlanner = {
 export type CreatePlannerInteractorDependencies = {
   gateway: CreatePlannerGateway;
   presenter: IPresenter;
+  userCompanyValidator: UserCompanyValidationInteractor;
 };
 
 export type ICreatePlannerGatewayDependencies = {

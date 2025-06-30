@@ -1,4 +1,4 @@
-import { LoggerMixin, EmailService, TokenService } from '../../services';
+import { LoggerMixin, EmailService, TokenService } from '../../../services';
 
 class BaseGateway {
   constructor(...args: any[]) {}

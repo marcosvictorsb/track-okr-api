@@ -1,4 +1,4 @@
-import { LoggerMixin } from '../../services';
+import { LoggerMixin } from '../../../services';
 
 class BaseGateway {
   constructor(..._args: unknown[]) {}

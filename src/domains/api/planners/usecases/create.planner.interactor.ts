@@ -5,14 +5,17 @@ import {
 } from '../interfaces';
 import { IPresenter } from '@protocols/presenter';
 import { CreatePlannerGateway } from '../gateways/create.planner.gateway';
+import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class CreatePlannerInteractor {
   protected gateway: CreatePlannerGateway;
   protected presenter: IPresenter;
+  protected userCompanyValidator: UserCompanyValidationInteractor;
 
   constructor(params: CreatePlannerInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
+    this.userCompanyValidator = params.userCompanyValidator;
   }
 
   async execute(input: InputCreatePlanner): Promise<HttpResponse> {
@@ -25,24 +28,17 @@ export class CreatePlannerInteractor {
         id_company
       });
 
-      // 1. Buscar o usuário
-      const user = await this.gateway.findUser({ id: id_user });
-      if (!user) {
-        this.gateway.loggerInfo('Usuário não encontrado', { id_user });
-        return this.presenter.notFound('Usuário não encontrado');
-      }
+      const validation = await this.userCompanyValidator.execute({
+        id_user,
+        id_company
+      });
 
-      // 2. Verificar se o usuário pertence à empresa
-      if (user.id_company !== id_company) {
-        this.gateway.loggerInfo(
-          'Usuário não possui permissão para atualizar planner desta empresa',
-          {
-            id_company: user.id_company
-          }
-        );
-        return this.presenter.forbidden(
-          'Usuário não possui permissão para atualizar planner desta empresa'
-        );
+      if (!validation.isValid) {
+        this.gateway.loggerInfo('Usuário ou empresa inválidos', {
+          id_user,
+          id_company
+        });
+        return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
       const criteria = { title, description, year, id_company };

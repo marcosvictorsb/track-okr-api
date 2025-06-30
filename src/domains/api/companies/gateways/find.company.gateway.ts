@@ -4,7 +4,7 @@ import {
   IFindCompanyGateway,
   ICompanyRepository
 } from '@domains/api/companies/interfaces/';
-import { MixFindCompany } from '@adapters/gateways/companies';
+import { MixFindCompany } from '@adapters/gateways/api/companies';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 
 export class FindCompanyGateway

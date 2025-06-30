@@ -1,9 +1,19 @@
-import { UserEntity } from "../entity/user.entity";
-import { FindUserCriteria, IUserRepository, UpdateUserCriteria } from "../interfaces";
-import { IActiveUserGateway, IActiveUserGatewayDependencies } from "../interfaces/active.user.interface";
-import { MixActiveUser } from "@adapters/gateways/users/";
+import { UserEntity } from '../entity/user.entity';
+import {
+  FindUserCriteria,
+  IUserRepository,
+  UpdateUserCriteria
+} from '../interfaces';
+import {
+  IActiveUserGateway,
+  IActiveUserGatewayDependencies
+} from '../interfaces/active.user.interface';
+import { MixActiveUser } from '@adapters/gateways/api/users';
 
-export class ActiveUserGateway extends MixActiveUser implements IActiveUserGateway {
+export class ActiveUserGateway
+  extends MixActiveUser
+  implements IActiveUserGateway
+{
   userRepository: IUserRepository;
 
   constructor(params: IActiveUserGatewayDependencies) {
@@ -15,8 +25,10 @@ export class ActiveUserGateway extends MixActiveUser implements IActiveUserGatew
     return await this.userRepository.find(criteria);
   }
 
-  async activateUser(data: UpdateUserCriteria, criteria: UpdateUserCriteria): Promise<boolean> {
+  async activateUser(
+    data: UpdateUserCriteria,
+    criteria: UpdateUserCriteria
+  ): Promise<boolean> {
     return await this.userRepository.update(data, criteria);
   }
-  
 }

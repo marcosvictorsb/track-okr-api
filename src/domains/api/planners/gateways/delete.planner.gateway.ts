@@ -13,7 +13,7 @@ import {
   IDeletePlannerGateway,
   IDeletePlannerGatewayDependencies
 } from '../interfaces/delete.planner.interface';
-import { MixDeletePlanner } from '@adapters/gateways/planners/';
+import { MixDeletePlanner } from '@adapters/gateways/api/planners';
 import { logger } from '@configs/logger';
 
 export class DeletePlannerGateway

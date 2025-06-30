@@ -13,6 +13,7 @@ import {
 import { DataLogOutput } from '@adapters/services';
 import { HttpResponse } from '@protocols/http';
 import { logger } from '@configs/logger';
+import { UserCompanyValidationInteractor } from '@domains/common';
 
 export type InputDeletePlanner = {
   id: number;
@@ -23,6 +24,7 @@ export type InputDeletePlanner = {
 export type DeletePlannerInteractorDependencies = {
   gateway: IDeletePlannerGateway;
   presenter: IPresenter;
+  userCompanyValidator: UserCompanyValidationInteractor;
 };
 
 export type DeletePlannerControllerDependencies = {

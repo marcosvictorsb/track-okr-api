@@ -13,6 +13,7 @@ import {
 import { DataLogOutput } from '@adapters/services';
 import { HttpResponse } from '@protocols/http';
 import { logger } from '@configs/logger';
+import { UserCompanyValidationInteractor } from '@domains/common';
 
 export type InputUpdatePlanner = {
   id: number;
@@ -26,6 +27,7 @@ export type InputUpdatePlanner = {
 export type UpdatePlannerInteractorDependencies = {
   gateway: IUpdatePlannerGateway;
   presenter: IPresenter;
+  userCompanyValidator: UserCompanyValidationInteractor;
 };
 
 export type UpdatePlannerControllerDependencies = {

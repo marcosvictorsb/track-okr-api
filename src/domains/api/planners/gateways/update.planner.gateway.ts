@@ -13,7 +13,7 @@ import {
   IUpdatePlannerGateway,
   IUpdatePlannerGatewayDependencies
 } from '../interfaces/update.planner.interface';
-import { MixUpdatePlanner } from '@adapters/gateways/planners/';
+import { MixUpdatePlanner } from '@adapters/gateways/api/planners';
 import { logger } from '@configs/logger';
 
 export class UpdatePlannerGateway

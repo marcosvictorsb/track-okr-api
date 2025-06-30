@@ -4,12 +4,21 @@ import {
   CreateCompanyCriteria
 } from '@domains/api/companies/interfaces/';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
-import { CreateSubscriptionCriteria, ISubscriptionRepository } from '@domains/api/subscriptions/interfaces';
+import {
+  CreateSubscriptionCriteria,
+  ISubscriptionRepository
+} from '@domains/api/subscriptions/interfaces';
 import { SubscriptionEntity } from '@domains/api/subscriptions/entity/subscription.entity';
-import { CreateUserCriteria, IUserRepository } from '@domains/api/users/interfaces';
+import {
+  CreateUserCriteria,
+  IUserRepository
+} from '@domains/api/users/interfaces';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { IProcessSubscriptionPaymentGateway, IProcessSubscriptionPaymentGatewayDependencies } from '../interfaces/';
-import { MixProcessSubscriptionPayment } from '@adapters/gateways/webhooks/process.subscription.payment.gateway';
+import {
+  IProcessSubscriptionPaymentGateway,
+  IProcessSubscriptionPaymentGatewayDependencies
+} from '../interfaces/';
+import { MixProcessSubscriptionPayment } from '@adapters/gateways/api/webhooks/process.subscription.payment.gateway';
 
 export class ProcessSubscriptionPaymentGateway
   extends MixProcessSubscriptionPayment

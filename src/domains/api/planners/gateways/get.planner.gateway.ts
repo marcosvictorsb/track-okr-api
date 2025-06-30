@@ -6,7 +6,7 @@ import {
   FindPlannerCriteria,
   IPlannerRepository
 } from '../interfaces';
-import { MixGetPlanner } from '@adapters/gateways/planners/';
+import { MixGetPlanner } from '@adapters/gateways/api/planners';
 import {
   FindUserCriteria,
   IUserRepository

@@ -7,6 +7,7 @@ import { Presenter } from '@protocols/presenter';
 import { CreatePlannerController } from '../controllers/';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
 import UserModel from '@domains/api/users/model/user.model';
+import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories';
 
 const plannerRepository = new PlannerRepository({
   model: PlannerModel
@@ -24,7 +25,8 @@ const params = {
 const createPlannerGateway = new CreatePlannerGateway(params);
 const interactor = new CreatePlannerInteractor({
   gateway: createPlannerGateway,
-  presenter: new Presenter()
+  presenter: new Presenter(),
+  userCompanyValidator: userCompanyValidatiorInteractor
 });
 
 export const createPlannerController = new CreatePlannerController({
