@@ -18,6 +18,7 @@ export type FindTeamCriteria = {
   description?: string;
   amount_users?: number;
   id_company?: number;
+  limite?: number;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;

@@ -62,10 +62,20 @@ export class TeamRepository implements ITeamRepository {
   }
 
   public async findAll(criteria: FindTeamCriteria): Promise<TeamEntity[]> {
-    const teams = await this.model.findAll({
+    const queryOptions: {
+      where: Record<string, unknown>;
+      raw: boolean;
+      limit?: number;
+    } = {
       where: this.getConditions(criteria),
       raw: true
-    });
+    };
+
+    if (criteria.limite) {
+      queryOptions.limit = criteria.limite;
+    }
+
+    const teams = await this.model.findAll(queryOptions);
 
     if (!teams || teams.length === 0) return [];
 
