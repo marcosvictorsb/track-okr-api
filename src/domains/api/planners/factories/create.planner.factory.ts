@@ -1,5 +1,5 @@
 import { logger } from '@configs/logger';
-import { CreatePlannerGateway } from '../gateways/create.planner';
+import { CreatePlannerGateway } from '../gateways/create.planner.gateway';
 import PlannerModel from '../model/planner.model';
 import { PlannerRepository } from '../repository/planner.repository';
 import { CreatePlannerInteractor } from '../usecases';

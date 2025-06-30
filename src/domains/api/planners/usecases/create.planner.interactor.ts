@@ -2,9 +2,9 @@ import { HttpResponse } from '@protocols/http';
 import {
   CreatePlannerInteractorDependencies,
   InputCreatePlanner
-} from '../interfaces/';
+} from '../interfaces';
 import { IPresenter } from '@protocols/presenter';
-import { CreatePlannerGateway } from '../gateways/create.planner';
+import { CreatePlannerGateway } from '../gateways/create.planner.gateway';
 
 export class CreatePlannerInteractor {
   protected gateway: CreatePlannerGateway;

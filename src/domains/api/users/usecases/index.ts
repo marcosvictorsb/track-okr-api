@@ -1,1 +1,1 @@
-export * from './active.user.usecase';
+export * from './active.user.interactor';

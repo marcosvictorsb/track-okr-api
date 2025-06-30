@@ -5,7 +5,7 @@ import {
 } from './default.interfaces';
 import { DataLogOutput } from '@adapters/services';
 import { PlannerEntity } from '../entity/planner.entity';
-import { CreatePlannerGateway } from '../gateways/create.planner';
+import { CreatePlannerGateway } from '../gateways/create.planner.gateway';
 import { CreatePlannerInteractor } from '../usecases';
 import {
   FindUserCriteria,

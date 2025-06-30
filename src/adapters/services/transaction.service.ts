@@ -10,12 +10,12 @@
 //   Base: T
 // ) {
 //   return class extends Base {
-//     private sequelize: Sequelize;
+//     transaction: Sequelize;
 
 //     constructor(...args: any[]) {
 //       super(...args);
 //       const params = args[0];
-//       this.sequelize = params.sequelize;
+//       this.transaction = params.sequelize.transaction();
 //     }
 
 //     async startTransaction(): Promise<Transaction> {

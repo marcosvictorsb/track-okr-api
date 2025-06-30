@@ -5,7 +5,7 @@ import {
   IGetPlannerGatewayDependencies,
   FindPlannerCriteria,
   IPlannerRepository
-} from '../interfaces/';
+} from '../interfaces';
 import { MixGetPlanner } from '@adapters/gateways/planners/';
 import {
   FindUserCriteria,

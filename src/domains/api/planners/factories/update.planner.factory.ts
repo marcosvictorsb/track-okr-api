@@ -1,5 +1,5 @@
 import { logger } from '@configs/logger';
-import { UpdatePlannerGateway } from '../gateways/update.planner';
+import { UpdatePlannerGateway } from '../gateways/update.planner.gateway';
 import PlannerModel from '../model/planner.model';
 import UserModel from '@domains/api/users/model/user.model';
 import { PlannerRepository } from '../repository/planner.repository';

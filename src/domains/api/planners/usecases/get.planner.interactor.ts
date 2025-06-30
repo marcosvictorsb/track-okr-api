@@ -5,7 +5,7 @@ import {
   InputGetPlanner
 } from '../interfaces';
 import { IPresenter } from '@protocols/presenter';
-import { GetPlannerGateway } from '../gateways/';
+import { GetPlannerGateway } from '../gateways';
 
 export class GetPlannerInteractor {
   protected gateway: GetPlannerGateway;
