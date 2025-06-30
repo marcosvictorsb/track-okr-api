@@ -2,7 +2,8 @@ import { HttpResponse } from '@protocols/http';
 import {
   CreateTeamInteractorDependencies,
   InputCreateTeam,
-  ICreateTeamGateway
+  ICreateTeamGateway,
+  AMOUNT_USERS_DEFAULT
 } from '../interfaces';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
@@ -20,12 +21,11 @@ export class CreateTeamInteractor {
 
   async execute(input: InputCreateTeam): Promise<HttpResponse> {
     try {
-      const { name, description, amount_users, id_company, id_user } = input;
+      const { name, description, id_company, id_user } = input;
       this.gateway.loggerInfo('Iniciando criação do time', {
         data: JSON.stringify({
           name,
           description,
-          amount_users,
           id_company
         })
       });
@@ -44,7 +44,12 @@ export class CreateTeamInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      const criteria = { name, description, amount_users, id_company };
+      const criteria = {
+        name,
+        description,
+        amount_users: AMOUNT_USERS_DEFAULT,
+        id_company
+      };
       const team = await this.gateway.createTeam(criteria);
       this.gateway.loggerInfo('Time criado com sucesso');
 

@@ -36,6 +36,8 @@ export type UpdateTeamCriteria = {
   id_company?: number;
 };
 
+export const AMOUNT_USERS_DEFAULT = 0;
+
 export interface ITeamRepository {
   create(criteria: CreateTeamCriteria): Promise<TeamEntity>;
   find(criteria: FindTeamCriteria): Promise<TeamEntity | undefined>;

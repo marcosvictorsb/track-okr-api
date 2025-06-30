@@ -14,7 +14,6 @@ import { HttpResponse } from '@protocols/http';
 export type InputCreateTeam = {
   name: string;
   description: string;
-  amount_users: number;
   id_company: number;
   id_user: number;
 };

@@ -19,7 +19,6 @@ export class CreateTeamController {
     const input: InputCreateTeam = {
       name: request.body.name,
       description: request.body.description,
-      amount_users: parseInt(request.body.amount_users as string),
       id_company: request.user.id_company,
       id_user: request.user.id
     };
