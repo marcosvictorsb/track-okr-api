@@ -12,10 +12,10 @@ routers.get('/health-check', (request: Request, response: Response) => {
 });
 
 routers.use('/webhook', routerMercadoPago);
-routers.use('/user', routerUser);
+routers.use('/users', routerUser);
 routers.use('/authenticate', authRoutes);
-routers.use('/planner', plannerRouter);
-routers.use('/team', teamRouter);
+routers.use('/planners', plannerRouter);
+routers.use('/teams', teamRouter);
 
 const notFound = (request: Request, response: Response) => {
   response.status(404).json({ rota: 'Route does not exist' });
