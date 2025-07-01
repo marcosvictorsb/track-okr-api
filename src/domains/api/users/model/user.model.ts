@@ -40,7 +40,11 @@ UserModel.init(
       type: DataTypes.INTEGER
     },
     name: { type: DataTypes.STRING },
-    email: { type: DataTypes.STRING },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: 'users_email_unique'
+    },
     password_hash: { type: DataTypes.STRING },
     role: { type: DataTypes.STRING },
     status: {

@@ -4,7 +4,8 @@ import UserModel from '@domains/api/users/model/user.model';
 
 export enum UserStatus {
   ACTIVE = 'active',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
+  PENDING_ACTIVATION = 'pending_activation'
 }
 
 export type CreateUserCriteria = {
@@ -36,7 +37,7 @@ export type DeleteUserCriteria = {
 };
 
 export type UpdateUserCriteria = {
-  id?: number
+  id?: number;
   name?: string;
   email?: string;
   password_hash?: string;
@@ -47,9 +48,7 @@ export type UpdateUserCriteria = {
 
 export interface IUserRepository {
   create(criteria: CreateUserCriteria): Promise<UserEntity>;
-  find(
-    criteria: FindUserCriteria
-  ): Promise<UserEntity | undefined>;
+  find(criteria: FindUserCriteria): Promise<UserEntity | undefined>;
   // findAll(criteria: FindUserCriteria): Promise<UserEntity[]>;
   update(
     criteria: UpdateUserCriteria,

@@ -14,8 +14,7 @@ export async function up(queryInterface, Sequelize) {
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false,
-      unique: true
+      allowNull: false
     },
     password_hash: {
       type: Sequelize.STRING,
@@ -79,6 +78,6 @@ export async function down(queryInterface) {
   await queryInterface.removeIndex('users', 'users_email_unique');
   await queryInterface.removeIndex('users', 'users_id_company_index');
   await queryInterface.removeIndex('users', 'users_status_index');
-  
+
   await queryInterface.dropTable('users');
 }

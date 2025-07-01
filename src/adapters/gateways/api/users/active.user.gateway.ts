@@ -1,6 +1,12 @@
-import { EncryptionService, LoggerMixin } from '../../../services';
+import {
+  EncryptionService,
+  LoggerMixin,
+  TokenService
+} from '../../../services';
 
 class BaseGateway {
-  constructor(...args: any[]) {}
+  constructor(..._args: unknown[]) {}
 }
-export const MixActiveUser = EncryptionService(LoggerMixin(BaseGateway));
+export const MixActiveUser = TokenService(
+  EncryptionService(LoggerMixin(BaseGateway))
+);

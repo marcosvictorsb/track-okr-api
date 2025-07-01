@@ -33,7 +33,11 @@ export class GetTeamInteractor {
       });
 
       if (!validation.isValid) {
-        return validation.errorResponse!;
+        this.gateway.loggerInfo('O usuário ou empresa não é válido', {
+          id_company,
+          id_user
+        });
+        return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
       const criteria: FindTeamCriteria = { id_company, limite, name };
