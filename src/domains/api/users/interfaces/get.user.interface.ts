@@ -1,0 +1,36 @@
+import { IPresenter } from '@protocols/presenter';
+import { FindUserCriteria, IUserRepository } from './default.interfaces';
+import { DataLogOutput } from '@adapters/services';
+import { UserEntity } from '../entity/user.entity';
+import { GetUserGateway } from '../gateways/get.user.gateway';
+import { GetUserInteractor } from '../usecases/get.user.interactor';
+import { logger } from '@configs/logger';
+
+export type InputGetUser = {
+  id_company: number;
+  id_user: number;
+  limite?: number;
+  status?: string;
+  role?: string;
+};
+
+export type GetUserInteractorDependencies = {
+  gateway: GetUserGateway;
+  presenter: IPresenter;
+};
+
+export type IGetUserGatewayDependencies = {
+  userRepository: IUserRepository;
+  logging: typeof logger;
+};
+
+export type GetUserControllerDependencies = {
+  interactor: GetUserInteractor;
+};
+
+export interface IGetUserGateway {
+  findUsers(criteria: FindUserCriteria): Promise<UserEntity[] | undefined>;
+  findUser(criteria: FindUserCriteria): Promise<UserEntity | undefined>;
+  loggerInfo(message: string, data?: DataLogOutput): void;
+  loggerError(message: string, data?: DataLogOutput): void;
+}

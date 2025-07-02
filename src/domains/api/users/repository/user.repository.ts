@@ -28,6 +28,10 @@ export class UserRepository implements IUserRepository {
       whereConditions['email'] = criteria.email;
     }
 
+    if (criteria.id_company) {
+      whereConditions['id_company'] = criteria.id_company;
+    }
+
     return whereConditions;
   }
 
@@ -53,7 +57,7 @@ export class UserRepository implements IUserRepository {
     const users = await this.model.findAll({
       where: this.getConditions(criteria),
       attributes: {
-        exclude: ['password_hash']
+        exclude: ['password_hash', 'deleted_at', 'updated_at', 'created_at']
       },
       raw: true
     });

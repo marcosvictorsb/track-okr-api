@@ -2,7 +2,7 @@ export class SubscriptionEntity {
   public readonly id?: number;
   public readonly id_company: string; // UUID
   public readonly amount_users: number;
-  public readonly status: string; // 'active' | 'cancelled'
+  public readonly status: string; // 'active' | 'inactive'
   public readonly id_external_payment: string;
   public readonly created_at?: Date;
   public readonly updated_at?: Date | null;
@@ -29,7 +29,9 @@ export class SubscriptionEntity {
   }
 
   // Método opcional para criar instância vazia (padrão factory)
-  public static create(params: Partial<SubscriptionEntity> = {}): SubscriptionEntity {
+  public static create(
+    params: Partial<SubscriptionEntity> = {}
+  ): SubscriptionEntity {
     return new SubscriptionEntity({
       id_company: params.id_company || '',
       amount_users: params.amount_users || 0,

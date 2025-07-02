@@ -2,11 +2,22 @@ import { Response, Router } from 'express';
 import * as factories from '@domains/api/users/factories';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { inviteUserSchema } from '../schemas';
+import { inviteUserSchema, getUserSchema } from '../schemas';
 
-const { activeUserController, inviteUserController } = factories;
+const { activeUserController, inviteUserController, makeGetUserController } =
+  factories;
+
+const getUserController = makeGetUserController();
 
 const router = Router();
+
+router.get(
+  '/',
+  authMiddleware,
+  // validateSchema(getUserSchema),
+  (request: UserPayload, response: Response) =>
+    getUserController.getUsers(request, response)
+);
 
 router.post(
   '/active',
