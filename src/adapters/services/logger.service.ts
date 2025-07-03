@@ -22,6 +22,16 @@ export type DataLogOutput = {
   title?: string;
   description?: string;
   year?: number;
+
+  // teams
+  id_team?: number;
+
+  // user-teams
+  id_user_to_add?: number;
+  role_in_team?: string;
+  userTeamId?: number;
+  id_user_to_manage?: number;
+  action?: string;
 };
 
 type LoggerServiceDependencies = {
