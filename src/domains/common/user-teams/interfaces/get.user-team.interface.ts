@@ -1,7 +1,5 @@
 import { IPresenter } from '@protocols/presenter';
 import { UserTeamEntity } from '../entity/user-team.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { IUserRepository } from '@domains/api/users/interfaces';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import {
@@ -38,20 +36,6 @@ export interface IGetUserTeamGateway {
   findUserTeam(
     criteria: FindUserTeamCriteria
   ): Promise<UserTeamEntity | undefined>;
-  findActiveTeamsByUser(id_user: number): Promise<UserTeamEntity[]>;
-  findActiveUsersByTeam(id_team: number): Promise<UserTeamEntity[]>;
-  findUser(criteria: {
-    id?: number;
-    id_company?: number;
-  }): Promise<UserEntity | undefined>;
-  findTeam(criteria: {
-    id?: number;
-    id_company?: number;
-  }): Promise<TeamEntity | undefined>;
-  canViewTeam(
-    requestingUser: UserEntity,
-    team?: TeamEntity
-  ): Promise<{ canView: boolean; message?: string }>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

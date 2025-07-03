@@ -12,7 +12,6 @@ export type CreateUserTeamCriteria = {
   id_user: number;
   id_team: number;
   role_in_team?: string;
-  joined_at?: Date;
 };
 
 export type FindUserTeamCriteria = {
@@ -20,18 +19,12 @@ export type FindUserTeamCriteria = {
   id_user?: number;
   id_team?: number;
   role_in_team?: string;
-  joined_at?: Date;
-  left_at?: Date;
-  created_at?: Date;
-  updated_at?: Date;
 };
 
 export type UpdateUserTeamCriteria = {
   id?: number;
   id_user?: number;
   id_team?: number;
-  role_in_team?: string;
-  left_at?: Date;
 };
 
 export type DeleteUserTeamCriteria = {
@@ -49,10 +42,6 @@ export interface IUserTeamRepository {
     criteria: UpdateUserTeamCriteria
   ): Promise<boolean>;
   delete(criteria: DeleteUserTeamCriteria): Promise<boolean>;
-  // Métodos específicos para user-teams
-  findActiveTeamsByUser(id_user: number): Promise<UserTeamEntity[]>;
-  findActiveUsersByTeam(id_team: number): Promise<UserTeamEntity[]>;
-  leaveTeam(id_user: number, id_team: number): Promise<boolean>;
 }
 
 export type UserTeamRepositoryDependencies = {

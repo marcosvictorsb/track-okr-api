@@ -59,8 +59,7 @@ export class DeleteUserTeamInteractor {
       } else if (id_user_to_remove && id_team) {
         userTeamToRemove = await this.gateway.findUserTeam({
           id_user: id_user_to_remove,
-          id_team,
-          left_at: undefined
+          id_team
         });
       } else {
         this.gateway.loggerInfo(

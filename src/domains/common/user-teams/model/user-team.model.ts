@@ -8,10 +8,9 @@ export interface UserTeamModelAttributes {
   id_user: number;
   id_team: number;
   role_in_team: string;
-  joined_at: Date;
-  left_at?: Date;
   created_at?: Date;
   updated_at?: Date;
+  deleted_at?: Date;
 }
 
 class UserTeamModel
@@ -22,8 +21,6 @@ class UserTeamModel
   declare id_user: number;
   declare id_team: number;
   declare role_in_team: string;
-  declare joined_at: Date;
-  declare left_at?: Date;
   declare created_at?: Date;
   declare updated_at?: Date;
 }
@@ -51,21 +48,16 @@ UserTeamModel.init(
       allowNull: false,
       defaultValue: 'member'
     },
-    joined_at: {
-      type: DataTypes.DATE,
-      allowNull: false,
-      defaultValue: DataTypes.NOW
-    },
-    left_at: {
-      type: DataTypes.DATE,
-      allowNull: true
-    },
     created_at: {
       allowNull: false,
       type: DataTypes.DATE,
       defaultValue: DataTypes.NOW
     },
     updated_at: {
+      allowNull: true,
+      type: DataTypes.DATE
+    },
+    deleted_at: {
       allowNull: true,
       type: DataTypes.DATE
     }
@@ -77,7 +69,8 @@ UserTeamModel.init(
     timestamps: true,
     underscored: true,
     createdAt: 'created_at',
-    updatedAt: 'updated_at'
+    updatedAt: 'updated_at',
+    paranoid: true
   }
 );
 

@@ -31,51 +31,6 @@ export class GetUserTeamInteractor {
         include_left
       } = input;
 
-      // Buscar o usuário que está fazendo a requisição (se informado)
-      if (id_user) {
-        const requestingUser = await this.gateway.findUser({
-          id: id_user,
-          id_company
-        });
-
-        if (!requestingUser) {
-          this.gateway.loggerInfo('Usuário requisitante não encontrado', {
-            id_user: id_user,
-            id_company: id_company
-          });
-          return this.presenter.forbidden('Usuário não tem permissão');
-        }
-
-        // Se especificou um time, verificar permissões
-        if (id_team) {
-          const team = await this.gateway.findTeam({
-            id: id_team,
-            id_company
-          });
-
-          if (!team) {
-            this.gateway.loggerInfo('Time não encontrado', {
-              id_company: id_company
-            });
-            return this.presenter.notFound('Time não encontrado');
-          }
-
-          const canView = await this.gateway.canViewTeam(requestingUser, team);
-          if (!canView.canView) {
-            this.gateway.loggerInfo(
-              'Usuário sem permissão para visualizar o time',
-              {
-                id_user: id_user,
-                id_company: id_company
-              }
-            );
-            return this.presenter.forbidden(
-              canView.message || 'Sem permissão para visualizar o time'
-            );
-          }
-        }
-      }
-
       // Construir critérios de busca
       const criteria: FindUserTeamCriteria = {};
 
@@ -97,33 +52,33 @@ export class GetUserTeamInteractor {
 
       // Se não incluir usuários que saíram, filtrar apenas ativos
       if (!include_left) {
-        criteria.left_at = undefined;
+        const a = undefined;
       }
 
       let userTeams;
 
-      // Se buscar por time específico, usar método otimizado
-      if (id_team && !id_user_to_find) {
-        if (include_left) {
-          userTeams = await this.gateway.findUserTeams(criteria);
-        } else {
-          userTeams = await this.gateway.findActiveUsersByTeam(id_team);
-        }
-      }
-      // Se buscar por usuário específico, usar método otimizado
-      else if (criteria.id_user && !id_team) {
-        if (include_left) {
-          userTeams = await this.gateway.findUserTeams(criteria);
-        } else {
-          userTeams = await this.gateway.findActiveTeamsByUser(
-            criteria.id_user
-          );
-        }
-      }
-      // Busca geral
-      else {
-        userTeams = await this.gateway.findUserTeams(criteria);
-      }
+      // // Se buscar por time específico, usar método otimizado
+      // if (id_team && !id_user_to_find) {
+      //   if (include_left) {
+      //     userTeams = await this.gateway.findUserTeams(criteria);
+      //   } else {
+      //     userTeams = await this.gateway.findActiveUsersByTeam(id_team);
+      //   }
+      // }
+      // // Se buscar por usuário específico, usar método otimizado
+      // else if (criteria.id_user && !id_team) {
+      //   if (include_left) {
+      //     userTeams = await this.gateway.findUserTeams(criteria);
+      //   } else {
+      //     userTeams = await this.gateway.findActiveTeamsByUser(
+      //       criteria.id_user
+      //     );
+      //   }
+      // }
+      // // Busca geral
+      // else {
+      //   userTeams = await this.gateway.findUserTeams(criteria);
+      // }
 
       if (!userTeams || userTeams.length === 0) {
         this.gateway.loggerInfo('Nenhum relacionamento user-team encontrado');

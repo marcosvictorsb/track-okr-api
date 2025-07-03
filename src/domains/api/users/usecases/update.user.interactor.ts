@@ -7,24 +7,35 @@ import {
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserModelAttributes } from '../model/user.model';
+import { ManageUserTeamInteractor } from '@domains/common/user-teams/usecases';
 
 export class UpdateUserInteractor {
   protected gateway: IUpdateUserGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
+  protected manageUserTeamInteractor: ManageUserTeamInteractor;
 
   constructor(params: UpdateUserInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.userCompanyValidator = params.userCompanyValidator;
+    this.manageUserTeamInteractor = params.manageUserTeamInteractor;
   }
 
   async execute(input: InputUpdateUser): Promise<HttpResponse> {
     try {
-      const { id, name, email, role, id_company, id_user } = input;
+      const { id, name, email, role, teamId, id_company, id_user } = input;
 
       this.gateway.loggerInfo('Iniciando atualização do usuário', {
-        data: JSON.stringify({ id, name, email, role, id_company, id_user })
+        data: JSON.stringify({
+          id,
+          name,
+          email,
+          role,
+          teamId,
+          id_company,
+          id_user
+        })
       });
 
       // 1. Validar usuário e empresa
@@ -101,24 +112,25 @@ export class UpdateUserInteractor {
         return this.presenter.serverError('Erro ao atualizar o usuário');
       }
 
-      // 7. Buscar usuário atualizado para retornar
-      const updatedUser = await this.gateway.findUser({ id });
+      if (teamId !== undefined) {
+        const { action } = await this.manageUserTeamInteractor.execute({
+          id_user_to_manage: id,
+          id_team: teamId,
+          id_company: id_company
+        });
+        this.gateway.loggerInfo(`Ação realizada: ${action}`, {
+          id_user_to_manage: id,
+          id_team: teamId,
+          action
+        });
+        return this.presenter.noContent();
+      }
 
       this.gateway.loggerInfo('Usuário atualizado com sucesso', {
         data: JSON.stringify({ id, updated_by: id_user })
       });
 
-      return this.presenter.ok({
-        message: 'Usuário atualizado com sucesso',
-        user: {
-          id: updatedUser?.id,
-          name: updatedUser?.name,
-          email: updatedUser?.email,
-          role: updatedUser?.role,
-          status: updatedUser?.status,
-          id_company: updatedUser?.id_company
-        }
-      });
+      return this.presenter.noContent();
     } catch (error) {
       this.gateway.loggerError('Erro ao atualizar o usuário', {
         error: String(error)

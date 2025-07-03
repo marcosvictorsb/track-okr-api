@@ -9,10 +9,7 @@ import { DataLogOutput } from '@adapters/services';
 import { HttpResponse } from '@protocols/http';
 import { logger } from '@configs/logger';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
-import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { ManageUserTeamInteractor } from '@domains/common/user-teams/usecases';
 
 export type InputUpdateUser = {
   id: number;
@@ -28,6 +25,7 @@ export type UpdateUserInteractorDependencies = {
   gateway: IUpdateUserGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
+  manageUserTeamInteractor: ManageUserTeamInteractor;
 };
 
 export type UpdateUserControllerDependencies = {
@@ -48,30 +46,11 @@ export interface IUpdateUserGateway {
     updateData: Partial<InputUpdateUser>
   ): Promise<{ canUpdateUser: boolean; message?: string }>;
 
-  // Métodos para user-teams
-  findTeam(criteria: {
-    id?: number;
-    id_company?: number;
-  }): Promise<TeamEntity | undefined>;
-  findUserTeam(criteria: {
-    id_user?: number;
-    id_team?: number;
-    left_at?: Date | undefined;
-  }): Promise<UserTeamEntity | undefined>;
-  createUserTeam(criteria: {
-    id_user: number;
-    id_team: number;
-    role_in_team?: string;
-    joined_at?: Date;
-  }): Promise<UserTeamEntity>;
-
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }
 
 export interface IUpdateUserGatewayDependencies {
   userRepository: IUserRepository;
-  userTeamRepository: IUserTeamRepository;
-  teamRepository: ITeamRepository;
   logging: typeof logger;
 }

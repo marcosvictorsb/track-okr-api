@@ -79,7 +79,7 @@ export class CreateUserTeamInteractor {
         this.gateway.loggerInfo('Usuário sem permissão para gerenciar o time', {
           id_user: id_user,
           id_team: id_team,
-          message: canManage.message
+          requestTxt: canManage.message
         });
         return this.presenter.forbidden(
           canManage.message || 'Sem permissão para gerenciar o time'
@@ -89,8 +89,7 @@ export class CreateUserTeamInteractor {
       // Verificar se o usuário já está no time
       const existingRelation = await this.gateway.findUserTeam({
         id_user: id_user_to_add,
-        id_team,
-        left_at: undefined
+        id_team
       });
 
       if (existingRelation) {
@@ -105,8 +104,7 @@ export class CreateUserTeamInteractor {
       const userTeam = await this.gateway.createUserTeam({
         id_user: id_user_to_add,
         id_team,
-        role_in_team: role_in_team || 'member',
-        joined_at: new Date()
+        role_in_team: role_in_team || 'member'
       });
 
       this.gateway.loggerInfo('Usuário adicionado ao time com sucesso', {

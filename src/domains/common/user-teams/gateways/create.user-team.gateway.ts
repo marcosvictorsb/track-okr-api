@@ -77,8 +77,7 @@ export class CreateUserTeamGateway
     // Verificar se o usuário é manager do time
     const userTeamRelation = await this.userTeamRepository.find({
       id_user: requestingUser.id,
-      id_team: team.id,
-      left_at: undefined
+      id_team: team.id
     });
 
     if (userTeamRelation && userTeamRelation.role_in_team === 'manager') {

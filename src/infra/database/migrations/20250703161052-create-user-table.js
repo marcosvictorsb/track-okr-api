@@ -36,22 +36,16 @@ module.exports = {
         defaultValue: 'member',
         comment: 'Papel do usuário no time: leader, member, etc.'
       },
-      joined_at: {
-        type: Sequelize.DATE,
-        allowNull: false,
-        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
-      },
-      left_at: {
-        type: Sequelize.DATE,
-        allowNull: true,
-        comment: 'Data que o usuário saiu do time (soft delete)'
-      },
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updated_at: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      deleted_at: {
         type: Sequelize.DATE,
         allowNull: true
       }
@@ -61,7 +55,7 @@ module.exports = {
     await queryInterface.addIndex('user_teams', ['id_user', 'id_team'], {
       unique: true,
       where: {
-        left_at: null
+        updated_at: null
       },
       name: 'unique_active_user_team'
     });
@@ -74,10 +68,6 @@ module.exports = {
     await queryInterface.addIndex('user_teams', ['id_team'], {
       name: 'idx_user_teams_team'
     });
-
-    await queryInterface.addIndex('user_teams', ['left_at'], {
-      name: 'idx_user_teams_left_at'
-    });
   },
 
   async down(queryInterface, _Sequelize) {
@@ -85,7 +75,6 @@ module.exports = {
     await queryInterface.removeIndex('user_teams', 'unique_active_user_team');
     await queryInterface.removeIndex('user_teams', 'idx_user_teams_user');
     await queryInterface.removeIndex('user_teams', 'idx_user_teams_team');
-    await queryInterface.removeIndex('user_teams', 'idx_user_teams_left_at');
 
     // Remover a tabela
     await queryInterface.dropTable('user_teams');

@@ -45,16 +45,6 @@ export class GetUserTeamGateway
     return await this.userTeamRepository.find(criteria);
   }
 
-  async findActiveTeamsByUser(id_user: number): Promise<UserTeamEntity[]> {
-    this.logging.info('Buscando times ativos do usuário', { id_user });
-    return await this.userTeamRepository.findActiveTeamsByUser(id_user);
-  }
-
-  async findActiveUsersByTeam(id_team: number): Promise<UserTeamEntity[]> {
-    this.logging.info('Buscando usuários ativos do time', { id_team });
-    return await this.userTeamRepository.findActiveUsersByTeam(id_team);
-  }
-
   async findUser(criteria: {
     id?: number;
     id_company?: number;
@@ -93,8 +83,7 @@ export class GetUserTeamGateway
     // Verificar se o usuário faz parte do time
     const userTeamRelation = await this.userTeamRepository.find({
       id_user: requestingUser.id,
-      id_team: team.id,
-      left_at: undefined
+      id_team: team.id
     });
 
     if (userTeamRelation) {

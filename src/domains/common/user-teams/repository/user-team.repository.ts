@@ -40,10 +40,6 @@ export class UserTeamRepository implements IUserTeamRepository {
       whereConditions['role_in_team'] = criteria.role_in_team;
     }
 
-    if (criteria.left_at !== undefined) {
-      whereConditions['left_at'] = criteria.left_at;
-    }
-
     return whereConditions;
   }
 
@@ -52,7 +48,6 @@ export class UserTeamRepository implements IUserTeamRepository {
   ): Promise<UserTeamEntity> {
     const userTeam = await this.model.create({
       ...criteria,
-      joined_at: criteria.joined_at || new Date(),
       role_in_team: criteria.role_in_team || 'member'
     });
     return new UserTeamEntity(userTeam.dataValues);
@@ -100,54 +95,6 @@ export class UserTeamRepository implements IUserTeamRepository {
     const affectedRows = await this.model.destroy({
       where: this.getConditions(criteria)
     });
-    return affectedRows > 0;
-  }
-
-  // Métodos específicos para user-teams
-
-  public async findActiveTeamsByUser(
-    id_user: number
-  ): Promise<UserTeamEntity[]> {
-    const userTeams = await this.model.findAll({
-      where: {
-        id_user,
-        left_at: null
-      } as any,
-      raw: true
-    });
-
-    return userTeams.map(
-      (userTeam: UserTeamModelAttributes) => new UserTeamEntity(userTeam)
-    );
-  }
-
-  public async findActiveUsersByTeam(
-    id_team: number
-  ): Promise<UserTeamEntity[]> {
-    const userTeams = await this.model.findAll({
-      where: {
-        id_team,
-        left_at: null
-      } as any,
-      raw: true
-    });
-
-    return userTeams.map(
-      (userTeam: UserTeamModelAttributes) => new UserTeamEntity(userTeam)
-    );
-  }
-
-  public async leaveTeam(id_user: number, id_team: number): Promise<boolean> {
-    const [affectedRows] = await this.model.update(
-      { left_at: new Date() },
-      {
-        where: {
-          id_user,
-          id_team,
-          left_at: null
-        } as any
-      }
-    );
     return affectedRows > 0;
   }
 }

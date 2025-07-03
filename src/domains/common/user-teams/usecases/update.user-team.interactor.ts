@@ -62,8 +62,7 @@ export class UpdateUserTeamInteractor {
       } else if (id_user_to_update && id_team) {
         userTeamToUpdate = await this.gateway.findUserTeam({
           id_user: id_user_to_update,
-          id_team,
-          left_at: undefined
+          id_team
         });
       } else {
         this.gateway.loggerInfo(
