@@ -24,15 +24,25 @@ export const updateUserSchema = z.object({
         .enum(['admin', 'user', 'manager'], {
           errorMap: () => ({ message: 'Role deve ser admin, user ou manager' })
         })
+        .optional(),
+      teamId: z
+        .union([z.string(), z.number()])
+        .transform((val) => (typeof val === 'string' ? parseInt(val, 10) : val))
+        .refine(
+          (val) => !isNaN(val) && val > 0,
+          'TeamId deve ser um número válido maior que 0'
+        )
         .optional()
     })
     .refine(
       (data) =>
         data.name !== undefined ||
         data.email !== undefined ||
-        data.role !== undefined,
+        data.role !== undefined ||
+        data.teamId !== undefined,
       {
-        message: 'Pelo menos um campo (name, email ou role) deve ser fornecido'
+        message:
+          'Pelo menos um campo (name, email, role ou teamId) deve ser fornecido'
       }
     )
 });

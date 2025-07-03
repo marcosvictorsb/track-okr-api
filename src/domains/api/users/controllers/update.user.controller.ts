@@ -25,7 +25,8 @@ export class UpdateUserController {
       email,
       role,
       id_company: request.user.id_company,
-      id_user: request.user.id
+      id_user: request.user.id,
+      teamId: request.body.teamId
     };
 
     const httpResponse = await this.interactor.execute(input);

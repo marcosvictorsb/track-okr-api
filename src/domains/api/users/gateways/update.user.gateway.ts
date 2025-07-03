@@ -7,6 +7,10 @@ import {
   IUserRepository,
   InputUpdateUser
 } from '../interfaces';
+import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { MixUpdateUser } from '@adapters/gateways/api/users';
 import { logger } from '@configs/logger';
 
@@ -15,11 +19,15 @@ export class UpdateUserGateway
   implements IUpdateUserGateway
 {
   userRepository: IUserRepository;
+  userTeamRepository: IUserTeamRepository;
+  teamRepository: ITeamRepository;
   logging: typeof logger;
 
   constructor(params: IUpdateUserGatewayDependencies) {
     super(params);
     this.userRepository = params.userRepository;
+    this.userTeamRepository = params.userTeamRepository;
+    this.teamRepository = params.teamRepository;
     this.logging = params.logging;
   }
 
@@ -114,5 +122,33 @@ export class UpdateUserGateway
     }
 
     return { canUpdateUser: true };
+  }
+
+  // Métodos para user-teams
+  async findTeam(criteria: {
+    id?: number;
+    id_company?: number;
+  }): Promise<TeamEntity | undefined> {
+    this.logging.info('Buscando time', { criteria });
+    return await this.teamRepository.find(criteria);
+  }
+
+  async findUserTeam(criteria: {
+    id_user?: number;
+    id_team?: number;
+    left_at?: Date | undefined;
+  }): Promise<UserTeamEntity | undefined> {
+    this.logging.info('Buscando relacionamento user-team', { criteria });
+    return await this.userTeamRepository.find(criteria);
+  }
+
+  async createUserTeam(criteria: {
+    id_user: number;
+    id_team: number;
+    role_in_team?: string;
+    joined_at?: Date;
+  }): Promise<UserTeamEntity> {
+    this.logging.info('Criando relacionamento user-team', { criteria });
+    return await this.userTeamRepository.create(criteria);
   }
 }
