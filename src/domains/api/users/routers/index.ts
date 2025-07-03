@@ -2,18 +2,20 @@ import { Response, Router } from 'express';
 import * as factories from '@domains/api/users/factories';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { inviteUserSchema, getUserSchema } from '../schemas';
+import { inviteUserSchema } from '../schemas';
 import { deleteUserSchema } from '../schemas/delete.user';
 
 const {
   activeUserController,
   inviteUserController,
   makeGetUserController,
-  makeDeleteUserController
+  makeDeleteUserController,
+  makeDeactivateUserController
 } = factories;
 
 const getUserController = makeGetUserController();
 const deleteUserController = makeDeleteUserController();
+const deactivateUserController = makeDeactivateUserController();
 
 const router = Router();
 
@@ -46,6 +48,13 @@ router.delete(
   validateSchema(deleteUserSchema),
   (request: UserPayload, response: Response) =>
     deleteUserController.deleteUser(request, response)
+);
+
+router.put(
+  '/:id/deactivate',
+  authMiddleware,
+  (request: UserPayload, response: Response) =>
+    deactivateUserController.deactivateUser(request, response)
 );
 
 export default router;
