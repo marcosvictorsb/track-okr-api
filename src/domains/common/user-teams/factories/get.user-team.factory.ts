@@ -1,5 +1,4 @@
 import { Presenter } from '@protocols/presenter';
-import { GetUserTeamController } from '../controllers/get.user-team.controller';
 import { GetUserTeamGateway } from '../gateways/get.user-team.gateway';
 import { GetUserTeamInteractor } from '../usecases/get.user-team.interactor';
 import { logger } from '@configs/logger';
@@ -10,7 +9,7 @@ import UserTeamModel from '../model/user-team.model';
 import UserModel from '@domains/api/users/model/user.model';
 import TeamModel from '@domains/api/teams/model/team.model';
 
-export const makeGetUserTeamController = (): GetUserTeamController => {
+export const makeGetUserTeamController = (): GetUserTeamInteractor => {
   const userTeamRepository = new UserTeamRepository({ model: UserTeamModel });
   const userRepository = new UserRepository({ model: UserModel });
   const teamRepository = new TeamRepository({ model: TeamModel });
@@ -23,10 +22,8 @@ export const makeGetUserTeamController = (): GetUserTeamController => {
     logging: logger
   });
 
-  const interactor = new GetUserTeamInteractor({
+  return new GetUserTeamInteractor({
     gateway,
     presenter
   });
-
-  return new GetUserTeamController({ interactor });
 };

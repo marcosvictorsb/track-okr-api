@@ -1,5 +1,4 @@
 import { Presenter } from '@protocols/presenter';
-import { UpdateUserTeamController } from '../controllers/update.user-team.controller';
 import { UpdateUserTeamGateway } from '../gateways/update.user-team.gateway';
 import { UpdateUserTeamInteractor } from '../usecases/update.user-team.interactor';
 import { UserCompanyValidationInteractor } from '@domains/common';
@@ -12,7 +11,7 @@ import UserTeamModel from '../model/user-team.model';
 import UserModel from '@domains/api/users/model/user.model';
 import TeamModel from '@domains/api/teams/model/team.model';
 
-export const makeUpdateUserTeamController = (): UpdateUserTeamController => {
+export const makeUpdateUserTeamInteractor = (): UpdateUserTeamInteractor => {
   const userTeamRepository = new UserTeamRepository({ model: UserTeamModel });
   const userRepository = new UserRepository({ model: UserModel });
   const teamRepository = new TeamRepository({ model: TeamModel });
@@ -34,11 +33,9 @@ export const makeUpdateUserTeamController = (): UpdateUserTeamController => {
     gateway: userCompanyValidationGateway
   });
 
-  const interactor = new UpdateUserTeamInteractor({
+  return new UpdateUserTeamInteractor({
     gateway,
     presenter,
     userCompanyValidator
   });
-
-  return new UpdateUserTeamController({ interactor });
 };

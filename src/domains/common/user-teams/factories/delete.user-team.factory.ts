@@ -1,5 +1,4 @@
 import { Presenter } from '@protocols/presenter';
-import { DeleteUserTeamController } from '../controllers/delete.user-team.controller';
 import { DeleteUserTeamGateway } from '../gateways/delete.user-team.gateway';
 import { DeleteUserTeamInteractor } from '../usecases/delete.user-team.interactor';
 import { UserCompanyValidationInteractor } from '@domains/common';
@@ -12,7 +11,7 @@ import UserTeamModel from '../model/user-team.model';
 import UserModel from '@domains/api/users/model/user.model';
 import TeamModel from '@domains/api/teams/model/team.model';
 
-export const makeDeleteUserTeamController = (): DeleteUserTeamController => {
+export const makeDeleteUserTeamInteractor = (): DeleteUserTeamInteractor => {
   const userTeamRepository = new UserTeamRepository({ model: UserTeamModel });
   const userRepository = new UserRepository({ model: UserModel });
   const teamRepository = new TeamRepository({ model: TeamModel });
@@ -34,11 +33,9 @@ export const makeDeleteUserTeamController = (): DeleteUserTeamController => {
     gateway: userCompanyValidationGateway
   });
 
-  const interactor = new DeleteUserTeamInteractor({
+  return new DeleteUserTeamInteractor({
     gateway,
     presenter,
     userCompanyValidator
   });
-
-  return new DeleteUserTeamController({ interactor });
 };
