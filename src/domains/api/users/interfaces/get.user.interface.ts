@@ -4,6 +4,7 @@ import { DataLogOutput } from '@adapters/services';
 import { UserEntity } from '../entity/user.entity';
 import { GetUserGateway } from '../gateways/get.user.gateway';
 import { GetUserInteractor } from '../usecases/get.user.interactor';
+import { GetUserTeamInteractor } from '@domains/common/user-teams/usecases';
 import { logger } from '@configs/logger';
 
 export type InputGetUser = {
@@ -17,6 +18,7 @@ export type InputGetUser = {
 export type GetUserInteractorDependencies = {
   gateway: GetUserGateway;
   presenter: IPresenter;
+  getUserTeamInteractor: GetUserTeamInteractor;
 };
 
 export type IGetUserGatewayDependencies = {

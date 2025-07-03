@@ -5,6 +5,7 @@ import { GetUserInteractor } from '../usecases/get.user.interactor';
 import { logger } from '@configs/logger';
 import { UserRepository } from '../repository/user.repository';
 import UserModel from '../model/user.model';
+import { makeGetUserTeamInteractor } from '@domains/common/user-teams/factories';
 
 export const makeGetUserController = (): GetUserController => {
   const userRepository = new UserRepository({ model: UserModel });
@@ -17,7 +18,8 @@ export const makeGetUserController = (): GetUserController => {
 
   const interactor = new GetUserInteractor({
     gateway,
-    presenter
+    presenter,
+    getUserTeamInteractor: makeGetUserTeamInteractor()
   });
 
   return new GetUserController({ interactor });

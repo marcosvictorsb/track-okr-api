@@ -22,14 +22,8 @@ export class GetUserTeamInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      const {
-        id_company,
-        id_user,
-        id_team,
-        id_user_to_find,
-        role_in_team,
-        include_left
-      } = input;
+      const { id_user, id_team, id_user_to_find, role_in_team, include_left } =
+        input;
 
       // Construir critérios de busca
       const criteria: FindUserTeamCriteria = {};
@@ -50,35 +44,8 @@ export class GetUserTeamInteractor {
         criteria.role_in_team = role_in_team;
       }
 
-      // Se não incluir usuários que saíram, filtrar apenas ativos
-      if (!include_left) {
-        const a = undefined;
-      }
-
-      let userTeams;
-
-      // // Se buscar por time específico, usar método otimizado
-      // if (id_team && !id_user_to_find) {
-      //   if (include_left) {
-      //     userTeams = await this.gateway.findUserTeams(criteria);
-      //   } else {
-      //     userTeams = await this.gateway.findActiveUsersByTeam(id_team);
-      //   }
-      // }
-      // // Se buscar por usuário específico, usar método otimizado
-      // else if (criteria.id_user && !id_team) {
-      //   if (include_left) {
-      //     userTeams = await this.gateway.findUserTeams(criteria);
-      //   } else {
-      //     userTeams = await this.gateway.findActiveTeamsByUser(
-      //       criteria.id_user
-      //     );
-      //   }
-      // }
-      // // Busca geral
-      // else {
-      //   userTeams = await this.gateway.findUserTeams(criteria);
-      // }
+      // Buscar os relacionamentos user-team
+      const userTeams = await this.gateway.findUserTeams(criteria);
 
       if (!userTeams || userTeams.length === 0) {
         this.gateway.loggerInfo('Nenhum relacionamento user-team encontrado');
