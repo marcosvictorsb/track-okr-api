@@ -72,16 +72,16 @@ export class DeleteUserGateway
       };
     }
 
-    if (userToDelete.role === 'admin') {
-      this.logging.warn('Tentativa de deletar outro admin', {
-        userToDeleteRole: userToDelete.role,
-        userToDeleteId: userToDelete.id
-      });
-      return {
-        canDeleteUser: false,
-        message: 'Você não pode deletar outro administrador'
-      };
-    }
+    // if (userToDelete.role === 'admin') {
+    //   this.logging.warn('Tentativa de deletar outro admin', {
+    //     userToDeleteRole: userToDelete.role,
+    //     userToDeleteId: userToDelete.id
+    //   });
+    //   return {
+    //     canDeleteUser: false,
+    //     message: 'Você não pode deletar outro administrador'
+    //   };
+    // }
 
     return { canDeleteUser: true };
   }
