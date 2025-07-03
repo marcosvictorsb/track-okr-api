@@ -2,7 +2,7 @@ import { Response, Router } from 'express';
 import * as factories from '@domains/api/users/factories';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { inviteUserSchema } from '../schemas';
+import { inviteUserSchema, updateUserSchema } from '../schemas';
 import { deleteUserSchema } from '../schemas/delete.user';
 
 const {
@@ -10,12 +10,14 @@ const {
   inviteUserController,
   makeGetUserController,
   makeDeleteUserController,
-  makeDeactivateUserController
+  makeDeactivateUserController,
+  makeUpdateUserController
 } = factories;
 
 const getUserController = makeGetUserController();
 const deleteUserController = makeDeleteUserController();
 const deactivateUserController = makeDeactivateUserController();
+const updateUserController = makeUpdateUserController();
 
 const router = Router();
 
@@ -40,6 +42,14 @@ router.post(
   validateSchema(inviteUserSchema),
   (request: UserPayload, response: Response) =>
     inviteUserController.inviteUser(request, response)
+);
+
+router.put(
+  '/:id',
+  authMiddleware,
+  validateSchema(updateUserSchema),
+  (request: UserPayload, response: Response) =>
+    updateUserController.updateUser(request, response)
 );
 
 router.delete(

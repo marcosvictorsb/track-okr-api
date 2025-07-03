@@ -1,0 +1,129 @@
+import { HttpResponse } from '@protocols/http';
+import {
+  UpdateUserInteractorDependencies,
+  InputUpdateUser,
+  IUpdateUserGateway
+} from '../interfaces';
+import { IPresenter } from '@protocols/presenter';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { UserModelAttributes } from '../model/user.model';
+
+export class UpdateUserInteractor {
+  protected gateway: IUpdateUserGateway;
+  protected presenter: IPresenter;
+  protected userCompanyValidator: UserCompanyValidationInteractor;
+
+  constructor(params: UpdateUserInteractorDependencies) {
+    this.gateway = params.gateway;
+    this.presenter = params.presenter;
+    this.userCompanyValidator = params.userCompanyValidator;
+  }
+
+  async execute(input: InputUpdateUser): Promise<HttpResponse> {
+    try {
+      const { id, name, email, role, id_company, id_user } = input;
+
+      this.gateway.loggerInfo('Iniciando atualização do usuário', {
+        data: JSON.stringify({ id, name, email, role, id_company, id_user })
+      });
+
+      // 1. Validar usuário e empresa
+      const validation = await this.userCompanyValidator.execute({
+        id_user,
+        id_company
+      });
+
+      if (!validation.isValid) {
+        this.gateway.loggerError('O usuário ou empresa não é válido', {
+          id_company,
+          id_user
+        });
+        return this.presenter.badRequest('O usuário ou empresa não é válido');
+      }
+
+      // 3. Buscar o usuário a ser atualizado
+      const userToUpdate = await this.gateway.findUser({
+        id,
+        id_company
+      });
+      if (!userToUpdate) {
+        this.gateway.loggerInfo('Usuário a ser atualizado não encontrado', {
+          data: JSON.stringify({ id, id_company })
+        });
+        return this.presenter.notFound(
+          'Usuário a ser atualizado não encontrado'
+        );
+      }
+
+      // 4. Preparar dados para atualização (apenas campos fornecidos)
+      const updateData: Partial<InputUpdateUser> = {};
+      if (name !== undefined) updateData.name = name;
+      if (email !== undefined) updateData.email = email;
+      if (role !== undefined) updateData.role = role;
+
+      // Verificar se há dados para atualizar
+      if (Object.keys(updateData).length === 0) {
+        return this.presenter.badRequest(
+          'Nenhum dado fornecido para atualização'
+        );
+      }
+
+      const requestingUser = validation.user;
+      const canUpdate = await this.gateway.canUpdateUser(
+        userToUpdate,
+        requestingUser as UserModelAttributes,
+        updateData
+      );
+      if (!canUpdate.canUpdateUser) {
+        this.gateway.loggerInfo('Sem permissão para atualizar o usuário', {
+          data: JSON.stringify({
+            id,
+            requesting_user: id_user,
+            message: canUpdate.message
+          })
+        });
+        return this.presenter.forbidden(
+          canUpdate.message || 'Sem permissão para atualizar este usuário'
+        );
+      }
+
+      // 6. Atualizar o usuário
+      const updateCriteria = {
+        ...updateData
+      };
+
+      const updated = await this.gateway.updateUser(updateCriteria, { id });
+
+      if (!updated) {
+        this.gateway.loggerError('Erro ao atualizar o usuário', {
+          data: JSON.stringify({ id })
+        });
+        return this.presenter.serverError('Erro ao atualizar o usuário');
+      }
+
+      // 7. Buscar usuário atualizado para retornar
+      const updatedUser = await this.gateway.findUser({ id });
+
+      this.gateway.loggerInfo('Usuário atualizado com sucesso', {
+        data: JSON.stringify({ id, updated_by: id_user })
+      });
+
+      return this.presenter.ok({
+        message: 'Usuário atualizado com sucesso',
+        user: {
+          id: updatedUser?.id,
+          name: updatedUser?.name,
+          email: updatedUser?.email,
+          role: updatedUser?.role,
+          status: updatedUser?.status,
+          id_company: updatedUser?.id_company
+        }
+      });
+    } catch (error) {
+      this.gateway.loggerError('Erro ao atualizar o usuário', {
+        error: String(error)
+      });
+      return this.presenter.serverError('Erro ao atualizar o usuário');
+    }
+  }
+}
