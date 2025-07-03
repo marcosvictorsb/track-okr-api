@@ -1,4 +1,6 @@
-import UserModel from '@domains/api/users/model/user.model';
+import UserModel, {
+  UserModelAttributes
+} from '@domains/api/users/model/user.model';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { ModelStatic } from 'sequelize';
 import {
@@ -64,7 +66,7 @@ export class UserRepository implements IUserRepository {
 
     if (!users || users.length === 0) return [];
 
-    return users.map((user: any) => new UserEntity(user));
+    return users.map((user: UserModelAttributes) => new UserEntity(user));
   }
 
   public async update(
