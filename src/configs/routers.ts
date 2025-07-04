@@ -4,6 +4,7 @@ import routerUser from '@domains/api/users/routers';
 import authRoutes from '@domains/api/authentication/routes';
 import plannerRouter from '@domains/api/planners/routers';
 import teamRouter from '@domains/api/teams/routers';
+import objectiveRouter from '@domains/api/objectives/routers';
 
 const routers = Router();
 
@@ -16,6 +17,7 @@ routers.use('/users', routerUser);
 routers.use('/authenticate', authRoutes);
 routers.use('/planners', plannerRouter);
 routers.use('/teams', teamRouter);
+routers.use('/objectives', objectiveRouter);
 
 const notFound = (request: Request, response: Response) => {
   response.status(404).json({ rota: 'Route does not exist' });
