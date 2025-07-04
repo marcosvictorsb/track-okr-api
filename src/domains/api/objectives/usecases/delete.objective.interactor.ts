@@ -7,7 +7,9 @@ import {
 export class DeleteObjectiveInteractor {
   constructor(private readonly objectiveGateway: IObjectiveGateway) {}
 
-  public async execute(request: DeleteObjectiveRequest): Promise<DeleteObjectiveResponse> {
+  public async execute(
+    request: DeleteObjectiveRequest
+  ): Promise<DeleteObjectiveResponse> {
     const { id } = request;
 
     // Verificar se o objetivo existe

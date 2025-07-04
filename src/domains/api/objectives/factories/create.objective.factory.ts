@@ -6,5 +6,9 @@ import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 
 const objectiveRepository = new ObjectiveRepository({ model: ObjectiveModel });
 const objectiveGateway = new ObjectiveGateway(objectiveRepository);
-const createObjectiveInteractor = new CreateObjectiveInteractor(objectiveGateway);
-export const createObjectiveController = new CreateObjectiveController(createObjectiveInteractor);
+const createObjectiveInteractor = new CreateObjectiveInteractor(
+  objectiveGateway
+);
+export const createObjectiveController = new CreateObjectiveController(
+  createObjectiveInteractor
+);

@@ -4,9 +4,14 @@ import { ICreateObjectiveController } from '@domains/api/objectives/interfaces';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class CreateObjectiveController implements ICreateObjectiveController {
-  constructor(private readonly createObjectiveInteractor: CreateObjectiveInteractor) {}
+  constructor(
+    private readonly createObjectiveInteractor: CreateObjectiveInteractor
+  ) {}
 
-  public async createObjective(request: UserPayload, response: Response): Promise<void> {
+  public async createObjective(
+    request: UserPayload,
+    response: Response
+  ): Promise<void> {
     try {
       const { title, description, id_team, quarter, year } = request.body;
 
@@ -24,8 +29,9 @@ export class CreateObjectiveController implements ICreateObjectiveController {
         data: result.objective.toJson()
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Internal server error';
-      
+      const errorMessage =
+        error instanceof Error ? error.message : 'Internal server error';
+
       response.status(400).json({
         success: false,
         message: errorMessage

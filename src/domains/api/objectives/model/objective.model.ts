@@ -39,11 +39,11 @@ ObjectiveModel.init(
       primaryKey: true,
       type: DataTypes.INTEGER
     },
-    title: { 
+    title: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    description: { 
+    description: {
       type: DataTypes.TEXT,
       allowNull: true
     },

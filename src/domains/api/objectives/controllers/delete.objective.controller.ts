@@ -4,9 +4,14 @@ import { IDeleteObjectiveController } from '@domains/api/objectives/interfaces';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class DeleteObjectiveController implements IDeleteObjectiveController {
-  constructor(private readonly deleteObjectiveInteractor: DeleteObjectiveInteractor) {}
+  constructor(
+    private readonly deleteObjectiveInteractor: DeleteObjectiveInteractor
+  ) {}
 
-  public async deleteObjective(request: UserPayload, response: Response): Promise<void> {
+  public async deleteObjective(
+    request: UserPayload,
+    response: Response
+  ): Promise<void> {
     try {
       const { id } = request.params;
 
@@ -20,9 +25,10 @@ export class DeleteObjectiveController implements IDeleteObjectiveController {
         data: { deleted: result.success }
       });
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Internal server error';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Internal server error';
       const statusCode = errorMessage.includes('not found') ? 404 : 400;
-      
+
       response.status(statusCode).json({
         success: false,
         message: errorMessage

@@ -6,5 +6,9 @@ import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 
 const objectiveRepository = new ObjectiveRepository({ model: ObjectiveModel });
 const objectiveGateway = new ObjectiveGateway(objectiveRepository);
-const deleteObjectiveInteractor = new DeleteObjectiveInteractor(objectiveGateway);
-export const deleteObjectiveController = new DeleteObjectiveController(deleteObjectiveInteractor);
+const deleteObjectiveInteractor = new DeleteObjectiveInteractor(
+  objectiveGateway
+);
+export const deleteObjectiveController = new DeleteObjectiveController(
+  deleteObjectiveInteractor
+);

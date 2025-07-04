@@ -17,7 +17,9 @@ export class ObjectiveRepository implements IObjectiveRepository {
     this.model = params.model;
   }
 
-  private getConditions(criteria: FindObjectiveCriteria): Record<string, unknown> {
+  private getConditions(
+    criteria: FindObjectiveCriteria
+  ): Record<string, unknown> {
     const whereConditions: Record<string, unknown> = {};
 
     if (criteria.id) {
@@ -47,19 +49,23 @@ export class ObjectiveRepository implements IObjectiveRepository {
     return whereConditions;
   }
 
-  public async create(criteria: CreateObjectiveCriteria): Promise<ObjectiveEntity> {
+  public async create(
+    criteria: CreateObjectiveCriteria
+  ): Promise<ObjectiveEntity> {
     const objectiveData = {
       ...criteria,
-      status: criteria.status || 'active' as const
+      status: criteria.status || ('active' as const)
     };
-    
+
     const objective = await this.model.create(objectiveData);
     return new ObjectiveEntity(objective.dataValues);
   }
 
-  public async findOne(criteria: FindObjectiveCriteria): Promise<ObjectiveEntity | null> {
+  public async findOne(
+    criteria: FindObjectiveCriteria
+  ): Promise<ObjectiveEntity | null> {
     const whereConditions = this.getConditions(criteria);
-    
+
     const objective = await this.model.findOne({
       where: whereConditions
     });
@@ -71,15 +77,19 @@ export class ObjectiveRepository implements IObjectiveRepository {
     return new ObjectiveEntity(objective.dataValues);
   }
 
-  public async findMany(criteria: FindObjectiveCriteria): Promise<ObjectiveEntity[]> {
+  public async findMany(
+    criteria: FindObjectiveCriteria
+  ): Promise<ObjectiveEntity[]> {
     const whereConditions = this.getConditions(criteria);
-    
+
     const objectives = await this.model.findAll({
       where: whereConditions,
       order: [['created_at', 'DESC']]
     });
 
-    return objectives.map(objective => new ObjectiveEntity(objective.dataValues));
+    return objectives.map(
+      (objective) => new ObjectiveEntity(objective.dataValues)
+    );
   }
 
   public async update(
@@ -87,7 +97,7 @@ export class ObjectiveRepository implements IObjectiveRepository {
     data: UpdateObjectiveCriteria
   ): Promise<ObjectiveEntity | null> {
     const whereConditions = this.getConditions(criteria);
-    
+
     const [affectedRows] = await this.model.update(data, {
       where: whereConditions
     });

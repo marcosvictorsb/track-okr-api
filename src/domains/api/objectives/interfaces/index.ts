@@ -41,7 +41,10 @@ export interface IObjectiveRepository {
   create(criteria: CreateObjectiveCriteria): Promise<ObjectiveEntity>;
   findOne(criteria: FindObjectiveCriteria): Promise<ObjectiveEntity | null>;
   findMany(criteria: FindObjectiveCriteria): Promise<ObjectiveEntity[]>;
-  update(criteria: FindObjectiveCriteria, data: UpdateObjectiveCriteria): Promise<ObjectiveEntity | null>;
+  update(
+    criteria: FindObjectiveCriteria,
+    data: UpdateObjectiveCriteria
+  ): Promise<ObjectiveEntity | null>;
   delete(criteria: DeleteObjectiveCriteria): Promise<boolean>;
 }
 
@@ -51,7 +54,10 @@ export interface IObjectiveGateway {
   findById(id: number): Promise<ObjectiveEntity | null>;
   findByTeam(id_team: number): Promise<ObjectiveEntity[]>;
   findByQuarter(quarter: number, year: number): Promise<ObjectiveEntity[]>;
-  update(id: number, data: UpdateObjectiveCriteria): Promise<ObjectiveEntity | null>;
+  update(
+    id: number,
+    data: UpdateObjectiveCriteria
+  ): Promise<ObjectiveEntity | null>;
   delete(id: number): Promise<boolean>;
 }
 

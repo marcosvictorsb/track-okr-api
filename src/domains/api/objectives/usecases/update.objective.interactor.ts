@@ -7,7 +7,9 @@ import {
 export class UpdateObjectiveInteractor {
   constructor(private readonly objectiveGateway: IObjectiveGateway) {}
 
-  public async execute(request: UpdateObjectiveRequest): Promise<UpdateObjectiveResponse> {
+  public async execute(
+    request: UpdateObjectiveRequest
+  ): Promise<UpdateObjectiveResponse> {
     const { id, title, description, status, quarter, year } = request;
 
     // Verificar se o objetivo existe
@@ -30,7 +32,7 @@ export class UpdateObjectiveInteractor {
     }
 
     const updateData: Record<string, unknown> = {};
-    
+
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;
     if (status !== undefined) updateData.status = status;

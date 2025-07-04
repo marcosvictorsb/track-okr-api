@@ -7,7 +7,9 @@ import {
 export class CreateObjectiveInteractor {
   constructor(private readonly objectiveGateway: IObjectiveGateway) {}
 
-  public async execute(request: CreateObjectiveRequest): Promise<CreateObjectiveResponse> {
+  public async execute(
+    request: CreateObjectiveRequest
+  ): Promise<CreateObjectiveResponse> {
     const { title, description, id_team, quarter, year } = request;
 
     // Validar se o quarter está entre 1 e 4

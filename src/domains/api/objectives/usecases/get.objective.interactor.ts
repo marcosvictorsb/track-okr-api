@@ -7,7 +7,9 @@ import {
 export class GetObjectiveInteractor {
   constructor(private readonly objectiveGateway: IObjectiveGateway) {}
 
-  public async execute(request: GetObjectiveRequest): Promise<GetObjectiveResponse> {
+  public async execute(
+    request: GetObjectiveRequest
+  ): Promise<GetObjectiveResponse> {
     const { id, id_team, quarter, year } = request;
 
     let objectives;
@@ -20,7 +22,9 @@ export class GetObjectiveInteractor {
     } else if (quarter && year) {
       objectives = await this.objectiveGateway.findByQuarter(quarter, year);
     } else {
-      throw new Error('At least one search criteria must be provided (id, id_team, or quarter+year)');
+      throw new Error(
+        'At least one search criteria must be provided (id, id_team, or quarter+year)'
+      );
     }
 
     return {

@@ -21,11 +21,17 @@ export class ObjectiveGateway implements IObjectiveGateway {
     return await this.objectiveRepository.findMany({ id_team });
   }
 
-  public async findByQuarter(quarter: number, year: number): Promise<ObjectiveEntity[]> {
+  public async findByQuarter(
+    quarter: number,
+    year: number
+  ): Promise<ObjectiveEntity[]> {
     return await this.objectiveRepository.findMany({ quarter, year });
   }
 
-  public async update(id: number, data: UpdateObjectiveCriteria): Promise<ObjectiveEntity | null> {
+  public async update(
+    id: number,
+    data: UpdateObjectiveCriteria
+  ): Promise<ObjectiveEntity | null> {
     return await this.objectiveRepository.update({ id }, data);
   }
 

@@ -2,11 +2,11 @@ import { Response, Router } from 'express';
 import * as factories from '@domains/api/objectives/factories';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { 
-  createObjectiveSchema, 
-  updateObjectiveSchema, 
+import {
+  createObjectiveSchema,
+  updateObjectiveSchema,
   getObjectiveSchema,
-  deleteObjectiveSchema 
+  deleteObjectiveSchema
 } from '../schemas';
 
 const {
@@ -37,11 +37,8 @@ router.get(
 );
 
 // Buscar objetivo por ID
-router.get(
-  '/:id',
-  authMiddleware,
-  (request: UserPayload, response: Response) =>
-    getObjectiveController.getObjectives(request, response)
+router.get('/:id', authMiddleware, (request: UserPayload, response: Response) =>
+  getObjectiveController.getObjectives(request, response)
 );
 
 // Atualizar objetivo
