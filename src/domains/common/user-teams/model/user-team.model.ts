@@ -23,6 +23,7 @@ class UserTeamModel
   declare role_in_team: string;
   declare created_at?: Date;
   declare updated_at?: Date;
+  declare deleted_at?: Date;
 }
 
 UserTeamModel.init(

@@ -66,6 +66,23 @@ export class ManageUserTeamGateway
     criteria: CreateUserTeamCriteria
   ): Promise<UserTeamEntity> {
     this.logging.info('Criando relacionamento user-team', { criteria });
+
+    // Verificar se já existe uma relação ativa
+    const existingUserTeam = await this.userTeamRepository.find({
+      id_user: criteria.id_user,
+      id_team: criteria.id_team
+    });
+
+    if (existingUserTeam) {
+      this.logging.warn('Relacionamento user-team já existe', {
+        existingUserTeam,
+        criteria
+      });
+      throw new Error(
+        `User ${criteria.id_user} is already a member of team ${criteria.id_team}`
+      );
+    }
+
     return await this.userTeamRepository.create(criteria);
   }
 

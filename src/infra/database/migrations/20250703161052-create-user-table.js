@@ -55,7 +55,7 @@ module.exports = {
     await queryInterface.addIndex('user_teams', ['id_user', 'id_team'], {
       unique: true,
       where: {
-        updated_at: null
+        deleted_at: null
       },
       name: 'unique_active_user_team'
     });
