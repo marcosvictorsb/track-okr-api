@@ -22,8 +22,7 @@ export class GetUserTeamInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      const { id_user, id_team, id_user_to_find, role_in_team, include_left } =
-        input;
+      const { id_user, id_team, id_user_to_find, role_in_team } = input;
 
       // Construir critérios de busca
       const criteria: FindUserTeamCriteria = {};

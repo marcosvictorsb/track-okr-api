@@ -112,24 +112,16 @@ export class UpdateUserInteractor {
         return this.presenter.serverError('Erro ao atualizar o usuário');
       }
 
-      if (teamId !== undefined) {
-        const { action } = await this.manageUserTeamInteractor.execute({
-          id_user_to_manage: id,
-          id_team: teamId,
-          id_company: id_company
-        });
-        this.gateway.loggerInfo(`Ação realizada: ${action}`, {
-          id_user_to_manage: id,
-          id_team: teamId,
-          action
-        });
-        return this.presenter.noContent();
-      }
-
-      this.gateway.loggerInfo('Usuário atualizado com sucesso', {
-        data: JSON.stringify({ id, updated_by: id_user })
+      const { action } = await this.manageUserTeamInteractor.execute({
+        id_user_to_manage: id,
+        id_team: teamId,
+        id_company: id_company
       });
-
+      this.gateway.loggerInfo(`Ação realizada: ${action}`, {
+        id_user_to_manage: id,
+        id_team: teamId,
+        action
+      });
       return this.presenter.noContent();
     } catch (error) {
       this.gateway.loggerError('Erro ao atualizar o usuário', {

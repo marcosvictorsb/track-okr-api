@@ -31,6 +31,16 @@ export class ManageUserTeamInteractor {
     const currentUserTeam =
       await this.gateway.findCurrentUserTeam(id_user_to_manage);
 
+    if (!currentUserTeam && !id_team) {
+      this.gateway.loggerInfo(
+        'Nenhum time atual encontrado e ID do time não informado',
+        {
+          data: JSON.stringify({ id_user_to_manage, id_team, id_company })
+        }
+      );
+      return { action: ActionUserTeam.NOTHING_TO_DO };
+    }
+
     if (currentUserTeam && (id_team == null || id_team === undefined)) {
       this.gateway.loggerInfo('ID do time não informado', {
         data: JSON.stringify({ id_user_to_manage, id_team, id_company })
