@@ -1,4 +1,3 @@
-import { HttpResponse } from '@protocols/http';
 import {
   ManageUserTeamInteractorDependencies,
   InputManageUserTeam,
@@ -31,6 +30,15 @@ export class ManageUserTeamInteractor {
 
     const currentUserTeam =
       await this.gateway.findCurrentUserTeam(id_user_to_manage);
+
+    if (currentUserTeam && (id_team == null || id_team === undefined)) {
+      this.gateway.loggerInfo('ID do time não informado', {
+        data: JSON.stringify({ id_user_to_manage, id_team, id_company })
+      });
+      await this.removeUserFromTeam(id_user_to_manage);
+
+      return { action: ActionUserTeam.TEAM_NOT_FOUND };
+    }
 
     const existingTeam = await this.gateway.findTeam({
       id: id_team,
@@ -131,30 +139,24 @@ export class ManageUserTeamInteractor {
     };
   }
 
-  // private async removeUserFromTeam(
-  //   userId: number,
-  //   teamId: number
-  // ): Promise<{ action: string; message: string; previous_team_id: number }> {
-  //   this.gateway.loggerInfo('Removendo usuário do time', {
-  //     data: JSON.stringify({ id_user: userId, id_team: teamId })
-  //   });
+  private async removeUserFromTeam(
+    userId: number,
+    teamId?: number
+  ): Promise<{ action: string }> {
+    this.gateway.loggerInfo('ID do time não informado para remoção', {
+      data: JSON.stringify({ id_user: userId })
+    });
 
-  //   const success = await this.gateway.leaveCurrentTeam(userId, teamId);
+    const leftSuccess = await this.gateway.leaveCurrentTeam(userId);
 
-  //   if (!success) {
-  //     throw new Error('Falha ao remover usuário do time');
-  //   }
+    if (!leftSuccess) {
+      throw new Error('Falha ao remover usuário do time atual');
+    }
 
-  //   this.gateway.loggerInfo('Usuário removido do time com sucesso', {
-  //     data: JSON.stringify({ id_user: userId, id_team: teamId })
-  //   });
-
-  //   return {
-  //     action: 'team_left',
-  //     message: 'Usuário removido do time',
-  //     previous_team_id: teamId
-  //   };
-  // }
+    return {
+      action: ActionUserTeam.REMOVED_USER_FROM_CURRENT_TEAM
+    };
+  }
 
   private async changeUserTeam({ userId, fromTeamId, toTeamId }): Promise<{
     action: string;

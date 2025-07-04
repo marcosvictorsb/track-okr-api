@@ -18,7 +18,8 @@ export enum ActionUserTeam {
   USER_ADD_TEAM = 'user_add_team',
   USER_UPDATED_TEAM = 'user_updated_team',
   TEAM_NOT_FOUND = 'team_not_found',
-  NOTHING_TO_DO = 'nothing_to_do'
+  NOTHING_TO_DO = 'nothing_to_do',
+  REMOVED_USER_FROM_CURRENT_TEAM = 'removed_user_from_current_team'
 }
 
 // MANAGE USER TEAM
@@ -57,7 +58,7 @@ export interface IManageUserTeamGateway {
   // Métodos específicos para gerenciamento
   findCurrentUserTeam(userId: number): Promise<UserTeamEntity | undefined>;
   createUserTeam(criteria: CreateUserTeamCriteria): Promise<UserTeamEntity>;
-  leaveCurrentTeam(userId: number, teamId: number): Promise<boolean>;
+  leaveCurrentTeam(userId: number, teamId?: number): Promise<boolean>;
 
   // Métodos de log
   loggerInfo(message: string, data?: DataLogOutput): void;
