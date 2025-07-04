@@ -79,7 +79,16 @@ export class TeamRepository implements ITeamRepository {
 
     if (!teams || teams.length === 0) return [];
 
-    return teams.map((team) => new TeamEntity(team));
+    return teams.map(
+      (team) =>
+        new TeamEntity({
+          id: team.id,
+          name: team.name,
+          description: team.description,
+          amount_users: team.amount_users,
+          id_company: team.id_company
+        })
+    );
   }
 
   public async update(
