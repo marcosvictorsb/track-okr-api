@@ -11,12 +11,14 @@ const {
   makeGetUserController,
   makeDeleteUserController,
   makeDeactivateUserController,
+  makeActivateUserController,
   makeUpdateUserController
 } = factories;
 
 const getUserController = makeGetUserController();
 const deleteUserController = makeDeleteUserController();
 const deactivateUserController = makeDeactivateUserController();
+const activateUserController = makeActivateUserController();
 const updateUserController = makeUpdateUserController();
 
 const router = Router();
@@ -65,6 +67,13 @@ router.put(
   authMiddleware,
   (request: UserPayload, response: Response) =>
     deactivateUserController.deactivateUser(request, response)
+);
+
+router.put(
+  '/:id/activate',
+  authMiddleware,
+  (request: UserPayload, response: Response) =>
+    activateUserController.activateUser(request, response)
 );
 
 export default router;
