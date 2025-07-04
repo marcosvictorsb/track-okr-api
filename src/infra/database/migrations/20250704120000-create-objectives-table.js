@@ -29,7 +29,7 @@ module.exports = {
         onDelete: 'CASCADE'
       },
       status: {
-        type: Sequelize.ENUM('active', 'cancelled', 'completed'),
+        type: Sequelize.STRING, // ('active', 'cancelled', 'completed'),
         allowNull: false,
         defaultValue: 'active'
       },
@@ -62,15 +62,15 @@ module.exports = {
 
     // Adicionando índice para id_team para melhorar performance nas consultas
     await queryInterface.addIndex('objectives', ['id_team']);
-    
+
     // Adicionando índice composto para quarter e year
     await queryInterface.addIndex('objectives', ['quarter', 'year']);
-    
+
     // Adicionando índice para status
     await queryInterface.addIndex('objectives', ['status']);
   },
 
-  async down(queryInterface, Sequelize) {
+  async down(queryInterface) {
     await queryInterface.dropTable('objectives');
   }
 };
