@@ -158,3 +158,26 @@ export interface CreateObjectiveControllerDependencies {
     execute(input: InputCreateObjective): Promise<HttpResponse>;
   };
 }
+
+// Get Objective Interfaces
+export interface InputGetObjective {
+  id?: number;
+  id_team?: number;
+  quarter?: number;
+  year?: number;
+  id_company: number;
+  id_user: number;
+  limite?: number;
+}
+
+export interface GetObjectiveInteractorDependencies {
+  gateway: IObjectiveGateway;
+  presenter: IPresenter;
+  userCompanyValidator: UserCompanyValidationInteractor;
+}
+
+export interface GetObjectiveControllerDependencies {
+  interactor: {
+    execute(input: InputGetObjective): Promise<HttpResponse>;
+  };
+}

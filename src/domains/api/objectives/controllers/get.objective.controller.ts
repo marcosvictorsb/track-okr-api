@@ -1,41 +1,37 @@
 import { Response } from 'express';
-import { GetObjectiveInteractor } from '@domains/api/objectives/usecases';
-import { IGetObjectiveController } from '@domains/api/objectives/interfaces';
+import {
+  IGetObjectiveController,
+  GetObjectiveControllerDependencies,
+  InputGetObjective
+} from '@domains/api/objectives/interfaces';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class GetObjectiveController implements IGetObjectiveController {
-  constructor(
-    private readonly getObjectiveInteractor: GetObjectiveInteractor
-  ) {}
+  protected interactor: GetObjectiveControllerDependencies['interactor'];
+
+  constructor(params: GetObjectiveControllerDependencies) {
+    this.interactor = params.interactor;
+  }
 
   public async getObjectives(
     request: UserPayload,
     response: Response
   ): Promise<void> {
-    try {
-      const { id_team, quarter, year } = request.query;
-      const { id } = request.params;
+    const { id_team, quarter, year } = request.query;
+    const { id } = request.params;
+    const { id_company, id: id_user } = request.user;
 
-      const result = await this.getObjectiveInteractor.execute({
-        id: id ? Number(id) : undefined,
-        id_team: id_team ? Number(id_team) : undefined,
-        quarter: quarter ? Number(quarter) : undefined,
-        year: year ? Number(year) : undefined
-      });
+    const input: InputGetObjective = {
+      id: id ? Number(id) : undefined,
+      id_team: id_team ? Number(id_team) : undefined,
+      quarter: quarter ? Number(quarter) : undefined,
+      year: year ? Number(year) : undefined,
+      id_company,
+      id_user,
+      limite: request.query.limite ? Number(request.query.limite) : 10
+    };
 
-      response.status(200).json({
-        success: true,
-        message: 'Objectives retrieved successfully',
-        data: result.objectives.map((objective) => objective.toJson())
-      });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Internal server error';
-
-      response.status(400).json({
-        success: false,
-        message: errorMessage
-      });
-    }
+    const httpResponse = await this.interactor.execute(input);
+    response.status(httpResponse.status).json(httpResponse.body);
   }
 }

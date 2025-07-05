@@ -88,7 +88,16 @@ export class ObjectiveRepository implements IObjectiveRepository {
     });
 
     return objectives.map(
-      (objective) => new ObjectiveEntity(objective.dataValues)
+      (objective) =>
+        new ObjectiveEntity({
+          id: objective.id,
+          title: objective.title,
+          description: objective.description,
+          id_team: objective.id_team,
+          quarter: objective.quarter,
+          year: objective.year,
+          status: objective.status
+        })
     );
   }
 
