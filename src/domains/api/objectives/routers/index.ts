@@ -10,11 +10,16 @@ import {
 } from '../schemas';
 
 const {
-  createObjectiveController,
-  getObjectiveController,
-  updateObjectiveController,
-  deleteObjectiveController
+  makeCreateObjectiveController,
+  makeGetObjectiveController,
+  makeUpdateObjectiveController,
+  makeDeleteObjectiveController
 } = factories;
+
+const getObjectiveController = makeGetObjectiveController();
+const createObjectiveController = makeCreateObjectiveController();
+const updateObjectiveController = makeUpdateObjectiveController();
+const deleteObjectiveController = makeDeleteObjectiveController();
 
 const router = Router();
 

@@ -1,6 +1,12 @@
 import { ModelStatic } from 'sequelize';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { IPresenter } from '@protocols/presenter';
+import { HttpResponse } from '@protocols/http';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { UserPayload } from '@middlewares/index';
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
 
 // Repository Interfaces
 export interface CreateObjectiveCriteria {
@@ -33,6 +39,11 @@ export interface DeleteObjectiveCriteria {
   id: number;
 }
 
+export type ICreateObjectiveGatewayDependencies = {
+  objectiveRepository: IObjectiveRepository;
+  logging: typeof logger;
+};
+
 export interface ObjectiveRepositoryDependencies {
   model: ModelStatic<ObjectiveModel>;
 }
@@ -59,6 +70,8 @@ export interface IObjectiveGateway {
     data: UpdateObjectiveCriteria
   ): Promise<ObjectiveEntity | null>;
   delete(id: number): Promise<boolean>;
+  loggerInfo(message: string, data?: DataLogOutput): void;
+  loggerError(message: string, data?: DataLogOutput): void;
 }
 
 // UseCase Interfaces
@@ -108,7 +121,7 @@ export interface DeleteObjectiveResponse {
 
 // Controller Interfaces
 export interface ICreateObjectiveController {
-  createObjective(request: unknown, response: unknown): Promise<void>;
+  createObjective(request: UserPayload, response: Response): Promise<Response>;
 }
 
 export interface IGetObjectiveController {
@@ -121,4 +134,27 @@ export interface IUpdateObjectiveController {
 
 export interface IDeleteObjectiveController {
   deleteObjective(request: unknown, response: unknown): Promise<void>;
+}
+
+// Interactor Dependencies
+export interface InputCreateObjective {
+  title: string;
+  description?: string;
+  id_team: number;
+  quarter: number;
+  year: number;
+  id_company: number;
+  id_user: number;
+}
+
+export interface CreateObjectiveInteractorDependencies {
+  gateway: IObjectiveGateway;
+  presenter: IPresenter;
+  userCompanyValidator: UserCompanyValidationInteractor;
+}
+
+export interface CreateObjectiveControllerDependencies {
+  interactor: {
+    execute(input: InputCreateObjective): Promise<HttpResponse>;
+  };
 }
