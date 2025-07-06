@@ -30,34 +30,21 @@ export class CreateObjectiveInteractor {
         id_user
       } = input;
 
-      // Log início da operação
       this.gateway.loggerInfo('Iniciando criação do objetivo', {
         requestTxt: JSON.stringify(input)
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
       });
 
       if (!validation.isValid) {
-        console.log('Usuário ou empresa inválidos', {
+        this.gateway.loggerInfo('Usuário ou empresa inválidos', {
           id_user,
           id_company
         });
         return this.presenter.badRequest('Usuário ou empresa inválidos');
-      }
-
-      // Validar se o quarter está entre 1 e 4
-      if (quarter < 1 || quarter > 4) {
-        return this.presenter.badRequest('Quarter must be between 1 and 4');
-      }
-
-      // Validar se o ano é válido
-      const currentYear = new Date().getFullYear();
-      if (year < 2020 || year > currentYear + 10) {
-        return this.presenter.badRequest('Invalid year');
       }
 
       const objective = await this.gateway.create({
@@ -72,7 +59,7 @@ export class CreateObjectiveInteractor {
       this.gateway.loggerInfo('Objetivo criado com sucesso');
       return this.presenter.created(objective);
     } catch (error) {
-      console.error('Erro ao criar o objetivo', { error });
+      this.gateway.loggerError('Erro ao criar o objetivo', { error });
       return this.presenter.serverError('Erro ao criar o objetivo');
     }
   }

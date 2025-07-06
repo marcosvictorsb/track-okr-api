@@ -39,7 +39,7 @@ export const updateObjectiveSchema = z.object({
     year: z
       .number()
       .int()
-      .min(2020, 'Year must be 2020 or later')
+      .min(new Date().getFullYear(), 'Year must be 2020 or later')
       .max(2100, 'Year must be 2100 or earlier')
       .optional()
   })
