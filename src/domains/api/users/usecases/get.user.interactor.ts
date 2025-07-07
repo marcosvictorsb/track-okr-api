@@ -66,67 +66,33 @@ export class GetUserInteractor {
         );
       });
 
-      // Buscar o id_team para cada usuário
-      const usersWithTeam = await Promise.all(
-        users.map(async (user) => {
-          try {
-            // Buscar o time atual do usuário
-            const userTeamResponse = await this.getUserTeamInteractor.execute({
-              id_company,
-              id_user: id_user,
-              id_user_to_find: user.id,
-              include_left: false
-            });
+      // Filtrar IDs válidos e criar Map para lookup eficiente
+      const idsUser = users
+        .map((user: UserEntity) => user.id)
+        .filter((id): id is number => id !== undefined && id !== null);
 
-            let currentTeamId = null;
-            if (
-              userTeamResponse.status === 200 &&
-              userTeamResponse.body &&
-              Array.isArray(userTeamResponse.body)
-            ) {
-              const userTeams = userTeamResponse.body;
-              // Pegar o primeiro time ativo (já que um usuário só pode estar em um time)
-              const activeTeam = userTeams.find(
-                (ut: { left_at?: Date | null; id_team: number }) => !ut.left_at
-              );
-              if (activeTeam) {
-                currentTeamId = activeTeam.id_team;
-              }
-            }
+      if (idsUser.length === 0) {
+        this.gateway.loggerInfo('Nenhum usuário com ID válido encontrado');
+        return this.presenter.ok(
+          users.map((user) => ({ ...user, current_team_id: null }))
+        );
+      }
 
-            return {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              role: user.role,
-              status: user.status,
-              id_company: user.id_company,
-              created_at: user.created_at,
-              updated_at: user.updated_at,
-              deleted_at: user.deleted_at,
-              current_team_id: currentTeamId
-            };
-          } catch (error) {
-            this.gateway.loggerError('Erro ao buscar time do usuário', {
-              error: String(error),
-              data: JSON.stringify({ id_user: user.id })
-            });
-            // Em caso de erro, retornar o usuário sem o team_id
-            return {
-              id: user.id,
-              name: user.name,
-              email: user.email,
-              role: user.role,
-              status: user.status,
-              id_company: user.id_company,
-              created_at: user.created_at,
-              updated_at: user.updated_at,
-              deleted_at: user.deleted_at,
-              current_team_id: null
-            };
-          }
-        })
+      const userTeams = await this.gateway.findUserTeams({
+        idsUser
+      });
+
+      // Criar um Map para lookup O(1) em vez de find O(n)
+      const userTeamMap = new Map(
+        userTeams
+          .filter((ut) => !ut.deleted_at)
+          .map((ut) => [ut.id_user, ut.id_team])
       );
+
+      const usersWithTeam = users.map((user: UserEntity) => ({
+        ...user,
+        current_team_id: userTeamMap.get(user.id as number) || null
+      }));
 
       return this.presenter.ok(usersWithTeam);
     } catch (error) {

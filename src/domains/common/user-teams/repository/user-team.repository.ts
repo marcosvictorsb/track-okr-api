@@ -2,7 +2,7 @@ import UserTeamModel, {
   UserTeamModelAttributes
 } from '../model/user-team.model';
 import { UserTeamEntity } from '../entity/user-team.entity';
-import { ModelStatic } from 'sequelize';
+import { ModelStatic, Op } from 'sequelize';
 import {
   CreateUserTeamCriteria,
   DeleteUserTeamCriteria,
@@ -30,6 +30,10 @@ export class UserTeamRepository implements IUserTeamRepository {
 
     if (criteria.id_user) {
       whereConditions['id_user'] = criteria.id_user;
+    }
+
+    if (criteria.idsUser && criteria.idsUser.length > 0) {
+      whereConditions['id'] = { [Op.in]: criteria.idsUser };
     }
 
     if (criteria.id_team) {

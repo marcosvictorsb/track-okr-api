@@ -1,3 +1,7 @@
+import {
+  FindUserTeamCriteria,
+  IUserTeamRepository
+} from '@domains/common/user-teams/interfaces';
 import { UserEntity } from '../entity/user.entity';
 import {
   IGetUserGateway,
@@ -7,14 +11,17 @@ import {
 } from '../interfaces';
 import { MixGetUser } from '@adapters/gateways/api/users';
 import { logger } from '@configs/logger';
+import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
 
 export class GetUserGateway extends MixGetUser implements IGetUserGateway {
   userRepository: IUserRepository;
+  userTeamRepository: IUserTeamRepository;
   logging: typeof logger;
 
   constructor(params: IGetUserGatewayDependencies) {
     super(params);
     this.userRepository = params.userRepository;
+    this.userTeamRepository = params.userTeamRepository;
     this.logging = params.logging;
   }
 
@@ -28,5 +35,14 @@ export class GetUserGateway extends MixGetUser implements IGetUserGateway {
   async findUser(criteria: FindUserCriteria): Promise<UserEntity | undefined> {
     this.logging.info('Iniciando busca do usuário', { criteria });
     return await this.userRepository.find(criteria);
+  }
+
+  async findUserTeams(
+    criteria: FindUserTeamCriteria
+  ): Promise<UserTeamEntity[]> {
+    this.logging.info('Iniciando busca dos relacionamentos user-team', {
+      criteria
+    });
+    return await this.userTeamRepository.findAll(criteria);
   }
 }

@@ -6,6 +6,7 @@ export class UserEntity {
   public readonly role: string;
   public readonly status: string; // 'pending_activation' | 'active';
   public readonly id_company: number;
+  public current_team_id?: number | null;
   public readonly created_at?: Date;
   public readonly updated_at?: Date | null;
   public readonly deleted_at?: Date | null;
@@ -18,6 +19,7 @@ export class UserEntity {
     role: string;
     status: string; //'pending_activation' | 'active';
     id_company: number;
+    current_team_id?: number | null;
     created_at?: Date;
     updated_at?: Date | null;
     deleted_at?: Date | null;
@@ -29,6 +31,7 @@ export class UserEntity {
     this.role = params.role;
     this.status = params.status;
     this.id_company = params.id_company;
+    this.current_team_id = params.current_team_id;
     this.created_at = params.created_at;
     this.updated_at = params.updated_at;
     this.deleted_at = params.deleted_at;
