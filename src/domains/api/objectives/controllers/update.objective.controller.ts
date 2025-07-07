@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { UpdateObjectiveInteractor } from '@domains/api/objectives/usecases';
-import { IUpdateObjectiveController } from '@domains/api/objectives/interfaces';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { IUpdateObjectiveController } from '../interfaces';
 
 export class UpdateObjectiveController implements IUpdateObjectiveController {
   constructor(
