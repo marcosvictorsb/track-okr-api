@@ -1,6 +1,6 @@
 import { CreateObjectiveController } from '@domains/api/objectives/controllers';
 import { CreateObjectiveInteractor } from '@domains/api/objectives/usecases';
-import { ObjectiveGateway } from '@domains/api/objectives/gateways';
+import { CreateObjectiveGateway } from '@domains/api/objectives/gateways';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import { Presenter } from '@protocols/presenter';
@@ -24,7 +24,7 @@ export const makeCreateObjectiveController = () => {
     logging: logger
   };
 
-  const objectiveGateway = new ObjectiveGateway(params);
+  const objectiveGateway = new CreateObjectiveGateway(params);
 
   const interactor = new CreateObjectiveInteractor({
     gateway: objectiveGateway,

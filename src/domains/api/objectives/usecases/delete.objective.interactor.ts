@@ -1,11 +1,11 @@
 import {
-  IObjectiveGateway,
+  IDeleteObjectiveGateway,
   DeleteObjectiveRequest,
   DeleteObjectiveResponse
 } from '@domains/api/objectives/interfaces';
 
 export class DeleteObjectiveInteractor {
-  constructor(private readonly objectiveGateway: IObjectiveGateway) {}
+  constructor(private readonly objectiveGateway: IDeleteObjectiveGateway) {}
 
   public async execute(
     request: DeleteObjectiveRequest
