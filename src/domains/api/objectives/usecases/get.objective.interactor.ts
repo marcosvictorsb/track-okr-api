@@ -1,15 +1,15 @@
 import { HttpResponse } from '@protocols/http';
 import {
-  IObjectiveGateway,
   GetObjectiveInteractorDependencies,
-  InputGetObjective
-} from '@domains/api/objectives/interfaces';
+  InputGetObjective,
+  IGetObjectiveGateway
+} from '@domains/api/objectives/interfaces/get.objective.interface';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { ObjectiveEntity } from '../entity/objective.entity';
 
 export class GetObjectiveInteractor {
-  protected gateway: IObjectiveGateway;
+  protected gateway: IGetObjectiveGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
 
@@ -21,7 +21,7 @@ export class GetObjectiveInteractor {
 
   public async execute(input: InputGetObjective): Promise<HttpResponse> {
     try {
-      console.log('Iniciando a busca dos objetivos', {
+      this.gateway.loggerInfo('Iniciando a busca dos objetivos', {
         requestTxt: JSON.stringify(input)
       });
 
@@ -34,7 +34,7 @@ export class GetObjectiveInteractor {
       });
 
       if (!validation.isValid) {
-        console.log('Usuário ou empresa inválidos', {
+        this.gateway.loggerInfo('Usuário ou empresa inválidos', {
           id_user,
           id_company
         });
@@ -58,7 +58,7 @@ export class GetObjectiveInteractor {
       }
 
       if (!objectives || objectives.length === 0) {
-        console.log('Nenhum objetivo encontrado');
+        this.gateway.loggerInfo('Nenhum objetivo encontrado');
         return this.presenter.ok([]);
       }
 
@@ -74,10 +74,10 @@ export class GetObjectiveInteractor {
         }
       });
 
-      console.log('Objetivos encontrados com sucesso');
+      this.gateway.loggerInfo('Objetivos encontrados com sucesso');
       return this.presenter.ok(objectives);
     } catch (error) {
-      console.error('Erro ao buscar objetivos', { error });
+      this.gateway.loggerError('Erro ao buscar objetivos', { error });
       return this.presenter.serverError('Erro ao buscar objetivos');
     }
   }

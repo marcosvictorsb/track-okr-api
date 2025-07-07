@@ -1,6 +1,6 @@
 import { Response } from 'express';
-import { CreateObjectiveControllerDependencies } from '@domains/api/objectives/interfaces';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { CreateObjectiveControllerDependencies } from '../interfaces/create.objective.interface';
 
 export class CreateObjectiveController {
   protected interactor: CreateObjectiveControllerDependencies['interactor'];

@@ -1,9 +1,8 @@
 import {
-  IObjectiveGateway,
   CreateObjectiveCriteria,
   UpdateObjectiveCriteria,
   IObjectiveRepository
-} from '@domains/api/objectives/interfaces';
+} from '@domains/api/objectives/interfaces/';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { MixCreateObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';
@@ -12,17 +11,20 @@ import {
   ITeamRepository
 } from '@domains/api/teams/interfaces';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { ICreateObjectiveGatewayDependencies } from '../interfaces/create.objective.interface';
+import {
+  IGetObjectiveGateway,
+  IGetObjectiveGatewayDependencies
+} from '../interfaces/get.objective.interface';
 
-export class ObjectiveGateway
+export class GetObjectiveGateway
   extends MixCreateObjectives
-  implements IObjectiveGateway
+  implements IGetObjectiveGateway
 {
   objectiveRepository: IObjectiveRepository;
   teamRepository: ITeamRepository;
   logging: typeof logger;
 
-  constructor(params: ICreateObjectiveGatewayDependencies) {
+  constructor(params: IGetObjectiveGatewayDependencies) {
     super(params);
     this.objectiveRepository = params.objectiveRepository;
     this.teamRepository = params.teamRepository;

@@ -3,7 +3,7 @@ import {
   IGetObjectiveController,
   GetObjectiveControllerDependencies,
   InputGetObjective
-} from '@domains/api/objectives/interfaces';
+} from '@domains/api/objectives/interfaces/get.objective.interface';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class GetObjectiveController implements IGetObjectiveController {

@@ -1,14 +1,14 @@
 import { HttpResponse } from '@protocols/http';
-import {
-  IObjectiveGateway,
-  CreateObjectiveInteractorDependencies,
-  InputCreateObjective
-} from '@domains/api/objectives/interfaces';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import {
+  CreateObjectiveInteractorDependencies,
+  ICreateObjectiveGateway,
+  InputCreateObjective
+} from '../interfaces/create.objective.interface';
 
 export class CreateObjectiveInteractor {
-  protected gateway: IObjectiveGateway;
+  protected gateway: ICreateObjectiveGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
 
