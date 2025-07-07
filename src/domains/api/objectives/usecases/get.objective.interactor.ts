@@ -6,6 +6,7 @@ import {
 } from '@domains/api/objectives/interfaces';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { ObjectiveEntity } from '../entity/objective.entity';
 
 export class GetObjectiveInteractor {
   protected gateway: IObjectiveGateway;
@@ -60,6 +61,18 @@ export class GetObjectiveInteractor {
         console.log('Nenhum objetivo encontrado');
         return this.presenter.ok([]);
       }
+
+      const idsTeam = objectives.map(
+        (objective: ObjectiveEntity) => objective.id_team
+      );
+      const teams = await this.gateway.findTeam({ ids: idsTeam });
+
+      objectives.forEach((objective: ObjectiveEntity) => {
+        const team = teams.find((team) => team.id === objective.id_team);
+        if (team) {
+          objective.team_name = team.name;
+        }
+      });
 
       console.log('Objetivos encontrados com sucesso');
       return this.presenter.ok(objectives);
