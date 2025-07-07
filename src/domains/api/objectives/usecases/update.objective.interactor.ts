@@ -1,11 +1,11 @@
 import {
-  IObjectiveGateway,
+  IUpdateObjectiveGateway,
   UpdateObjectiveRequest,
   UpdateObjectiveResponse
 } from '@domains/api/objectives/interfaces';
 
 export class UpdateObjectiveInteractor {
-  constructor(private readonly objectiveGateway: IObjectiveGateway) {}
+  constructor(private readonly objectiveGateway: IUpdateObjectiveGateway) {}
 
   public async execute(
     request: UpdateObjectiveRequest
