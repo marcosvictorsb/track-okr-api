@@ -1,6 +1,6 @@
 import TeamModel from '@domains/api/teams/model/team.model';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { ModelStatic } from 'sequelize';
+import { ModelStatic, Op } from 'sequelize';
 import {
   CreateTeamCriteria,
   DeleteTeamCriteria,
@@ -22,6 +22,10 @@ export class TeamRepository implements ITeamRepository {
 
     if (criteria.id) {
       whereConditions['id'] = criteria.id;
+    }
+
+    if (criteria.ids && criteria.ids.length > 0) {
+      whereConditions['id'] = { [Op.in]: criteria.ids };
     }
 
     if (criteria.name) {

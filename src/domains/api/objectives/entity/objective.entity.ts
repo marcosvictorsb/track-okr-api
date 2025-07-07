@@ -3,6 +3,7 @@ export interface IObjectiveEntity {
   title: string;
   description?: string;
   id_team: number;
+  team_name?: string;
   status: 'active' | 'cancelled' | 'completed';
   quarter: number;
   year: number;
@@ -16,6 +17,7 @@ export class ObjectiveEntity implements IObjectiveEntity {
   readonly title: string;
   readonly description?: string;
   readonly id_team: number;
+  team_name?: string;
   readonly status: 'active' | 'cancelled' | 'completed';
   readonly quarter: number;
   readonly year: number;
@@ -28,6 +30,7 @@ export class ObjectiveEntity implements IObjectiveEntity {
     this.title = data.title;
     this.description = data.description;
     this.id_team = data.id_team;
+    this.team_name = data.team_name;
     this.status = data.status;
     this.quarter = data.quarter;
     this.year = data.year;

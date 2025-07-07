@@ -14,6 +14,7 @@ export type CreateTeamCriteria = {
 
 export type FindTeamCriteria = {
   id?: number;
+  ids?: number[];
   name?: string;
   description?: string;
   amount_users?: number;

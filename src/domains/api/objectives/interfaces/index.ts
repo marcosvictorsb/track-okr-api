@@ -7,6 +7,11 @@ import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserPayload } from '@middlewares/index';
 import { DataLogOutput } from '@adapters/services';
 import { logger } from '@configs/logger';
+import {
+  FindTeamCriteria,
+  ITeamRepository
+} from '@domains/api/teams/interfaces';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 
 // Repository Interfaces
 export interface CreateObjectiveCriteria {
@@ -41,6 +46,7 @@ export interface DeleteObjectiveCriteria {
 
 export type ICreateObjectiveGatewayDependencies = {
   objectiveRepository: IObjectiveRepository;
+  teamRepository: ITeamRepository;
   logging: typeof logger;
 };
 
@@ -69,6 +75,7 @@ export interface IObjectiveGateway {
     id: number,
     data: UpdateObjectiveCriteria
   ): Promise<ObjectiveEntity | null>;
+  findTeam(criteria: FindTeamCriteria): Promise<TeamEntity[]>;
   delete(id: number): Promise<boolean>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;

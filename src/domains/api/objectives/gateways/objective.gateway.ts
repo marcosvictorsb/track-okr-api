@@ -8,17 +8,24 @@ import {
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { MixCreateObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';
+import {
+  FindTeamCriteria,
+  ITeamRepository
+} from '@domains/api/teams/interfaces';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 
 export class ObjectiveGateway
   extends MixCreateObjectives
   implements IObjectiveGateway
 {
   objectiveRepository: IObjectiveRepository;
+  teamRepository: ITeamRepository;
   logging: typeof logger;
 
   constructor(params: ICreateObjectiveGatewayDependencies) {
     super(params);
     this.objectiveRepository = params.objectiveRepository;
+    this.teamRepository = params.teamRepository;
     this.logging = params.logging;
   }
 
@@ -59,5 +66,10 @@ export class ObjectiveGateway
   public async delete(id: number): Promise<boolean> {
     this.logging.info('Deleting objective', { id });
     return await this.objectiveRepository.delete({ id });
+  }
+
+  public async findTeam(criteria: FindTeamCriteria): Promise<TeamEntity[]> {
+    this.logging.info('Finding teams by IDs', { criteria });
+    return await this.teamRepository.findAll(criteria);
   }
 }
