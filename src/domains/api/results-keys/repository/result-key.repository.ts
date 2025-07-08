@@ -42,6 +42,12 @@ export class ResultKeyRepository implements IResultKeyRepository {
       whereConditions['id_okr'] = criteria.id_okr;
     }
 
+    if (criteria.ids_okr && criteria.ids_okr.length > 0) {
+      whereConditions['id_okr'] = {
+        [Op.in]: criteria.ids_okr
+      };
+    }
+
     if (criteria.status) {
       whereConditions['status'] = criteria.status;
     }
@@ -172,6 +178,12 @@ export class ResultKeyRepository implements IResultKeyRepository {
     objectiveId: number
   ): Promise<ResultKeyEntity[]> {
     return this.findMany({ id_okr: objectiveId });
+  }
+
+  public async findByObjectiveIds(
+    objectiveIds: number[]
+  ): Promise<ResultKeyEntity[]> {
+    return this.findMany({ ids_okr: objectiveIds });
   }
 
   public async findByTeamId(teamId: number): Promise<ResultKeyEntity[]> {

@@ -15,6 +15,8 @@ import {
   IGetObjectiveGateway,
   IGetObjectiveGatewayDependencies
 } from '../interfaces/get.objective.interface';
+import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
+import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
 
 export class GetObjectiveGateway
   extends MixCreateObjectives
@@ -22,12 +24,14 @@ export class GetObjectiveGateway
 {
   objectiveRepository: IObjectiveRepository;
   teamRepository: ITeamRepository;
+  resultKeyRepository: IResultKeyRepository;
   logging: typeof logger;
 
   constructor(params: IGetObjectiveGatewayDependencies) {
     super(params);
     this.objectiveRepository = params.objectiveRepository;
     this.teamRepository = params.teamRepository;
+    this.resultKeyRepository = params.resultKeyRepository;
     this.logging = params.logging;
   }
 
@@ -73,5 +77,12 @@ export class GetObjectiveGateway
   public async findTeam(criteria: FindTeamCriteria): Promise<TeamEntity[]> {
     this.logging.info('Finding teams by IDs', { criteria });
     return await this.teamRepository.findAll(criteria);
+  }
+
+  public async findResultKeysByObjectiveIds(
+    objectiveIds: number[]
+  ): Promise<ResultKeyEntity[]> {
+    this.logging.info('Finding result keys by objective IDs', { objectiveIds });
+    return await this.resultKeyRepository.findByObjectiveIds(objectiveIds);
   }
 }

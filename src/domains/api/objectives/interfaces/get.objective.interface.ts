@@ -10,6 +10,8 @@ import {
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { logger } from '@configs/logger';
 import { IObjectiveRepository } from './default.interface';
+import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
+import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
 
 export interface GetObjectiveRequest {
   id?: number;
@@ -42,6 +44,9 @@ export interface IGetObjectiveGateway {
   findById(id: number): Promise<ObjectiveEntity | null>;
   findByTeam(id_team: number): Promise<ObjectiveEntity[]>;
   findByQuarter(quarter: number, year: number): Promise<ObjectiveEntity[]>;
+  findResultKeysByObjectiveIds(
+    objectiveIds: number[]
+  ): Promise<ResultKeyEntity[]>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }
@@ -49,6 +54,7 @@ export interface IGetObjectiveGateway {
 export interface IGetObjectiveGatewayDependencies {
   objectiveRepository: IObjectiveRepository;
   teamRepository: ITeamRepository;
+  resultKeyRepository: IResultKeyRepository;
   logging: typeof logger;
 }
 

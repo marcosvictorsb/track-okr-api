@@ -10,7 +10,7 @@ export const createResultKeySchema = z.object({
       unit: z.string().min(1, 'Unit is required').max(10, 'Unit too long'),
       responsible_team_id: z.number().int().positive().nullable().optional(),
       responsible_users: z.array(z.number().int().positive()).default([]),
-      okr_id: z
+      id_okr: z
         .number()
         .int()
         .positive('Objective ID must be a positive integer')

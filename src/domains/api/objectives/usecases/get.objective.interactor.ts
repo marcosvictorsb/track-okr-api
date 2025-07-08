@@ -74,6 +74,23 @@ export class GetObjectiveInteractor {
         }
       });
 
+      // Buscar resultados-chaves para cada objetivo
+      const objectiveIds = objectives
+        .map((objective: ObjectiveEntity) => objective.id)
+        .filter((id): id is number => id !== undefined);
+
+      if (objectiveIds.length > 0) {
+        const resultKeys =
+          await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
+
+        // Agrupar result-keys por objetivo
+        objectives.forEach((objective: ObjectiveEntity) => {
+          objective.result_keys = resultKeys.filter(
+            (resultKey) => resultKey.id_okr === objective.id
+          );
+        });
+      }
+
       this.gateway.loggerInfo('Objetivos encontrados com sucesso');
       return this.presenter.ok(objectives);
     } catch (error) {

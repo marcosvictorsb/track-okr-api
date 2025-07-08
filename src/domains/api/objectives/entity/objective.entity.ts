@@ -1,3 +1,5 @@
+import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
+
 export interface IObjectiveEntity {
   id?: number;
   title: string;
@@ -7,6 +9,7 @@ export interface IObjectiveEntity {
   status: string; //'active' | 'cancelled' | 'completed';
   quarter: number;
   year: number;
+  result_keys?: ResultKeyEntity[];
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -21,6 +24,7 @@ export class ObjectiveEntity implements IObjectiveEntity {
   status: string; //'active' | 'cancelled' | 'completed';
   readonly quarter: number;
   readonly year: number;
+  result_keys?: ResultKeyEntity[];
   readonly created_at?: Date;
   readonly updated_at?: Date;
   readonly deleted_at?: Date;
@@ -34,6 +38,7 @@ export class ObjectiveEntity implements IObjectiveEntity {
     this.status = data.status;
     this.quarter = data.quarter;
     this.year = data.year;
+    this.result_keys = data.result_keys;
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
     this.deleted_at = data.deleted_at;
@@ -45,9 +50,11 @@ export class ObjectiveEntity implements IObjectiveEntity {
       title: this.title,
       description: this.description,
       id_team: this.id_team,
+      team_name: this.team_name,
       status: this.status,
       quarter: this.quarter,
       year: this.year,
+      result_keys: this.result_keys,
       created_at: this.created_at,
       updated_at: this.updated_at,
       deleted_at: this.deleted_at

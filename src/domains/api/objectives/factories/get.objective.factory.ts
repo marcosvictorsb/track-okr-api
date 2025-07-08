@@ -8,6 +8,8 @@ import { userCompanyValidatiorInteractor } from '@domains/common/validations/fac
 import { logger } from '@configs/logger';
 import TeamModel from '@domains/api/teams/model/team.model';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
+import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
 
 export const makeGetObjectiveController = () => {
   const objectiveRepository = new ObjectiveRepository({
@@ -18,9 +20,14 @@ export const makeGetObjectiveController = () => {
     model: TeamModel
   });
 
+  const resultKeyRepository = new ResultKeyRepository({
+    model: ResultKeyModel
+  });
+
   const params = {
     objectiveRepository,
     teamRepository,
+    resultKeyRepository,
     logging: logger
   };
 

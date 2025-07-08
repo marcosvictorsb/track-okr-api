@@ -11,7 +11,7 @@ const createResultKeyController = makeCreateResultKeyFactory();
 const router = Router();
 
 router.post(
-  '/key-results',
+  '/',
   authMiddleware,
   validateSchema(createResultKeySchema),
   (request: UserPayload, response: Response) =>

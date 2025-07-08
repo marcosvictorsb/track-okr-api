@@ -25,6 +25,7 @@ export interface FindResultKeyCriteria {
   name?: string;
   responsible_team_id?: number;
   id_okr?: number;
+  ids_okr?: number[]; // Para buscar por múltiplos objetivos
   status?: 'active' | 'completed' | 'cancelled';
   responsible_users?: number[];
   progress_min?: number;
@@ -39,7 +40,7 @@ export interface UpdateResultKeyCriteria {
   unit?: string;
   responsible_users?: number[] | null;
   responsible_team_id?: number | null;
-  id_okr?: number | null;
+  okr_id?: number | null;
   status?: 'active' | 'completed' | 'cancelled';
 }
 
@@ -61,6 +62,7 @@ export interface IResultKeyRepository {
   ): Promise<ResultKeyEntity | null>;
   delete(criteria: DeleteResultKeyCriteria): Promise<boolean>;
   findByObjectiveId(objectiveId: number): Promise<ResultKeyEntity[]>;
+  findByObjectiveIds(objectiveIds: number[]): Promise<ResultKeyEntity[]>;
   findByTeamId(teamId: number): Promise<ResultKeyEntity[]>;
   findByResponsibleUser(userId: number): Promise<ResultKeyEntity[]>;
   updateProgress(
