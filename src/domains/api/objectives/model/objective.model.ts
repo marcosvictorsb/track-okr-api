@@ -7,7 +7,7 @@ interface ObjectiveModelAttributes {
   title: string;
   description?: string;
   id_team: number;
-  status: 'active' | 'cancelled' | 'completed';
+  status: string; // 'active' | 'cancelled' | 'completed';
   quarter: number;
   year: number;
   created_at?: Date;
@@ -23,7 +23,7 @@ class ObjectiveModel
   declare title: string;
   declare description?: string;
   declare id_team: number;
-  declare status: 'active' | 'cancelled' | 'completed';
+  declare status: string; //'active' | 'cancelled' | 'completed';
   declare quarter: number;
   declare year: number;
   declare created_at?: Date;

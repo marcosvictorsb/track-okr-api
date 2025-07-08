@@ -13,7 +13,7 @@ interface ResultKeyModelAttributes {
   responsible_users?: number[] | null;
   responsible_team_id?: number | null;
   id_okr?: number | null;
-  status: 'active' | 'completed' | 'cancelled';
+  status: string; //'active' | 'completed' | 'cancelled';
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -32,7 +32,7 @@ class ResultKeyModel
   declare responsible_users?: number[] | null;
   declare responsible_team_id?: number | null;
   declare id_okr?: number | null;
-  declare status: 'active' | 'completed' | 'cancelled';
+  declare status: string; //'active' | 'completed' | 'cancelled';
   declare created_at?: Date;
   declare updated_at?: Date;
   declare deleted_at?: Date;
@@ -141,7 +141,7 @@ ResultKeyModel.init(
       references: { model: ObjectiveModel, key: 'id' }
     },
     status: {
-      type: DataTypes.ENUM('active', 'completed', 'cancelled'),
+      type: DataTypes.STRING, //('active', 'completed', 'cancelled'),
       allowNull: false,
       defaultValue: 'active'
     },

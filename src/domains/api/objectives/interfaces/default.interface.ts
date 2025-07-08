@@ -6,7 +6,7 @@ export interface CreateObjectiveCriteria {
   title: string;
   description?: string;
   id_team: number;
-  status?: 'active' | 'cancelled' | 'completed';
+  status?: string; //'active' | 'cancelled' | 'completed';
   quarter: number;
   year: number;
 }
@@ -15,7 +15,7 @@ export interface FindObjectiveCriteria {
   id?: number;
   title?: string;
   id_team?: number;
-  status?: 'active' | 'cancelled' | 'completed';
+  status?: string; //'active' | 'cancelled' | 'completed';
   quarter?: number;
   year?: number;
 }
@@ -23,7 +23,7 @@ export interface FindObjectiveCriteria {
 export interface UpdateObjectiveCriteria {
   title?: string;
   description?: string;
-  status?: 'active' | 'cancelled' | 'completed';
+  status?: string; //'active' | 'cancelled' | 'completed';
   quarter?: number;
   year?: number;
 }

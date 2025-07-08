@@ -8,7 +8,7 @@ export interface IResultKeyEntity {
   responsible_users?: number[] | null;
   responsible_team_id?: number | null;
   id_okr?: number | null;
-  status: 'active' | 'completed' | 'cancelled';
+  status: string; //'active' | 'completed' | 'cancelled';
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -29,7 +29,7 @@ export class ResultKeyEntity implements IResultKeyEntity {
   readonly responsible_users?: number[] | null;
   readonly responsible_team_id?: number | null;
   readonly id_okr?: number | null;
-  readonly status: 'active' | 'completed' | 'cancelled';
+  readonly status: string; //'active' | 'completed' | 'cancelled';
   readonly created_at?: Date;
   readonly updated_at?: Date;
   readonly deleted_at?: Date;
