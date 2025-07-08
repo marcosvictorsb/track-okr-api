@@ -104,23 +104,21 @@ export class UpdateUserInteractor {
       }
 
       // Gerenciar relacionamento user-team apenas se teamId foi fornecido nos dados de atualização
-      if (updateData.teamId !== undefined) {
-        const { action } = await this.manageUserTeamInteractor.execute({
-          id_user_to_manage: id,
-          id_team: teamId,
-          id_company: id_company
-        });
-        this.gateway.loggerInfo(`Ação realizada: ${action}`, {
-          id_user_to_manage: id,
-          id_team: teamId,
-          action
-        });
-      }
+      const { action } = await this.manageUserTeamInteractor.execute({
+        id_user_to_manage: id,
+        id_team: teamId,
+        id_company: id_company
+      });
+      this.gateway.loggerInfo(`Ação realizada: ${action}`, {
+        id_user_to_manage: id,
+        id_team: teamId,
+        action
+      });
 
       return this.presenter.noContent();
     } catch (error) {
       this.gateway.loggerError('Erro ao atualizar o usuário', {
-        error: String(error)
+        error: error
       });
       return this.presenter.serverError('Erro ao atualizar o usuário');
     }
