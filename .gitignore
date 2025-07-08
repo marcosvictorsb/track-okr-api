@@ -111,4 +111,4 @@ source/
 .deploys
 current
 
-src/domains/authentication/
+deployment/
