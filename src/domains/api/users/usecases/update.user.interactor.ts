@@ -27,15 +27,7 @@ export class UpdateUserInteractor {
       const { id, name, email, role, teamId, id_company, id_user } = input;
 
       this.gateway.loggerInfo('Iniciando atualização do usuário', {
-        data: JSON.stringify({
-          id,
-          name,
-          email,
-          role,
-          teamId,
-          id_company,
-          id_user
-        })
+        data: JSON.stringify(input)
       });
 
       // 1. Validar usuário e empresa
@@ -66,13 +58,12 @@ export class UpdateUserInteractor {
         );
       }
 
-      // 4. Preparar dados para atualização (apenas campos fornecidos)
       const updateData: Partial<InputUpdateUser> = {};
       if (name !== undefined) updateData.name = name;
       if (email !== undefined) updateData.email = email;
       if (role !== undefined) updateData.role = role;
+      if (typeof teamId === 'number') updateData.teamId = teamId;
 
-      // Verificar se há dados para atualizar
       if (Object.keys(updateData).length === 0) {
         return this.presenter.badRequest(
           'Nenhum dado fornecido para atualização'

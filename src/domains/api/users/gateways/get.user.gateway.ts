@@ -41,7 +41,7 @@ export class GetUserGateway extends MixGetUser implements IGetUserGateway {
     criteria: FindUserTeamCriteria
   ): Promise<UserTeamEntity[]> {
     this.logging.info('Iniciando busca dos relacionamentos user-team', {
-      criteria
+      data: JSON.stringify(criteria)
     });
     return await this.userTeamRepository.findAll(criteria);
   }
