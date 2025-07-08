@@ -43,7 +43,7 @@ UserModel.init(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: 'users_email_unique'
+      unique: false // Removido unique individual - agora será único por empresa
     },
     password_hash: { type: DataTypes.STRING },
     role: { type: DataTypes.STRING },

@@ -86,14 +86,31 @@ export class ManageUserTeamGateway
     return await this.userTeamRepository.create(criteria);
   }
 
-  async leaveCurrentTeam(userId: number, fromTeamId: number): Promise<boolean> {
+  async leaveCurrentTeam(
+    userId: number,
+    fromTeamId?: number
+  ): Promise<boolean> {
     this.logging.info('Removendo usuário do time', {
       data: JSON.stringify({ userId, fromTeamId })
     });
 
-    return await this.userTeamRepository.delete({
-      id_team: fromTeamId,
-      id_user: userId
-    });
+    if (fromTeamId) {
+      return await this.userTeamRepository.delete({
+        id_team: fromTeamId,
+        id_user: userId
+      });
+    } else {
+      // Se não foi fornecido o ID do time, buscar o time atual do usuário
+      const currentUserTeam = await this.findCurrentUserTeam(userId);
+      if (!currentUserTeam) {
+        this.logging.warn('Usuário não está em nenhum time', { userId });
+        return false;
+      }
+
+      return await this.userTeamRepository.delete({
+        id_team: currentUserTeam.id_team,
+        id_user: userId
+      });
+    }
   }
 }
