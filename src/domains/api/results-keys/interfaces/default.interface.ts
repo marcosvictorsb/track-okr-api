@@ -2,6 +2,12 @@ import { ModelStatic } from 'sequelize';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
 import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
 
+export const ResultKeyStatus = {
+  ACTIVE: 'active',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled'
+};
+
 export interface CreateResultKeyCriteria {
   name: string;
   initial_value: number;
@@ -11,7 +17,7 @@ export interface CreateResultKeyCriteria {
   responsible_users?: number[] | null;
   responsible_team_id?: number | null;
   id_okr?: number | null;
-  status?: 'active' | 'completed' | 'cancelled';
+  status?: string; //'active' | 'completed' | 'cancelled';
 }
 
 export interface FindResultKeyCriteria {
