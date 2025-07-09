@@ -88,7 +88,7 @@ export class ObjectiveRepository implements IObjectiveRepository {
 
     const objectives = await this.model.findAll({
       where: whereConditions,
-      order: [['created_at', 'DESC']]
+      order: [['created_at', 'ASC']]
     });
 
     return objectives.map(
