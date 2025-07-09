@@ -128,7 +128,15 @@ export class ObjectiveRepository implements IObjectiveRepository {
       return null;
     }
 
-    return new ObjectiveEntity(updatedObjective.dataValues);
+    return new ObjectiveEntity({
+      id: updatedObjective.id,
+      title: updatedObjective.title,
+      description: updatedObjective.description,
+      id_team: updatedObjective.id_team,
+      quarter: updatedObjective.quarter,
+      year: updatedObjective.year,
+      status: updatedObjective.status
+    });
   }
 
   public async delete(criteria: DeleteObjectiveCriteria): Promise<boolean> {

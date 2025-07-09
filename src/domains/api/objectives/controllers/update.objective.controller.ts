@@ -30,7 +30,10 @@ export class UpdateObjectiveController {
         ? parseInt(request.body.year as string)
         : undefined,
       id_company: request.user.id_company,
-      id_user: request.user.id
+      id_user: request.user.id,
+      id_team: request.body.id_team
+        ? parseInt(request.body.id_team as string)
+        : undefined
     };
 
     const httpResponse = await this.interactor.execute(input);

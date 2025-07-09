@@ -28,7 +28,8 @@ export class UpdateObjectiveInteractor {
         quarter,
         year,
         id_company,
-        id_user
+        id_user,
+        id_team
       } = input;
 
       this.gateway.loggerInfo('Iniciando atualização do objetivo', {
@@ -77,7 +78,6 @@ export class UpdateObjectiveInteractor {
         }
       }
 
-      // Preparar dados para atualização
       const updateData: Record<string, unknown> = { updated_at: new Date() };
 
       if (title !== undefined) updateData.title = title;
@@ -85,6 +85,7 @@ export class UpdateObjectiveInteractor {
       if (status !== undefined) updateData.status = status;
       if (quarter !== undefined) updateData.quarter = quarter;
       if (year !== undefined) updateData.year = year;
+      if (id_team !== undefined) updateData.id_team = id_team;
 
       const objective = await this.gateway.update(id, updateData);
 
@@ -98,10 +99,21 @@ export class UpdateObjectiveInteractor {
       this.gateway.loggerInfo('Objetivo atualizado com sucesso', {
         id_company
       });
+
+      const team = await this.gateway.findTeam({
+        id: objective.id_team
+      });
+
+      if (!team) {
+        this.gateway.loggerError('Equipe não encontrada para o objetivo', {
+          id_team: objective.id_team
+        });
+        objective.team_name = 'Equipe não encontrada';
+      }
+
       return this.presenter.ok({
-        success: true,
-        message: 'Objetivo atualizado com sucesso',
-        data: objective.toJson()
+        ...objective,
+        team_name: team?.name
       });
     } catch (error) {
       this.gateway.loggerError('Erro ao atualizar o objetivo', {

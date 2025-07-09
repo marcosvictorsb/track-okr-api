@@ -6,7 +6,7 @@ export interface IObjectiveEntity {
   description?: string;
   id_team: number;
   team_name?: string;
-  id_company: number;
+  id_company?: number;
   company_name?: string;
   status: string; //'active' | 'cancelled' | 'completed';
   quarter: number;
@@ -23,7 +23,7 @@ export class ObjectiveEntity implements IObjectiveEntity {
   readonly description?: string;
   readonly id_team: number;
   team_name?: string;
-  readonly id_company: number;
+  id_company?: number;
   company_name?: string;
   status: string; //'active' | 'cancelled' | 'completed';
   readonly quarter: number;

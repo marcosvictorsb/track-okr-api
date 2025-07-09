@@ -7,6 +7,8 @@ import {
 import { IPresenter } from '@protocols/presenter';
 import { HttpResponse } from '@protocols/http';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { FindTeamCriteria } from '@domains/api/teams/interfaces';
 
 export interface UpdateObjectiveRequest {
   id: number;
@@ -30,6 +32,7 @@ export type InputUpdateObjective = {
   year?: number;
   id_company: number;
   id_user: number;
+  id_team?: number;
 };
 
 export type UpdateObjectiveInteractorDependencies = {
@@ -56,6 +59,7 @@ export interface IUpdateObjectiveGateway {
     id: number,
     data: UpdateObjectiveCriteria
   ): Promise<ObjectiveEntity | null>;
+  findTeam(criteria: FindTeamCriteria): Promise<TeamEntity | undefined>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

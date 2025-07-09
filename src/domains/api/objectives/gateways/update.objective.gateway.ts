@@ -7,8 +7,12 @@ import {
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { MixUpdateObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
+import {
+  FindTeamCriteria,
+  ITeamRepository
+} from '@domains/api/teams/interfaces';
 import { ICreateObjectiveGatewayDependencies } from '../interfaces/create.objective.interface';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 
 export class UpdateObjectiveGateway
   extends MixUpdateObjectives
@@ -40,5 +44,11 @@ export class UpdateObjectiveGateway
   ): Promise<ObjectiveEntity | null> {
     this.logging.info('Updating objective', { id, data });
     return await this.objectiveRepository.update({ id }, data);
+  }
+
+  public async findTeam(
+    criteria: FindTeamCriteria
+  ): Promise<TeamEntity | undefined> {
+    return await this.teamRepository.find(criteria);
   }
 }
