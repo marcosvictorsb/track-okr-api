@@ -53,7 +53,8 @@ export class CreateObjectiveInteractor {
         id_team,
         quarter,
         year,
-        status: 'active'
+        status: 'active',
+        id_company
       });
 
       this.gateway.loggerInfo('Objetivo criado com sucesso');

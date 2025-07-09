@@ -49,7 +49,11 @@ export class GetObjectiveInteractor {
       } else if (id_team) {
         objectives = await this.gateway.findByTeam(id_team);
       } else if (quarter && year) {
-        objectives = await this.gateway.findByQuarter(quarter, year);
+        objectives = await this.gateway.findByQuarter(
+          quarter,
+          year,
+          id_company
+        );
       } else {
         // Se não há critérios específicos, retornar erro
         return this.presenter.badRequest(

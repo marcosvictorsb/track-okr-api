@@ -52,13 +52,19 @@ export class GetObjectiveGateway
 
   public async findByQuarter(
     quarter: number,
-    year: number
+    year: number,
+    id_company: number
   ): Promise<ObjectiveEntity[]> {
     this.logging.info('Finding objectives by quarter and year', {
       quarter,
-      year
+      year,
+      id_company
     });
-    return await this.objectiveRepository.findMany({ quarter, year });
+    return await this.objectiveRepository.findMany({
+      quarter,
+      year,
+      id_company
+    });
   }
 
   public async update(

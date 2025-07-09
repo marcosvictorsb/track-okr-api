@@ -34,6 +34,10 @@ export class ObjectiveRepository implements IObjectiveRepository {
       whereConditions['id_team'] = criteria.id_team;
     }
 
+    if (criteria.id_company) {
+      whereConditions['id_company'] = criteria.id_company;
+    }
+
     if (criteria.status) {
       whereConditions['status'] = criteria.status;
     }
@@ -96,7 +100,8 @@ export class ObjectiveRepository implements IObjectiveRepository {
           id_team: objective.id_team,
           quarter: objective.quarter,
           year: objective.year,
-          status: objective.status
+          status: objective.status,
+          id_company: objective.id_company
         })
     );
   }

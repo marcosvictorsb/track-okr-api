@@ -43,7 +43,11 @@ export interface IGetObjectiveGateway {
   findTeam(criteria: FindTeamCriteria): Promise<TeamEntity[]>;
   findById(id: number): Promise<ObjectiveEntity | null>;
   findByTeam(id_team: number): Promise<ObjectiveEntity[]>;
-  findByQuarter(quarter: number, year: number): Promise<ObjectiveEntity[]>;
+  findByQuarter(
+    quarter: number,
+    year: number,
+    id_company: number
+  ): Promise<ObjectiveEntity[]>;
   findResultKeysByObjectiveIds(
     objectiveIds: number[]
   ): Promise<ResultKeyEntity[]>;

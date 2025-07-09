@@ -1,12 +1,14 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '@infra/database/connection/mysql';
 import TeamModel from '@domains/api/teams/model/team.model';
+import CompanyModel from '@domains/api/companies/model/company.model';
 
 interface ObjectiveModelAttributes {
   id?: number;
   title: string;
   description?: string;
   id_team: number;
+  id_company: number;
   status: string; // 'active' | 'cancelled' | 'completed';
   quarter: number;
   year: number;
@@ -23,6 +25,7 @@ class ObjectiveModel
   declare title: string;
   declare description?: string;
   declare id_team: number;
+  declare id_company: number;
   declare status: string; //'active' | 'cancelled' | 'completed';
   declare quarter: number;
   declare year: number;
@@ -51,6 +54,11 @@ ObjectiveModel.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: TeamModel, key: 'id' }
+    },
+    id_company: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'companies', key: 'id' }
     },
     status: {
       type: DataTypes.ENUM('active', 'cancelled', 'completed'),
@@ -99,6 +107,11 @@ ObjectiveModel.init(
 ObjectiveModel.belongsTo(TeamModel, {
   foreignKey: 'id_team',
   as: 'team'
+});
+
+ObjectiveModel.belongsTo(CompanyModel, {
+  foreignKey: 'id_company',
+  as: 'company'
 });
 
 export default ObjectiveModel;
