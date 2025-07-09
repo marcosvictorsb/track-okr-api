@@ -1,6 +1,12 @@
 import { DataLogOutput } from '@adapters/services';
 import { ObjectiveEntity } from '../entity/objective.entity';
-import { UpdateObjectiveCriteria } from './default.interface';
+import {
+  FindObjectiveCriteria,
+  UpdateObjectiveCriteria
+} from './default.interface';
+import { IPresenter } from '@protocols/presenter';
+import { HttpResponse } from '@protocols/http';
+import { UserCompanyValidationInteractor } from '@domains/common';
 
 export interface UpdateObjectiveRequest {
   id: number;
@@ -15,12 +21,37 @@ export interface UpdateObjectiveResponse {
   objective: ObjectiveEntity;
 }
 
+export type InputUpdateObjective = {
+  id: number;
+  title?: string;
+  description?: string;
+  status?: 'active' | 'cancelled' | 'completed';
+  quarter?: number;
+  year?: number;
+  id_company: number;
+  id_user: number;
+};
+
+export type UpdateObjectiveInteractorDependencies = {
+  gateway: IUpdateObjectiveGateway;
+  presenter: IPresenter;
+  userCompanyValidator: UserCompanyValidationInteractor;
+};
+
+export type UpdateObjectiveControllerDependencies = {
+  interactor: {
+    execute(input: InputUpdateObjective): Promise<HttpResponse>;
+  };
+};
+
 export interface IUpdateObjectiveController {
-  updateObjective(request: unknown, response: unknown): Promise<void>;
+  updateObjective(request: unknown, response: unknown): Promise<unknown>;
 }
 
 export interface IUpdateObjectiveGateway {
-  findById(id: number): Promise<ObjectiveEntity | null>;
+  findObjective(
+    criteria: FindObjectiveCriteria
+  ): Promise<ObjectiveEntity | null>;
   update(
     id: number,
     data: UpdateObjectiveCriteria

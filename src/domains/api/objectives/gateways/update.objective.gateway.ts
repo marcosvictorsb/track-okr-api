@@ -1,7 +1,8 @@
 import {
   UpdateObjectiveCriteria,
   IObjectiveRepository,
-  IUpdateObjectiveGateway
+  IUpdateObjectiveGateway,
+  FindObjectiveCriteria
 } from '@domains/api/objectives/interfaces';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { MixUpdateObjectives } from '@adapters/gateways/api/objectives';
@@ -24,9 +25,13 @@ export class UpdateObjectiveGateway
     this.logging = params.logging;
   }
 
-  public async findById(id: number): Promise<ObjectiveEntity | null> {
-    this.logging.info('Finding objective by ID', { id });
-    return await this.objectiveRepository.findOne({ id });
+  public async findObjective(
+    criteria: FindObjectiveCriteria
+  ): Promise<ObjectiveEntity | null> {
+    this.logging.info('Finding objective by ID', {
+      request: JSON.stringify(criteria)
+    });
+    return await this.objectiveRepository.findOne(criteria);
   }
 
   public async update(

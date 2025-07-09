@@ -1,44 +1,39 @@
 import { Response } from 'express';
-import { UpdateObjectiveInteractor } from '@domains/api/objectives/usecases';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { IUpdateObjectiveController } from '../interfaces';
+import {
+  UpdateObjectiveControllerDependencies,
+  InputUpdateObjective
+} from '../interfaces';
 
-export class UpdateObjectiveController implements IUpdateObjectiveController {
-  constructor(
-    private readonly updateObjectiveInteractor: UpdateObjectiveInteractor
-  ) {}
+export class UpdateObjectiveController {
+  protected interactor: UpdateObjectiveControllerDependencies['interactor'];
+
+  constructor(params: UpdateObjectiveControllerDependencies) {
+    this.interactor = params.interactor;
+  }
 
   public async updateObjective(
     request: UserPayload,
     response: Response
-  ): Promise<void> {
-    try {
-      const { id } = request.params;
-      const { title, description, status, quarter, year } = request.body;
+  ): Promise<Response> {
+    const objectiveId = parseInt(request.params.id as string);
 
-      const result = await this.updateObjectiveInteractor.execute({
-        id: Number(id),
-        title,
-        description,
-        status,
-        quarter,
-        year
-      });
+    const input: InputUpdateObjective = {
+      id: objectiveId,
+      title: request.body.title,
+      description: request.body.description,
+      status: request.body.status,
+      quarter: request.body.quarter
+        ? parseInt(request.body.quarter as string)
+        : undefined,
+      year: request.body.year
+        ? parseInt(request.body.year as string)
+        : undefined,
+      id_company: request.user.id_company,
+      id_user: request.user.id
+    };
 
-      response.status(200).json({
-        success: true,
-        message: 'Objective updated successfully',
-        data: result.objective.toJson()
-      });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Internal server error';
-      const statusCode = errorMessage.includes('not found') ? 404 : 400;
-
-      response.status(statusCode).json({
-        success: false,
-        message: errorMessage
-      });
-    }
+    const httpResponse = await this.interactor.execute(input);
+    return response.status(httpResponse.status).json(httpResponse.body);
   }
 }

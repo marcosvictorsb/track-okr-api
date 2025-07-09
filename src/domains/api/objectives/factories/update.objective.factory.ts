@@ -6,6 +6,8 @@ import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import { logger } from '@configs/logger';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import TeamModel from '@domains/api/teams/model/team.model';
+import { Presenter } from '@protocols/presenter';
+import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories';
 
 export const makeUpdateObjectiveController = () => {
   const objectiveRepository = new ObjectiveRepository({
@@ -21,8 +23,12 @@ export const makeUpdateObjectiveController = () => {
     logging: logger
   };
   const objectiveGateway = new UpdateObjectiveGateway(params);
-  const updateObjectiveInteractor = new UpdateObjectiveInteractor(
-    objectiveGateway
-  );
-  return new UpdateObjectiveController(updateObjectiveInteractor);
+  const updateObjectiveInteractor = new UpdateObjectiveInteractor({
+    gateway: objectiveGateway,
+    presenter: new Presenter(),
+    userCompanyValidator: userCompanyValidatiorInteractor
+  });
+  return new UpdateObjectiveController({
+    interactor: updateObjectiveInteractor
+  });
 };
