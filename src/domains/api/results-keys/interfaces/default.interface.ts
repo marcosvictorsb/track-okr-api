@@ -42,6 +42,7 @@ export interface UpdateResultKeyCriteria {
   responsible_team_id?: number | null;
   okr_id?: number | null;
   status?: 'active' | 'completed' | 'cancelled';
+  updated_at?: Date;
 }
 
 export interface DeleteResultKeyCriteria {

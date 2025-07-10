@@ -32,6 +32,9 @@ export type DataLogOutput = {
   userTeamId?: number;
   id_user_to_manage?: number;
   action?: string;
+
+  // resultado chave
+  id_result_key?: number;
 };
 
 type LoggerServiceDependencies = {

@@ -39,7 +39,7 @@ ResultKeyUpdateModel.init(
       type: DataTypes.INTEGER
     },
     id_result_key: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.BIGINT,
       allowNull: false,
       references: { model: ResultKeyModel, key: 'id' }
     },
