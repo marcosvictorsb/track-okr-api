@@ -12,6 +12,7 @@ import { Response } from 'express';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { IPresenter } from '@protocols/presenter';
 import { HttpResponse } from '@protocols/http';
+import { DataLogOutput } from '@adapters/services';
 
 export interface InputGetKeyResultUpdate {
   id_company: number;
@@ -39,6 +40,8 @@ export interface IGetKeyResultUpdateGateway {
   findUpdatesByResultKey(
     criteria: FindResultKeyUpdateCriteria
   ): Promise<ResultKeyUpdateEntity[]>;
+  loggerInfo(message: string, data?: DataLogOutput): void;
+  loggerError(message: string, data?: DataLogOutput): void;
 }
 
 export interface IGetKeyResultUpdateInteractorDependencies {

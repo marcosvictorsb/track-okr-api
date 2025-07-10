@@ -25,9 +25,12 @@ export class GetKeyResultUpdateInteractor
 
   public async execute(input: InputGetKeyResultUpdate): Promise<HttpResponse> {
     try {
-      this.loggerInfo('Iniciando busca de atualizações do resultado-chave', {
-        requestTxt: JSON.stringify(input)
-      });
+      this.gateway.loggerInfo(
+        'Iniciando busca de atualizações do resultado-chave',
+        {
+          requestTxt: JSON.stringify(input)
+        }
+      );
       const { id_result_key } = input;
 
       const historyUpdates = await this.gateway.findUpdatesByResultKey({
@@ -35,7 +38,7 @@ export class GetKeyResultUpdateInteractor
       });
 
       if (!historyUpdates || historyUpdates.length === 0) {
-        this.loggerInfo(
+        this.gateway.loggerInfo(
           'Nenhuma atualização encontrada para o resultado-chave',
           {
             id_result_key
@@ -44,7 +47,7 @@ export class GetKeyResultUpdateInteractor
         return this.presenter.ok([]);
       }
 
-      this.loggerInfo(
+      this.gateway.loggerInfo(
         'Atualizações do resultado-chave encontradas com sucesso',
         {
           count: historyUpdates.length,
@@ -54,6 +57,7 @@ export class GetKeyResultUpdateInteractor
 
       return this.presenter.ok(historyUpdates);
     } catch (error) {
+      console.log(error);
       this.loggerError('Erro ao buscar atualizações do resultado-chave', {
         error: error instanceof Error ? error.message : 'Erro desconhecido',
         requestTxt: JSON.stringify(input)
