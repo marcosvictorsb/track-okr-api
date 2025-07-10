@@ -93,7 +93,20 @@ export class ResultKeyRepository implements IResultKeyRepository {
       objective_title: resultKeyWithIncludes.objective?.title
     };
 
-    return new ResultKeyEntity(entityData);
+    return new ResultKeyEntity({
+      id: entityData.id,
+      name: entityData.name,
+      initial_value: entityData.initial_value,
+      target_value: entityData.target_value,
+      current_value: entityData.current_value,
+      unit: entityData.unit,
+      status: entityData.status,
+      responsible_users: entityData.responsible_users || [],
+      responsible_team_id: entityData.responsible_team_id,
+      id_okr: entityData.id_okr,
+      team_name: entityData.team_name,
+      objective_title: entityData.objective_title
+    });
   }
 
   public async create(
@@ -134,7 +147,7 @@ export class ResultKeyRepository implements IResultKeyRepository {
     const resultKeys = await this.model.findAll({
       where: whereConditions,
       include: this.getIncludeOptions(),
-      order: [['created_at', 'DESC']]
+      order: [['created_at', 'ASC']]
     });
 
     return resultKeys.map((resultKey) => this.mapToEntity(resultKey));

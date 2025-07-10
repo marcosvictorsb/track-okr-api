@@ -12,6 +12,10 @@ import { logger } from '@configs/logger';
 import { IObjectiveRepository } from './default.interface';
 import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
+import {
+  FindUserCriteria,
+  IUserRepository
+} from '@domains/api/users/interfaces/default.interfaces';
 
 export interface GetObjectiveRequest {
   id?: number;
@@ -51,6 +55,9 @@ export interface IGetObjectiveGateway {
   findResultKeysByObjectiveIds(
     objectiveIds: number[]
   ): Promise<ResultKeyEntity[]>;
+  findUsers(
+    criteria: FindUserCriteria
+  ): Promise<Array<{ id: number; name: string }>>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }
@@ -59,6 +66,7 @@ export interface IGetObjectiveGatewayDependencies {
   objectiveRepository: IObjectiveRepository;
   teamRepository: ITeamRepository;
   resultKeyRepository: IResultKeyRepository;
+  userRepository: IUserRepository;
   logging: typeof logger;
 }
 

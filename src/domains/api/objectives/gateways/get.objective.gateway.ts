@@ -17,6 +17,10 @@ import {
 } from '../interfaces/get.objective.interface';
 import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
+import {
+  FindUserCriteria,
+  IUserRepository
+} from '@domains/api/users/interfaces/default.interfaces';
 
 export class GetObjectiveGateway
   extends MixCreateObjectives
@@ -25,6 +29,7 @@ export class GetObjectiveGateway
   objectiveRepository: IObjectiveRepository;
   teamRepository: ITeamRepository;
   resultKeyRepository: IResultKeyRepository;
+  userRepository: IUserRepository;
   logging: typeof logger;
 
   constructor(params: IGetObjectiveGatewayDependencies) {
@@ -32,6 +37,7 @@ export class GetObjectiveGateway
     this.objectiveRepository = params.objectiveRepository;
     this.teamRepository = params.teamRepository;
     this.resultKeyRepository = params.resultKeyRepository;
+    this.userRepository = params.userRepository;
     this.logging = params.logging;
   }
 
@@ -90,5 +96,19 @@ export class GetObjectiveGateway
   ): Promise<ResultKeyEntity[]> {
     this.logging.info('Finding result keys by objective IDs', { objectiveIds });
     return await this.resultKeyRepository.findByObjectiveIds(objectiveIds);
+  }
+
+  public async findUsers(
+    criteria: FindUserCriteria
+  ): Promise<Array<{ id: number; name: string }>> {
+    this.logging.info('Finding users by IDs', {
+      criteria: JSON.stringify(criteria)
+    });
+
+    const users = await this.userRepository.findAll(criteria);
+    return users.map((user) => ({
+      id: user.id as number,
+      name: user.name
+    }));
   }
 }

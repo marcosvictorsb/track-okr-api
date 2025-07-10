@@ -17,6 +17,7 @@ export interface IResultKeyEntity {
   team_name?: string;
   objective_title?: string;
   progress_percentage?: number;
+  responsible_users_details?: Array<{ id: number; name: string }>;
 }
 
 export class ResultKeyEntity implements IResultKeyEntity {
@@ -38,6 +39,7 @@ export class ResultKeyEntity implements IResultKeyEntity {
   team_name?: string;
   objective_title?: string;
   progress_percentage?: number;
+  responsible_users_details?: Array<{ id: number; name: string }>;
 
   constructor(data: IResultKeyEntity) {
     this.id = data.id;
@@ -57,8 +59,7 @@ export class ResultKeyEntity implements IResultKeyEntity {
     // Campos calculados/relacionados
     this.team_name = data.team_name;
     this.objective_title = data.objective_title;
-    this.progress_percentage =
-      data.progress_percentage || this.calculateProgress();
+    this.progress_percentage = this.calculateProgress();
   }
 
   public toJson(): IResultKeyEntity {

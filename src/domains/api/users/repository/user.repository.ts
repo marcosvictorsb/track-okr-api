@@ -2,7 +2,7 @@ import UserModel, {
   UserModelAttributes
 } from '@domains/api/users/model/user.model';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { ModelStatic } from 'sequelize';
+import { ModelStatic, Op } from 'sequelize';
 import {
   CreateUserCriteria,
   DeleteUserCriteria,
@@ -24,6 +24,10 @@ export class UserRepository implements IUserRepository {
 
     if (criteria.id) {
       whereConditions['id'] = criteria.id;
+    }
+
+    if (criteria.ids && criteria.ids.length > 0) {
+      whereConditions['id'] = { [Op.in]: criteria.ids };
     }
 
     if (criteria.email) {

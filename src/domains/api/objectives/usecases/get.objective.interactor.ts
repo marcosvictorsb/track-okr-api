@@ -95,6 +95,36 @@ export class GetObjectiveInteractor {
         });
       }
 
+      // pegar os ids dos responsible_users e buscar os nomes do usuario
+      const responsibleUserIds = objectives
+        .flatMap(
+          (objective: ObjectiveEntity) =>
+            objective.result_keys?.flatMap((rk) => rk.responsible_users) || []
+        )
+        .filter(
+          (id): id is number => typeof id === 'number' && id !== undefined
+        );
+
+      if (responsibleUserIds.length > 0) {
+        const responsibleUsers = await this.gateway.findUsers({
+          ids: responsibleUserIds
+        });
+        // Mapear os usuários responsáveis para cada result-key
+        objectives.forEach((objective: ObjectiveEntity) => {
+          objective.result_keys?.forEach((resultKey) => {
+            if (resultKey.responsible_users) {
+              resultKey.responsible_users_details =
+                resultKey.responsible_users.map((id: number) => {
+                  const user = responsibleUsers.find((u) => u.id === id);
+                  return user
+                    ? { id: user.id, name: user.name }
+                    : { id, name: 'Unknown' };
+                });
+            }
+          });
+        });
+      }
+
       this.gateway.loggerInfo('Objetivos encontrados com sucesso');
       return this.presenter.ok(objectives);
     } catch (error) {

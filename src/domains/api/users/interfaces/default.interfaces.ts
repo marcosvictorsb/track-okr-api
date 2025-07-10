@@ -22,6 +22,7 @@ export type CreateUserCriteria = {
 
 export type FindUserCriteria = {
   id?: number;
+  ids?: number[];
   name?: string;
   email?: string;
   role?: string;

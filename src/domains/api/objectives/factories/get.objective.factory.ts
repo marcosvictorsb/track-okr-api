@@ -10,6 +10,8 @@ import TeamModel from '@domains/api/teams/model/team.model';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
 import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
+import { UserRepository } from '@domains/api/users/repository/user.repository';
+import UserModel from '@domains/api/users/model/user.model';
 
 export const makeGetObjectiveController = () => {
   const objectiveRepository = new ObjectiveRepository({
@@ -24,10 +26,15 @@ export const makeGetObjectiveController = () => {
     model: ResultKeyModel
   });
 
+  const userRepository = new UserRepository({
+    model: UserModel
+  });
+
   const params = {
     objectiveRepository,
     teamRepository,
     resultKeyRepository,
+    userRepository,
     logging: logger
   };
 
