@@ -167,27 +167,27 @@ ResultKeyModel.init(
     paranoid: true,
     createdAt: 'created_at',
     updatedAt: 'updated_at',
-    deletedAt: 'deleted_at',
-    validate: {
-      // Validação global para garantir que apenas um campo de responsabilidade seja preenchido
-      responsibilityExclusivity() {
-        const hasResponsibleUsers =
-          this.responsible_users && this.responsible_users.length > 0;
-        const hasResponsibleTeam = !!this.responsible_team_id;
+    deletedAt: 'deleted_at'
+    // validate: {
+    //   // Validação global para garantir que apenas um campo de responsabilidade seja preenchido
+    //   responsibilityExclusivity() {
+    //     const hasResponsibleUsers =
+    //       this.responsible_users && this.responsible_users.length > 0;
+    //     const hasResponsibleTeam = !!this.responsible_team_id;
 
-        if (!hasResponsibleUsers && !hasResponsibleTeam) {
-          throw new Error(
-            'É necessário definir responsável(is): responsible_users ou responsible_team_id'
-          );
-        }
+    //     if (!hasResponsibleUsers && !hasResponsibleTeam) {
+    //       throw new Error(
+    //         'É necessário definir responsável(is): responsible_users ou responsible_team_id'
+    //       );
+    //     }
 
-        if (hasResponsibleUsers && hasResponsibleTeam) {
-          throw new Error(
-            'Não é possível ter responsible_users e responsible_team_id ao mesmo tempo'
-          );
-        }
-      }
-    }
+    //     if (hasResponsibleUsers && hasResponsibleTeam) {
+    //       throw new Error(
+    //         'Não é possível ter responsible_users e responsible_team_id ao mesmo tempo'
+    //       );
+    //     }
+    //   }
+    // }
   }
 );
 

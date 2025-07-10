@@ -57,13 +57,12 @@ export class CreateResultKeyUpdateGateway
     new_value: number
   ): Promise<boolean> {
     this.logging.info('Atualizando valor atual do resultado-chave', {
-      id,
-      new_value
+      data: JSON.stringify({ id, new_value })
     });
 
     const updated = await this.resultKeyRepository.update(
       { id },
-      { current_value: new_value, updated_at: new Date() }
+      { current_value: new_value }
     );
 
     return updated !== null;

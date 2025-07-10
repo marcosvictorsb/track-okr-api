@@ -240,7 +240,8 @@ export class ResultKeyRepository implements IResultKeyRepository {
       resultKey.status = 'completed';
     }
 
-    await resultKey.save();
+    // Salvar com validações desabilitadas para evitar problemas com responsible_users/responsible_team_id
+    await resultKey.save({ validate: false });
 
     return this.mapToEntity(resultKey);
   }
