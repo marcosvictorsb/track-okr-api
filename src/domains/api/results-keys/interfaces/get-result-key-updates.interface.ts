@@ -13,26 +13,26 @@ import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { IPresenter } from '@protocols/presenter';
 import { HttpResponse } from '@protocols/http';
 
-export interface InputGetKeyResultsUpdatesHistory {
+export interface InputGetKeyResultUpdate {
   id_company: number;
   id_result_key: number;
   id_user: number;
 }
 
-export interface GetKeyResultsUpdatesHistoryResponse {
+export interface GetKeyResultUpdateResponse {
   value: number;
   date: string; // ISO string
   user: string;
   comment: string | null;
 }
 
-export interface IGetKeyResultsUpdatesHistoryGatewayDependencies {
+export interface IGetKeyResultUpdateGatewayDependencies {
   resultKeyRepository: IResultKeyRepository;
   resultKeyUpdateRepository: IResultKeyUpdateRepository;
   logging: typeof import('@configs/logger').logger;
 }
 
-export interface IGetKeyResultsUpdatesHistoryGateway {
+export interface IGetKeyResultUpdateGateway {
   findResultKey(
     criteria: FindResultKeyCriteria
   ): Promise<ResultKeyEntity | null>;
@@ -41,18 +41,18 @@ export interface IGetKeyResultsUpdatesHistoryGateway {
   ): Promise<ResultKeyUpdateEntity[]>;
 }
 
-export interface IGetKeyResultsUpdatesHistoryInteractorDependencies {
-  gateway: IGetKeyResultsUpdatesHistoryGateway;
+export interface IGetKeyResultUpdateInteractorDependencies {
+  gateway: IGetKeyResultUpdateGateway;
   presenter: IPresenter;
   // userCompanyValidator: UserCompanyValidationInteractor;
 }
 
-export interface IGetKeyResultsUpdatesHistoryInteractor {
-  execute(params: InputGetKeyResultsUpdatesHistory): Promise<HttpResponse>;
+export interface IGetKeyResultUpdateInteractor {
+  execute(params: InputGetKeyResultUpdate): Promise<HttpResponse>;
 }
 
-export interface IGetKeyResultsUpdatesHistoryController {
-  getKeyResultsUpdatesHistory(
+export interface IGetKeyResultUpdateController {
+  getKeyResultUpdate(
     request: UserPayload,
     response: Response
   ): Promise<Response>;

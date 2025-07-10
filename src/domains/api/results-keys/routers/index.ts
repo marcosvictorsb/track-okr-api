@@ -36,7 +36,7 @@ router.get(
   '/:id/updates',
   authMiddleware,
   (request: UserPayload, response: Response) =>
-    getResultKeyUpdatesController.getKeyResultsUpdatesHistory(request, response)
+    getResultKeyUpdatesController.getKeyResultUpdate(request, response)
 );
 
 export default router;

@@ -1,15 +1,15 @@
 import { GetResultKeyUpdatesGateway } from '../gateways/get-result-key-updates.gateway';
-import { GetKeyResultsUpdatesHistoryInteractor } from '../usecases/get-result-key-updates.interactor';
-import { GetKeyResultsUpdatesHistoryController } from '../controllers/get-result-key-updates.controller';
 import { ResultKeyRepository } from '../repository/result-key.repository';
 import { ResultKeyUpdateRepository } from '../repository/result-key-update.repository';
 import ResultKeyModel from '../model/result-key.model';
 import ResultKeyUpdateModel from '../model/result-key-update.model';
 import { logger } from '@configs/logger';
 import { Presenter } from '@protocols/presenter';
-import { IGetKeyResultsUpdatesHistoryInteractorDependencies } from '../interfaces';
+import { GetKeyResultUpdateController } from '../controllers';
+import { GetKeyResultUpdateInteractor } from '../usecases';
+import { IGetKeyResultUpdateInteractorDependencies } from '../interfaces';
 
-export function makeGetResultKeyUpdatesFactory(): GetKeyResultsUpdatesHistoryController {
+export function makeGetResultKeyUpdatesFactory(): GetKeyResultUpdateController {
   // Repositórios
   const resultKeyRepository = new ResultKeyRepository({
     model: ResultKeyModel
@@ -26,16 +26,16 @@ export function makeGetResultKeyUpdatesFactory(): GetKeyResultsUpdatesHistoryCon
     logging: logger
   });
 
-  const params: IGetKeyResultsUpdatesHistoryInteractorDependencies = {
+  const params: IGetKeyResultUpdateInteractorDependencies = {
     gateway,
     presenter: new Presenter()
   };
 
   // Interactor
-  const interactor = new GetKeyResultsUpdatesHistoryInteractor(params);
+  const interactor = new GetKeyResultUpdateInteractor(params);
 
   // Controller
-  const controller = new GetKeyResultsUpdatesHistoryController(interactor);
+  const controller = new GetKeyResultUpdateController(interactor);
 
   return controller;
 }

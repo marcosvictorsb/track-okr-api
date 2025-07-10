@@ -1,20 +1,20 @@
 import { Response } from 'express';
 import {
-  IGetKeyResultsUpdatesHistoryController,
-  IGetKeyResultsUpdatesHistoryInteractor
+  IGetKeyResultUpdateController,
+  IGetKeyResultUpdateInteractor
 } from '../interfaces/get-result-key-updates.interface';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
-export class GetKeyResultsUpdatesHistoryController
-  implements IGetKeyResultsUpdatesHistoryController
+export class GetKeyResultUpdateController
+  implements IGetKeyResultUpdateController
 {
-  private interactor: IGetKeyResultsUpdatesHistoryInteractor;
+  private interactor: IGetKeyResultUpdateInteractor;
 
-  constructor(interactor: IGetKeyResultsUpdatesHistoryInteractor) {
+  constructor(interactor: IGetKeyResultUpdateInteractor) {
     this.interactor = interactor;
   }
 
-  public async getKeyResultsUpdatesHistory(
+  public async getKeyResultUpdate(
     request: UserPayload,
     response: Response
   ): Promise<Response> {

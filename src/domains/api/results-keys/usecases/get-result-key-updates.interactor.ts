@@ -1,31 +1,29 @@
 import { IPresenter } from '@protocols/presenter';
 import {
-  IGetKeyResultsUpdatesHistoryGateway,
-  IGetKeyResultsUpdatesHistoryInteractor,
-  IGetKeyResultsUpdatesHistoryInteractorDependencies,
-  InputGetKeyResultsUpdatesHistory
+  IGetKeyResultUpdateGateway,
+  IGetKeyResultUpdateInteractor,
+  IGetKeyResultUpdateInteractorDependencies,
+  InputGetKeyResultUpdate
 } from '../interfaces/get-result-key-updates.interface';
 // import { UserCompanyValidationInteractor } from '@domains/common';
 import { MixGetKeyResultUpdatesHistory } from '@adapters/gateways/api/result-key';
 import { HttpResponse } from '@protocols/http';
 
-export class GetKeyResultsUpdatesHistoryInteractor
+export class GetKeyResultUpdateInteractor
   extends MixGetKeyResultUpdatesHistory
-  implements IGetKeyResultsUpdatesHistoryInteractor
+  implements IGetKeyResultUpdateInteractor
 {
-  protected gateway: IGetKeyResultsUpdatesHistoryGateway;
+  protected gateway: IGetKeyResultUpdateGateway;
   protected presenter: IPresenter;
   // protected userCompanyValidator: UserCompanyValidationInteractor;
 
-  constructor(params: IGetKeyResultsUpdatesHistoryInteractorDependencies) {
+  constructor(params: IGetKeyResultUpdateInteractorDependencies) {
     super(params);
     this.gateway = params.gateway;
     this.presenter = params.presenter;
   }
 
-  public async execute(
-    input: InputGetKeyResultsUpdatesHistory
-  ): Promise<HttpResponse> {
+  public async execute(input: InputGetKeyResultUpdate): Promise<HttpResponse> {
     try {
       this.loggerInfo('Iniciando busca de atualizações do resultado-chave', {
         requestTxt: JSON.stringify(input)

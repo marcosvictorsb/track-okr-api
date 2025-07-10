@@ -2,10 +2,6 @@ import { MixGetKeyResultUpdatesHistory } from '@adapters/gateways/api/result-key
 import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
 import { ResultKeyEntity } from '../entity/result-key.entity';
 import {
-  IGetKeyResultsUpdatesHistoryGatewayDependencies,
-  IGetKeyResultsUpdatesHistoryGateway
-} from '../interfaces/get-result-key-updates.interface';
-import {
   FindResultKeyCriteria,
   IResultKeyRepository
 } from '../interfaces/default.interface';
@@ -14,16 +10,20 @@ import {
   IResultKeyUpdateRepository
 } from '../interfaces/result-key-update.interface';
 import { logger } from '@configs/logger';
+import {
+  IGetKeyResultUpdateGateway,
+  IGetKeyResultUpdateGatewayDependencies
+} from '../interfaces';
 
 export class GetResultKeyUpdatesGateway
   extends MixGetKeyResultUpdatesHistory
-  implements IGetKeyResultsUpdatesHistoryGateway
+  implements IGetKeyResultUpdateGateway
 {
   resultKeyRepository: IResultKeyRepository;
   resultKeyUpdateRepository: IResultKeyUpdateRepository;
   logging: typeof logger;
 
-  constructor(params: IGetKeyResultsUpdatesHistoryGatewayDependencies) {
+  constructor(params: IGetKeyResultUpdateGatewayDependencies) {
     super(params);
     this.resultKeyRepository = params.resultKeyRepository;
     this.resultKeyUpdateRepository = params.resultKeyUpdateRepository;
