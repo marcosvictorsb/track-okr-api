@@ -8,6 +8,7 @@ export type DataLogOutput = {
   error?: string;
   input?: string;
   requestTxt?: string;
+  count?: number;
 
   id_user?: number;
   id_expense?: number;
