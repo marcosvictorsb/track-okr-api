@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import multer from 'multer';
+import { validateFileExtension } from './file-validation.middleware';
 
 // Configuração do Multer para armazenar arquivo em memória
 const storage = multer.memoryStorage();
@@ -7,7 +8,9 @@ const storage = multer.memoryStorage();
 const upload = multer({
   storage,
   limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB
+    fileSize: 5 * 1024 * 1024, // 5MB
+    files: 1, // Apenas 1 arquivo por request
+    fields: 10 // Máximo 10 campos de formulário
   },
   fileFilter: (req, file, cb) => {
     // Validar tipos de arquivo aceitos
@@ -18,11 +21,19 @@ const upload = multer({
       'image/webp'
     ];
 
-    if (allowedMimeTypes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Formato de arquivo não suportado. Use JPG, PNG ou WebP'));
+    // Validar MIME type
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      return cb(
+        new Error('Formato de arquivo não suportado. Use JPG, PNG ou WebP')
+      );
     }
+
+    // Validar extensão do arquivo
+    if (!validateFileExtension(file.originalname)) {
+      return cb(new Error('Extensão de arquivo não permitida'));
+    }
+
+    cb(null, true);
   }
 });
 
