@@ -4,7 +4,7 @@ export interface IResultKeyUpdateEntity {
   previous_value?: number | null;
   new_value: number;
   comment?: string | null;
-  id_user: number;
+  id_user?: number;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -20,7 +20,7 @@ export class ResultKeyUpdateEntity implements IResultKeyUpdateEntity {
   readonly previous_value?: number | null;
   readonly new_value: number;
   readonly comment?: string | null;
-  readonly id_user: number;
+  readonly id_user?: number;
   readonly created_at?: Date;
   readonly updated_at?: Date;
   readonly deleted_at?: Date;

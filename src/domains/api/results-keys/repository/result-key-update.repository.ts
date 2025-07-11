@@ -106,7 +106,12 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
         result_key?: { id: number; name: string };
       };
       return new ResultKeyUpdateEntity({
-        ...data,
+        id: data.id,
+        id_result_key: data.id_result_key,
+        previous_value: data.previous_value,
+        new_value: data.new_value,
+        comment: data.comment,
+        created_at: data.created_at,
         user_name: data.user?.name,
         result_key_name: data.result_key?.name
       });
