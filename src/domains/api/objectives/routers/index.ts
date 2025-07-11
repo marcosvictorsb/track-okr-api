@@ -2,6 +2,7 @@ import { Response, Router } from 'express';
 import * as factories from '@domains/api/objectives/factories';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
+import { objectiveCreationLimiter } from '@configs/rate-limit';
 import {
   createObjectiveSchema,
   updateObjectiveSchema,
@@ -27,6 +28,7 @@ const router = Router();
 router.post(
   '/',
   authMiddleware,
+  objectiveCreationLimiter,
   validateSchema(createObjectiveSchema),
   (request: UserPayload, response: Response) =>
     createObjectiveController.createObjective(request, response)

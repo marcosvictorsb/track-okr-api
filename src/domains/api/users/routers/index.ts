@@ -2,6 +2,7 @@ import { Response, Router } from 'express';
 import * as factories from '@domains/api/users/factories';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
+import { userCreationLimiter } from '@configs/rate-limit';
 import { inviteUserSchema, updateUserSchema } from '../schemas';
 import { deleteUserSchema } from '../schemas/delete.user';
 
@@ -41,6 +42,7 @@ router.post(
 router.post(
   '/invite',
   authMiddleware,
+  userCreationLimiter,
   validateSchema(inviteUserSchema),
   (request: UserPayload, response: Response) =>
     inviteUserController.inviteUser(request, response)

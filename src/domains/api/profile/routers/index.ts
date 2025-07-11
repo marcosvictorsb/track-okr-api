@@ -6,6 +6,8 @@ import {
   validateFileUpload,
   handleUploadErrors
 } from '@middlewares/upload.middleware';
+import { advancedFileValidation } from '@middlewares/file-validation.middleware';
+import { uploadLimiter, createLimiter } from '@configs/rate-limit';
 import { createProfileSchema } from '../schemas';
 
 const { makeCreateProfileFactory, makeGetProfileFactory } = factories;
@@ -15,16 +17,17 @@ const getProfileController = makeGetProfileFactory();
 
 const router = Router();
 
-// GET /profile - Buscar perfil do usuário
 router.get('/', authMiddleware, (request: UserPayload, response: Response) =>
   getProfileController.getProfile(request, response)
 );
 
-// POST /profile - Criar/atualizar perfil do usuário
 router.post(
   '/',
   authMiddleware,
+  uploadLimiter,
+  createLimiter,
   validateFileUpload,
+  advancedFileValidation,
   validateSchema(createProfileSchema),
   handleUploadErrors,
   (request: UserPayload, response: Response) =>
