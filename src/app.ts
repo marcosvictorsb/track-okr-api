@@ -20,6 +20,7 @@ app.use((req, res, next) => {
 app.use(corsMiddleware);
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use('/uploads', express.static('uploads'));
 app.use(routers);
 
 export default app;

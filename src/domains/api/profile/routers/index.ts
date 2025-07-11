@@ -8,12 +8,19 @@ import {
 } from '@middlewares/upload.middleware';
 import { createProfileSchema } from '../schemas';
 
-const { makeCreateProfileFactory } = factories;
+const { makeCreateProfileFactory, makeGetProfileFactory } = factories;
 
 const createProfileController = makeCreateProfileFactory();
+const getProfileController = makeGetProfileFactory();
 
 const router = Router();
 
+// GET /profile - Buscar perfil do usuário
+router.get('/', authMiddleware, (request: UserPayload, response: Response) =>
+  getProfileController.getProfile(request, response)
+);
+
+// POST /profile - Criar/atualizar perfil do usuário
 router.post(
   '/',
   authMiddleware,
