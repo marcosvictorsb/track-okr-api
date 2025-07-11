@@ -19,9 +19,9 @@ router.post(
   authMiddleware,
   validateFileUpload,
   validateSchema(createProfileSchema),
+  handleUploadErrors,
   (request: UserPayload, response: Response) =>
-    createProfileController.createProfile(request, response),
-  handleUploadErrors
+    createProfileController.createProfile(request, response)
 );
 
 export default router;

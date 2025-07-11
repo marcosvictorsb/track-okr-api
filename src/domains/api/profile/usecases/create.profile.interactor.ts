@@ -24,17 +24,6 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         id_user
       });
 
-      // Validar dados obrigatórios
-      if (!name || name.trim().length === 0) {
-        return this.presenter.badRequest('Nome é obrigatório');
-      }
-
-      if (name.trim().length < 2) {
-        return this.presenter.badRequest(
-          'Nome deve ter pelo menos 2 caracteres'
-        );
-      }
-
       // Verificar se usuário existe
       const user = await this.gateway.findUser(id_user);
       if (!user) {
@@ -91,12 +80,14 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
       }
 
       // Atualizar nome do usuário
-      const updatedUser = await this.gateway.updateUserName(
-        id_user,
-        name.trim()
-      );
-      if (!updatedUser) {
-        return this.presenter.badRequest('Erro ao atualizar nome do usuário');
+      if (name && name.length > 0 && !name.trim()) {
+        const updatedUser = await this.gateway.updateUserName(
+          id_user,
+          name.trim()
+        );
+        if (!updatedUser) {
+          return this.presenter.badRequest('Erro ao atualizar nome do usuário');
+        }
       }
 
       // Criar ou atualizar perfil
@@ -135,12 +126,9 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         id_user
       });
 
-      return this.presenter.ok({
-        profile,
-        user: updatedUser,
-        message: 'Perfil atualizado com sucesso'
-      });
+      return this.presenter.ok('Perfil atualizado com sucesso');
     } catch (error) {
+      console.log(error);
       this.gateway.loggerError('Erro ao criar/atualizar perfil', {
         id_user: input.id_user,
         error: error instanceof Error ? error.message : 'Erro desconhecido'

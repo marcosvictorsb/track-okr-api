@@ -56,9 +56,6 @@ ProfileModel.init(
       type: DataTypes.STRING(500),
       allowNull: true,
       validate: {
-        isUrl: {
-          msg: 'photo_url deve ser uma URL válida'
-        },
         len: {
           args: [0, 500],
           msg: 'photo_url deve ter no máximo 500 caracteres'

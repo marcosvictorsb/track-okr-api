@@ -8,12 +8,7 @@ import {
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 interface MulterRequest extends UserPayload {
-  file?: {
-    buffer: Buffer;
-    originalname: string;
-    mimetype: string;
-    size: number;
-  };
+  file?: Express.Multer.File;
 }
 
 export class CreateProfileController implements ICreateProfileController {
