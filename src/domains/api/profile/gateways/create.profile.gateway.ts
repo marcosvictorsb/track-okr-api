@@ -47,7 +47,7 @@ export class CreateProfileGateway
   ): Promise<UserEntity | null> {
     this.logging.info('Atualizando nome do usuário', { userId, name });
 
-    const success = await this.userRepository.update({ id: userId }, { name });
+    const success = await this.userRepository.update({ name }, { id: userId });
 
     if (!success) {
       this.logging.warn('Falha ao atualizar nome do usuário', { userId });

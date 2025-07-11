@@ -52,8 +52,8 @@ export interface IUserRepository {
   find(criteria: FindUserCriteria): Promise<UserEntity | undefined>;
   findAll(criteria: FindUserCriteria): Promise<UserEntity[]>;
   update(
-    criteria: UpdateUserCriteria,
-    data: Partial<UserEntity>
+    data: Partial<UserEntity>,
+    criteria: UpdateUserCriteria
   ): Promise<boolean>;
   delete(criteria: DeleteUserCriteria): Promise<boolean>;
 }

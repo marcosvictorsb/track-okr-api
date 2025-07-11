@@ -80,11 +80,8 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
       }
 
       // Atualizar nome do usuário
-      if (name && name.length > 0 && !name.trim()) {
-        const updatedUser = await this.gateway.updateUserName(
-          id_user,
-          name.trim()
-        );
+      if (name && name.length > 0) {
+        const updatedUser = await this.gateway.updateUserName(id_user, name);
         if (!updatedUser) {
           return this.presenter.badRequest('Erro ao atualizar nome do usuário');
         }
