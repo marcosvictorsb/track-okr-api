@@ -1,32 +1,44 @@
 import { ProfileEntity } from '../entity/profile.entity';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { IProfileRepository } from './default.interfaces';
 import { IUserRepository } from '@domains/api/users/interfaces';
 import { ImageProcessingService } from '@adapters/services/image.processing.service';
 import { DataLogOutput } from '@adapters/services';
+import { IPresenter } from '@protocols/presenter';
+import { HttpResponse } from '@protocols/http';
+import { CreateProfileGateway } from '../gateways/create.profile.gateway';
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { logger } from '@configs/logger';
 
-export interface CreateProfileRequest {
+export type InputCreateProfile = {
   name: string;
   position?: string;
-  // file será tratado pelo multer
-}
-
-export interface CreateProfileResponse {
-  success: boolean;
-  data?: {
-    profile: ProfileEntity;
-    user: UserEntity;
+  file?: {
+    buffer: Buffer;
+    originalname: string;
+    mimetype: string;
+    size: number;
   };
-  message?: string;
-}
+  id_user: number;
+  id_company: number;
+};
 
-export interface ICreateProfileGatewayDependencies extends DataLogOutput {
+export type CreateProfileInteractorDependencies = {
+  gateway: CreateProfileGateway;
+  presenter: IPresenter;
+};
+
+export type ICreateProfileGatewayDependencies = {
   profileRepository: IProfileRepository;
   userRepository: IUserRepository;
   imageProcessingService: ImageProcessingService;
-  logging: typeof import('@configs/logger').logger;
-}
+  logging: typeof logger;
+};
+
+export type CreateProfileControllerDependencies = {
+  interactor: ICreateProfileInteractor;
+};
 
 export interface ICreateProfileGateway {
   findUser(id: number): Promise<UserEntity | null>;
@@ -43,22 +55,14 @@ export interface ICreateProfileGateway {
     userId: number
   ): Promise<string>;
   deleteOldAvatar(avatarPath: string): Promise<void>;
+  loggerInfo(message: string, data?: DataLogOutput): void;
+  loggerError(message: string, data?: DataLogOutput): void;
 }
 
 export interface ICreateProfileInteractor {
-  execute(params: {
-    name: string;
-    position?: string;
-    file?: {
-      buffer: Buffer;
-      originalname: string;
-      mimetype: string;
-      size: number;
-    };
-    userId: number;
-  }): Promise<CreateProfileResponse>;
+  execute(input: InputCreateProfile): Promise<HttpResponse>;
 }
 
 export interface ICreateProfileController {
-  createProfile(request: Request, response: Response): Promise<void>;
+  createProfile(request: UserPayload, response: Response): Promise<Response>;
 }

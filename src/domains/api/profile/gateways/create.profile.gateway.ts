@@ -8,14 +8,19 @@ import { IProfileRepository } from '../interfaces/default.interfaces';
 import { IUserRepository } from '@domains/api/users/interfaces';
 import { ImageProcessingService } from '@adapters/services/image.processing.service';
 import { logger } from '@configs/logger';
+import { MixCreateProfile } from '@adapters/gateways';
 
-export class CreateProfileGateway implements ICreateProfileGateway {
-  private profileRepository: IProfileRepository;
-  private userRepository: IUserRepository;
-  private imageProcessingService: ImageProcessingService;
-  private logging: typeof logger;
+export class CreateProfileGateway
+  extends MixCreateProfile
+  implements ICreateProfileGateway
+{
+  profileRepository: IProfileRepository;
+  userRepository: IUserRepository;
+  imageProcessingService: ImageProcessingService;
+  logging: typeof logger;
 
   constructor(params: ICreateProfileGatewayDependencies) {
+    super(params);
     this.profileRepository = params.profileRepository;
     this.userRepository = params.userRepository;
     this.imageProcessingService = params.imageProcessingService;

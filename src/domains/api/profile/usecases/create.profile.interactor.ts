@@ -1,79 +1,63 @@
+import { HttpResponse } from '@protocols/http';
 import {
   ICreateProfileInteractor,
-  ICreateProfileGateway,
-  CreateProfileResponse
+  InputCreateProfile,
+  CreateProfileInteractorDependencies
 } from '../interfaces/create.profile.interface';
-import { logger } from '@configs/logger';
+import { IPresenter } from '@protocols/presenter';
+import { CreateProfileGateway } from '../gateways/create.profile.gateway';
 
 export class CreateProfileInteractor implements ICreateProfileInteractor {
-  private gateway: ICreateProfileGateway;
-  private logging: typeof logger;
+  protected gateway: CreateProfileGateway;
+  protected presenter: IPresenter;
 
-  constructor(gateway: ICreateProfileGateway) {
-    this.gateway = gateway;
-    this.logging = logger;
+  constructor(params: CreateProfileInteractorDependencies) {
+    this.gateway = params.gateway;
+    this.presenter = params.presenter;
   }
 
-  public async execute(params: {
-    name: string;
-    position?: string;
-    file?: {
-      buffer: Buffer;
-      originalname: string;
-      mimetype: string;
-      size: number;
-    };
-    userId: number;
-  }): Promise<CreateProfileResponse> {
+  public async execute(input: InputCreateProfile): Promise<HttpResponse> {
     try {
-      this.logging.info('Iniciando criação/atualização de perfil', {
-        userId: params.userId,
-        hasFile: !!params.file,
-        hasPosition: !!params.position
+      const { name, position, file, id_user } = input;
+
+      this.gateway.loggerInfo('Iniciando criação/atualização de perfil', {
+        id_user
       });
 
       // Validar dados obrigatórios
-      if (!params.name || params.name.trim().length === 0) {
-        return {
-          success: false,
-          message: 'Nome é obrigatório'
-        };
+      if (!name || name.trim().length === 0) {
+        return this.presenter.badRequest('Nome é obrigatório');
       }
 
-      if (params.name.trim().length < 2) {
-        return {
-          success: false,
-          message: 'Nome deve ter pelo menos 2 caracteres'
-        };
+      if (name.trim().length < 2) {
+        return this.presenter.badRequest(
+          'Nome deve ter pelo menos 2 caracteres'
+        );
       }
 
       // Verificar se usuário existe
-      const user = await this.gateway.findUser(params.userId);
+      const user = await this.gateway.findUser(id_user);
       if (!user) {
-        return {
-          success: false,
-          message: 'Usuário não encontrado'
-        };
+        return this.presenter.notFound('Usuário não encontrado');
       }
 
       // Verificar se há perfil existente para deletar avatar antigo
-      const existingProfile = await this.gateway.findUserProfile(params.userId);
+      const existingProfile = await this.gateway.findUserProfile(id_user);
       let oldAvatarPath: string | null = null;
 
-      if (existingProfile && existingProfile.photo_url && params.file) {
+      if (existingProfile && existingProfile.photo_url && file) {
         oldAvatarPath = existingProfile.photo_url;
       }
 
       // Processar avatar se fornecido
       let avatarPath: string | undefined;
-      if (params.file) {
+      if (file) {
         // Validar arquivo
         const maxSize = 5 * 1024 * 1024; // 5MB
-        if (params.file.size > maxSize) {
-          return {
-            success: false,
-            message: 'Arquivo muito grande. Máximo permitido: 5MB'
-          };
+        if (file.size > maxSize) {
+          return this.presenter.badRequest(
+            'Arquivo muito grande. Máximo permitido: 5MB'
+          );
         }
 
         const allowedMimeTypes = [
@@ -82,42 +66,37 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
           'image/png',
           'image/webp'
         ];
-        if (!allowedMimeTypes.includes(params.file.mimetype)) {
-          return {
-            success: false,
-            message: 'Formato de arquivo não suportado. Use JPG, PNG ou WebP'
-          };
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          return this.presenter.badRequest(
+            'Formato de arquivo não suportado. Use JPG, PNG ou WebP'
+          );
         }
 
         try {
           avatarPath = await this.gateway.processAvatar(
-            params.file.buffer,
-            params.file.originalname,
-            params.userId
+            file.buffer,
+            file.originalname,
+            id_user
           );
         } catch (error) {
-          this.logging.error('Erro ao processar avatar', {
-            userId: params.userId,
+          this.gateway.loggerError('Erro ao processar avatar', {
+            id_user,
             error: error instanceof Error ? error.message : 'Erro desconhecido'
           });
 
-          return {
-            success: false,
-            message: `Erro ao processar imagem: ${error instanceof Error ? error.message : 'Erro desconhecido'}`
-          };
+          return this.presenter.badRequest(
+            `Erro ao processar imagem: ${error instanceof Error ? error.message : 'Erro desconhecido'}`
+          );
         }
       }
 
       // Atualizar nome do usuário
       const updatedUser = await this.gateway.updateUserName(
-        params.userId,
-        params.name.trim()
+        id_user,
+        name.trim()
       );
       if (!updatedUser) {
-        return {
-          success: false,
-          message: 'Erro ao atualizar nome do usuário'
-        };
+        return this.presenter.badRequest('Erro ao atualizar nome do usuário');
       }
 
       // Criar ou atualizar perfil
@@ -126,15 +105,15 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         photo_url?: string;
         position?: string;
       } = {
-        id_user: params.userId
+        id_user
       };
 
       if (avatarPath !== undefined) {
         profileData.photo_url = avatarPath;
       }
 
-      if (params.position !== undefined) {
-        profileData.position = params.position.trim() || undefined;
+      if (position !== undefined) {
+        profileData.position = position.trim() || undefined;
       }
 
       const profile = await this.gateway.createOrUpdateProfile(profileData);
@@ -145,38 +124,28 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
           await this.gateway.deleteOldAvatar(oldAvatarPath);
         } catch (error) {
           // Log mas não falha a operação
-          this.logging.warn('Erro ao deletar avatar antigo', {
-            userId: params.userId,
-            oldAvatarPath,
+          this.gateway.loggerInfo('Erro ao deletar avatar antigo', {
+            id_user,
             error: error instanceof Error ? error.message : 'Erro desconhecido'
           });
         }
       }
 
-      this.logging.info('Perfil criado/atualizado com sucesso', {
-        userId: params.userId,
-        profileId: profile.id
+      this.gateway.loggerInfo('Perfil criado/atualizado com sucesso', {
+        id_user
       });
 
-      return {
-        success: true,
-        data: {
-          profile,
-          user: updatedUser
-        },
+      return this.presenter.ok({
+        profile,
+        user: updatedUser,
         message: 'Perfil atualizado com sucesso'
-      };
-    } catch (error) {
-      this.logging.error('Erro ao criar/atualizar perfil', {
-        userId: params.userId,
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-        stack: error instanceof Error ? error.stack : undefined
       });
-
-      return {
-        success: false,
-        message: 'Erro interno do servidor'
-      };
+    } catch (error) {
+      this.gateway.loggerError('Erro ao criar/atualizar perfil', {
+        id_user: input.id_user,
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      });
+      return this.presenter.serverError('Erro ao criar/atualizar perfil');
     }
   }
 }

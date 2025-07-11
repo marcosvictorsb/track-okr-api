@@ -6,6 +6,7 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import ProfileModel from '../model/profile.model';
 import UserModel from '@domains/api/users/model/user.model';
 import { ImageProcessingService } from '@adapters/services/image.processing.service';
+import { Presenter } from '@protocols/presenter';
 import { logger } from '@configs/logger';
 
 export function makeCreateProfileFactory(): CreateProfileController {
@@ -20,6 +21,7 @@ export function makeCreateProfileFactory(): CreateProfileController {
 
   // Serviços
   const imageProcessingService = new ImageProcessingService();
+  const presenter = new Presenter();
 
   // Gateway
   const gateway = new CreateProfileGateway({
@@ -30,10 +32,15 @@ export function makeCreateProfileFactory(): CreateProfileController {
   });
 
   // Interactor
-  const interactor = new CreateProfileInteractor(gateway);
+  const interactor = new CreateProfileInteractor({
+    gateway,
+    presenter
+  });
 
   // Controller
-  const controller = new CreateProfileController(interactor);
+  const controller = new CreateProfileController({
+    interactor
+  });
 
   return controller;
 }
