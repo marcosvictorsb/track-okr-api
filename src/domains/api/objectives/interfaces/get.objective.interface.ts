@@ -16,6 +16,11 @@ import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces/default.interfaces';
+import {
+  FindProfileCriteria,
+  IProfileRepository
+} from '@domains/api/profile/interfaces';
+import { ProfileEntity } from '@domains/api/profile/entity';
 
 export interface GetObjectiveRequest {
   id?: number;
@@ -58,6 +63,9 @@ export interface IGetObjectiveGateway {
   findUsers(
     criteria: FindUserCriteria
   ): Promise<Array<{ id: number; name: string }>>;
+  findProfilesByUserIds(
+    criteria: FindProfileCriteria
+  ): Promise<ProfileEntity[]>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }
@@ -66,6 +74,7 @@ export interface IGetObjectiveGatewayDependencies {
   objectiveRepository: IObjectiveRepository;
   teamRepository: ITeamRepository;
   resultKeyRepository: IResultKeyRepository;
+  profileRepository: IProfileRepository;
   userRepository: IUserRepository;
   logging: typeof logger;
 }

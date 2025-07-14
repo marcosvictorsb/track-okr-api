@@ -109,6 +109,22 @@ export class GetObjectiveInteractor {
         const responsibleUsers = await this.gateway.findUsers({
           ids: responsibleUserIds
         });
+
+        const profileDetails = await this.gateway.findProfilesByUserIds({
+          ids: responsibleUserIds
+        });
+
+        // Criar um Map para lookup O(1) dos profiles
+        const profileMap = new Map(
+          profileDetails.map((profile) => [
+            profile.id_user,
+            {
+              photo_url: profile.photo_url,
+              position: profile.position
+            }
+          ])
+        );
+
         // Mapear os usuários responsáveis para cada result-key
         objectives.forEach((objective: ObjectiveEntity) => {
           objective.result_keys?.forEach((resultKey) => {
@@ -116,9 +132,20 @@ export class GetObjectiveInteractor {
               resultKey.responsible_users_details =
                 resultKey.responsible_users.map((id: number) => {
                   const user = responsibleUsers.find((u) => u.id === id);
+                  const profile = profileMap.get(id);
                   return user
-                    ? { id: user.id, name: user.name }
-                    : { id, name: 'Unknown' };
+                    ? {
+                        id: user.id,
+                        name: user.name,
+                        photo_url: profile?.photo_url || null,
+                        position: profile?.position || null
+                      }
+                    : {
+                        id,
+                        name: 'Unknown',
+                        photo_url: null,
+                        position: null
+                      };
                 });
             }
           });

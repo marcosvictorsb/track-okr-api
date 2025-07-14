@@ -21,6 +21,11 @@ import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces/default.interfaces';
+import {
+  FindProfileCriteria,
+  IProfileRepository
+} from '@domains/api/profile/interfaces';
+import { ProfileEntity } from '@domains/api/profile/entity';
 
 export class GetObjectiveGateway
   extends MixCreateObjectives
@@ -30,6 +35,7 @@ export class GetObjectiveGateway
   teamRepository: ITeamRepository;
   resultKeyRepository: IResultKeyRepository;
   userRepository: IUserRepository;
+  profileRepository: IProfileRepository;
   logging: typeof logger;
 
   constructor(params: IGetObjectiveGatewayDependencies) {
@@ -38,6 +44,7 @@ export class GetObjectiveGateway
     this.teamRepository = params.teamRepository;
     this.resultKeyRepository = params.resultKeyRepository;
     this.userRepository = params.userRepository;
+    this.profileRepository = params.profileRepository;
     this.logging = params.logging;
   }
 
@@ -110,5 +117,12 @@ export class GetObjectiveGateway
       id: user.id as number,
       name: user.name
     }));
+  }
+
+  public async findProfilesByUserIds(
+    criteria: FindProfileCriteria
+  ): Promise<ProfileEntity[]> {
+    this.logging.info('Finding profiles by user IDs', { criteria });
+    return await this.profileRepository.findAll(criteria);
   }
 }

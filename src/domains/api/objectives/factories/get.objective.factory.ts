@@ -12,6 +12,8 @@ import { ResultKeyRepository } from '@domains/api/results-keys/repository/result
 import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
 import UserModel from '@domains/api/users/model/user.model';
+import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
+import { ProfileModel } from '@domains/api/profile/model';
 
 export const makeGetObjectiveController = () => {
   const objectiveRepository = new ObjectiveRepository({
@@ -30,11 +32,16 @@ export const makeGetObjectiveController = () => {
     model: UserModel
   });
 
+  const profileRepository = new ProfileRepository({
+    model: ProfileModel
+  });
+
   const params = {
     objectiveRepository,
     teamRepository,
     resultKeyRepository,
     userRepository,
+    profileRepository,
     logging: logger
   };
 
