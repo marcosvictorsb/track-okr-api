@@ -123,9 +123,13 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         id_user
       });
 
-      return this.presenter.ok('Perfil atualizado com sucesso');
+      return this.presenter.ok({
+        photo_url: profile.photo_url,
+        position: profile.position,
+        user_name: profile.user_name,
+        user_email: profile.user_email
+      });
     } catch (error) {
-      console.log(error);
       this.gateway.loggerError('Erro ao criar/atualizar perfil', {
         id_user: input.id_user,
         error: error instanceof Error ? error.message : 'Erro desconhecido'
