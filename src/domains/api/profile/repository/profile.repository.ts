@@ -1,6 +1,6 @@
 import ProfileModel from '@domains/api/profile/model/profile.model';
 import { ProfileEntity } from '@domains/api/profile/entity/profile.entity';
-import { ModelStatic } from 'sequelize';
+import { ModelStatic, Op } from 'sequelize';
 import {
   CreateProfileCriteria,
   DeleteProfileCriteria,
@@ -25,6 +25,9 @@ export class ProfileRepository implements IProfileRepository {
 
     if (criteria.id) {
       whereConditions['id'] = criteria.id;
+    }
+    if (criteria.id_users && criteria.id_users.length > 0) {
+      whereConditions['id_user'] = { [Op.in]: criteria.id_users };
     }
 
     if (criteria.id_user) {

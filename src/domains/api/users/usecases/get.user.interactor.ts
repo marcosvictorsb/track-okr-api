@@ -94,7 +94,29 @@ export class GetUserInteractor {
         current_team_id: userTeamMap.get(user.id as number) || null
       }));
 
-      return this.presenter.ok(usersWithTeam);
+      const getProfiles = await this.gateway.getProfileByIds({
+        id_users: idsUser
+      });
+
+      // Criar um Map para lookup O(1) dos profiles
+      const profileMap = new Map(
+        getProfiles.map((profile) => [
+          profile.id_user,
+          {
+            position: profile.position,
+            photo_url: profile.photo_url
+          }
+        ])
+      );
+
+      // Incluir no userWithTeam o profile.position and profile.photo_url
+      const usersWithTeamAndProfile = usersWithTeam.map((user: UserEntity) => ({
+        ...user,
+        position: profileMap.get(user.id as number)?.position || null,
+        photo_url: profileMap.get(user.id as number)?.photo_url || null
+      }));
+
+      return this.presenter.ok(usersWithTeamAndProfile);
     } catch (error) {
       this.gateway.loggerError('Erro ao buscar usuários', { error });
       return this.presenter.serverError('Erro ao buscar usuários');

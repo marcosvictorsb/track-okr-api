@@ -12,16 +12,23 @@ import {
 import { MixGetUser } from '@adapters/gateways/api/users';
 import { logger } from '@configs/logger';
 import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
+import {
+  FindProfileCriteria,
+  IProfileRepository
+} from '@domains/api/profile/interfaces';
+import { ProfileEntity } from '@domains/api/profile/entity';
 
 export class GetUserGateway extends MixGetUser implements IGetUserGateway {
   userRepository: IUserRepository;
   userTeamRepository: IUserTeamRepository;
+  profileRepository: IProfileRepository;
   logging: typeof logger;
 
   constructor(params: IGetUserGatewayDependencies) {
     super(params);
     this.userRepository = params.userRepository;
     this.userTeamRepository = params.userTeamRepository;
+    this.profileRepository = params.profileRepository;
     this.logging = params.logging;
   }
 
@@ -44,5 +51,14 @@ export class GetUserGateway extends MixGetUser implements IGetUserGateway {
       data: JSON.stringify(criteria)
     });
     return await this.userTeamRepository.findAll(criteria);
+  }
+
+  async getProfileByIds(
+    criteria: FindProfileCriteria
+  ): Promise<ProfileEntity[]> {
+    this.logging.info('Iniciando busca de perfis por IDs', {
+      ids: JSON.stringify(criteria)
+    });
+    return await this.profileRepository.findAll(criteria);
   }
 }

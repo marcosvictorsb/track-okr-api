@@ -13,6 +13,8 @@ export type CreateProfileCriteria = {
 
 export type FindProfileCriteria = {
   id?: number;
+  ids?: number[];
+  id_users?: number[];
   id_user?: number;
   photo_url?: string;
   position?: string;

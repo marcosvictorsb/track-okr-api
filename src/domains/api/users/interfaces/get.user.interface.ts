@@ -7,6 +7,7 @@ import { GetUserInteractor } from '../usecases/get.user.interactor';
 import { GetUserTeamInteractor } from '@domains/common/user-teams/usecases';
 import { logger } from '@configs/logger';
 import { IUserTeamRepository } from '@domains/common/user-teams/interfaces/default.interfaces';
+import { IProfileRepository } from '@domains/api/profile/interfaces';
 
 export type InputGetUser = {
   id_company: number;
@@ -25,6 +26,7 @@ export type GetUserInteractorDependencies = {
 export type IGetUserGatewayDependencies = {
   userRepository: IUserRepository;
   userTeamRepository: IUserTeamRepository;
+  profileRepository: IProfileRepository;
   logging: typeof logger;
 };
 

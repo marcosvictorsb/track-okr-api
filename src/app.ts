@@ -41,8 +41,25 @@ app.use(corsMiddleware);
 app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
 app.use(bodyParser.json({ limit: '10mb' }));
 
-// 5. Static files com headers de segurança
-app.use('/uploads', uploadSecurityHeaders, express.static('uploads'));
+// 5. Static files com headers de segurança e CORS específico
+app.use(
+  '/uploads',
+  corsMiddleware,
+  uploadSecurityHeaders,
+  express.static('uploads', {
+    setHeaders: (res, path) => {
+      // Headers adicionais para imagens
+      if (
+        path.endsWith('.jpg') ||
+        path.endsWith('.jpeg') ||
+        path.endsWith('.png') ||
+        path.endsWith('.webp')
+      ) {
+        res.setHeader('Content-Type', 'image/' + path.split('.').pop());
+      }
+    }
+  })
+);
 
 // 6. Routes
 app.use(routers);

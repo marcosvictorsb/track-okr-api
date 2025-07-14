@@ -7,6 +7,7 @@ import teamRouter from '@domains/api/teams/routers';
 import objectiveRouter from '@domains/api/objectives/routers';
 import resultKeyRoutes from '@domains/api/results-keys/routers';
 import profileRouter from '@domains/api/profile/routers';
+import healthRouter from '@domains/api/health/routers';
 
 const routers = Router();
 
@@ -22,6 +23,7 @@ routers.use('/teams', teamRouter);
 routers.use('/objectives', objectiveRouter);
 routers.use('/key-results', resultKeyRoutes);
 routers.use('/profile', profileRouter);
+routers.use('/api', healthRouter);
 
 const notFound = (request: Request, response: Response) => {
   response.status(404).json({ rota: 'Route does not exist' });
