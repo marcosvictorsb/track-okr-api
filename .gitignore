@@ -112,3 +112,5 @@ source/
 current
 
 deployment/
+
+uploads/avatars/*
