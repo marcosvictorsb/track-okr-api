@@ -70,25 +70,25 @@ export class CreateLandingPageLeadController {
 
       // Verificar se já existe um lead com o mesmo email
       const existingLead = await this.leadRepository.findByEmail(email);
-      if (existingLead) {
-        logger.info('Lead já existe, atualizando informações', {
-          email,
-          existingId: existingLead.id
-        });
+      // if (existingLead) {
+      //   logger.info('Lead já existe, atualizando informações', {
+      //     email,
+      //     existingId: existingLead.id
+      //   });
 
-        // Opcionalmente, atualizar informações se necessário
-        return res.status(200).json({
-          success: true,
-          message: 'Lead já registrado anteriormente',
-          data: {
-            id: existingLead.id,
-            email: existingLead.email,
-            name: existingLead.name,
-            company: existingLead.company,
-            phone: existingLead.phone
-          }
-        });
-      }
+      //   // Opcionalmente, atualizar informações se necessário
+      //   return res.status(200).json({
+      //     success: true,
+      //     message: 'Lead já registrado anteriormente',
+      //     data: {
+      //       id: existingLead.id,
+      //       email: existingLead.email,
+      //       name: existingLead.name,
+      //       company: existingLead.company,
+      //       phone: existingLead.phone
+      //     }
+      //   });
+      // }
 
       // Criar novo lead
       const leadData = {
