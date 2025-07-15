@@ -8,6 +8,7 @@ import objectiveRouter from '@domains/api/objectives/routers';
 import resultKeyRoutes from '@domains/api/results-keys/routers';
 import profileRouter from '@domains/api/profile/routers';
 import healthRouter from '@domains/api/health/routers';
+import landingPageRouter from '@domains/api/landing-page-leads/routers';
 
 const routers = Router();
 
@@ -24,6 +25,7 @@ routers.use('/objectives', objectiveRouter);
 routers.use('/key-results', resultKeyRoutes);
 routers.use('/profile', profileRouter);
 routers.use('/api', healthRouter);
+routers.use('/landing-page', landingPageRouter);
 
 const notFound = (request: Request, response: Response) => {
   response.status(404).json({ rota: 'Route does not exist' });
