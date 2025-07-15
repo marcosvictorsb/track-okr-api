@@ -3,6 +3,7 @@ export class LandingPageLeadEntity {
   public readonly name: string;
   public readonly email: string;
   public readonly company?: string | null;
+  public readonly phone?: string | null;
   public readonly position?: string | null;
   public readonly company_size?: string | null;
   public readonly source: string;
@@ -32,6 +33,7 @@ export class LandingPageLeadEntity {
     name: string;
     email: string;
     company?: string | null;
+    phone?: string | null;
     position?: string | null;
     company_size?: string | null;
     source: string;
@@ -55,6 +57,7 @@ export class LandingPageLeadEntity {
     this.name = params.name;
     this.email = params.email;
     this.company = params.company;
+    this.phone = params.phone;
     this.position = params.position;
     this.company_size = params.company_size;
     this.source = params.source;
@@ -83,6 +86,10 @@ export class LandingPageLeadEntity {
 
   public hasCompanyInfo(): boolean {
     return !!(this.company || this.position || this.company_size);
+  }
+
+  public hasPhone(): boolean {
+    return !!(this.phone && this.phone.trim().length > 0);
   }
 
   public hasUTMTracking(): boolean {

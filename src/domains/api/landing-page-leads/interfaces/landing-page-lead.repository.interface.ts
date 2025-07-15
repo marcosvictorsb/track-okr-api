@@ -4,6 +4,7 @@ export interface CreateLandingPageLeadData {
   name: string;
   email: string;
   company?: string;
+  phone?: string;
   position?: string;
   company_size?: string;
   source?: string;

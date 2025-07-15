@@ -15,6 +15,7 @@ export class LandingPageLeadRepository implements ILandingPageLeadRepository {
       name: model.name,
       email: model.email,
       company: model.company,
+      phone: model.phone,
       position: model.position,
       company_size: model.company_size,
       source: model.source,

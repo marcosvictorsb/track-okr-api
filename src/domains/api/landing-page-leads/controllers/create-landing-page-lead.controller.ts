@@ -7,6 +7,7 @@ export interface CreateLeadRequest extends Request {
     name: string;
     email: string;
     company?: string;
+    phone?: string;
     position?: string;
     companySize?: string;
     source?: string;
@@ -34,6 +35,7 @@ export class CreateLandingPageLeadController {
         name,
         email,
         company,
+        phone,
         position,
         companySize,
         source,
@@ -81,7 +83,9 @@ export class CreateLandingPageLeadController {
           data: {
             id: existingLead.id,
             email: existingLead.email,
-            name: existingLead.name
+            name: existingLead.name,
+            company: existingLead.company,
+            phone: existingLead.phone
           }
         });
       }
@@ -91,6 +95,7 @@ export class CreateLandingPageLeadController {
         name: name.trim(),
         email: email.trim().toLowerCase(),
         company: company?.trim(),
+        phone: phone?.trim(),
         position: position?.trim(),
         company_size: companySize,
         source: source || 'landing-page',
@@ -120,7 +125,8 @@ export class CreateLandingPageLeadController {
           id: newLead.id,
           email: newLead.email,
           name: newLead.name,
-          company: newLead.company
+          company: newLead.company,
+          phone: newLead.phone
         }
       });
     } catch (error) {

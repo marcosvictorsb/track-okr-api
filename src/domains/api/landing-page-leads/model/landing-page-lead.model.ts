@@ -6,6 +6,7 @@ export interface LandingPageLeadModelAttributes {
   name: string;
   email: string;
   company?: string | null;
+  phone?: string | null;
   position?: string | null;
   company_size?: string | null;
   source: string;
@@ -34,6 +35,7 @@ class LandingPageLeadModel
   declare name: string;
   declare email: string;
   declare company?: string | null;
+  declare phone?: string | null;
   declare position?: string | null;
   declare company_size?: string | null;
   declare source: string;
@@ -56,6 +58,10 @@ class LandingPageLeadModel
   // Métodos auxiliares
   public hasCompany(): boolean {
     return !!(this.company && this.company.trim().length > 0);
+  }
+
+  public hasPhone(): boolean {
+    return !!(this.phone && this.phone.trim().length > 0);
   }
 
   public hasPosition(): boolean {
@@ -131,6 +137,11 @@ LandingPageLeadModel.init(
       type: DataTypes.STRING(255),
       allowNull: true,
       comment: 'Nome da empresa do lead'
+    },
+    phone: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+      comment: 'Telefone do lead'
     },
     position: {
       type: DataTypes.STRING(255),
