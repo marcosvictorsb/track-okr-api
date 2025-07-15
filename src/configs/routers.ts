@@ -8,14 +8,14 @@ import objectiveRouter from '@domains/api/objectives/routers';
 import resultKeyRoutes from '@domains/api/results-keys/routers';
 import profileRouter from '@domains/api/profile/routers';
 import healthRouter from '@domains/api/health/routers';
-import landingPageRouter from '@domains/api/landing-page-leads/routers';
+import leadRouter from '@domains/api/landing-page-leads/routers';
 
 const routers = Router();
 
 routers.get('/health-check', (request: Request, response: Response) => {
   response.status(200).json({ message: 'API is running' });
 });
-
+routers.use('/api', healthRouter);
 routers.use('/webhook', routerMercadoPago);
 routers.use('/users', routerUser);
 routers.use('/authenticate', authRoutes);
@@ -24,8 +24,7 @@ routers.use('/teams', teamRouter);
 routers.use('/objectives', objectiveRouter);
 routers.use('/key-results', resultKeyRoutes);
 routers.use('/profile', profileRouter);
-routers.use('/api', healthRouter);
-routers.use('/landing-page', landingPageRouter);
+routers.use('/leads', leadRouter);
 
 const notFound = (request: Request, response: Response) => {
   response.status(404).json({ rota: 'Route does not exist' });

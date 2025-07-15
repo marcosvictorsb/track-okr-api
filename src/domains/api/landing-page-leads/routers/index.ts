@@ -15,7 +15,7 @@ const updateLeadController = new UpdateLandingPageLeadController();
 
 // Rota pública para capturar leads da landing page
 router.post(
-  '/leads',
+  '/',
   createLimiter, // Rate limiting para evitar spam
   (req: CreateLeadRequest, res: Response) =>
     createLeadController.createLead(req, res)
