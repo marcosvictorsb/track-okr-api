@@ -9,6 +9,7 @@ import resultKeyRoutes from '@domains/api/results-keys/routers';
 import profileRouter from '@domains/api/profile/routers';
 import healthRouter from '@domains/api/health/routers';
 import leadRouter from '@domains/api/landing-page-leads/routers';
+import { dashboardRouter } from '@domains/api/dashboard/routers';
 
 const routers = Router();
 
@@ -25,6 +26,7 @@ routers.use('/objectives', objectiveRouter);
 routers.use('/key-results', resultKeyRoutes);
 routers.use('/profile', profileRouter);
 routers.use('/leads', leadRouter);
+routers.use('/dashboard', dashboardRouter);
 
 const notFound = (request: Request, response: Response) => {
   response.status(404).json({ rota: 'Route does not exist' });

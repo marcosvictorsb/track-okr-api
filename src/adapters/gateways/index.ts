@@ -1,4 +1,5 @@
 export * from './api/companies';
+export * from './api/dashboard';
 export * from './api/projects';
 export * from './api/authentication';
 export * from './api/users';
