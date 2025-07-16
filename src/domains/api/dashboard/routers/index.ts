@@ -1,15 +1,18 @@
 import { Router } from 'express';
 import { makeGetDashboardOverviewController } from '../factories/get.dashboard.overview.factory';
 import { getTeamPerformanceFactory } from '../factories/get.team.performance.factory';
+import { getTopContributorsFactory } from '../factories/get.top.contributors.factory';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
 import { getDashboardOverviewSchema } from '../schemas/get.dashboard.overview.schema';
 import { getTeamPerformanceSchema } from '../schemas/get.team.performance.schema';
+import { getTopContributorsSchema } from '../schemas/get.top.contributors.schema';
 
 const router = Router();
 
 const getDashboardOverviewController = makeGetDashboardOverviewController();
 const getTeamPerformanceController = getTeamPerformanceFactory().controller;
+const getTopContributorsController = getTopContributorsFactory().controller;
 
 // GET /api/dashboard/overview - Visão Geral do Trimestre
 router.get(
@@ -28,6 +31,16 @@ router.get(
   validateSchema(getTeamPerformanceSchema),
   async (req: UserPayload, res) => {
     await getTeamPerformanceController.getTeamPerformance(req, res);
+  }
+);
+
+// GET /api/dashboard/contributors - Top Contribuidores
+router.get(
+  '/contributors',
+  authMiddleware,
+  validateSchema(getTopContributorsSchema),
+  async (req: UserPayload, res) => {
+    await getTopContributorsController.getTopContributors(req, res);
   }
 );
 
