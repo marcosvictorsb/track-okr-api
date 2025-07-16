@@ -11,9 +11,9 @@ import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
 import { logger } from '@configs/logger';
 
-import { GetTeamPerformanceGateway } from '../gateways/get.team-performance.gateway';
-import { GetTeamPerformanceInteractor } from '../usecases/get.team-performance.interactor';
-import { GetTeamPerformanceController } from '../controllers/get.team-performance.controller';
+import { GetTeamPerformanceGateway } from '../gateways/get.team.performance.gateway';
+import { GetTeamPerformanceInteractor } from '../usecases/get.team.performance.interactor';
+import { GetTeamPerformanceController } from '../controllers/get.team.performance.controller';
 
 export function getTeamPerformanceFactory() {
   // Repositories

@@ -2,7 +2,7 @@ import { Response } from 'express';
 import {
   GetTeamPerformanceControllerDependencies,
   InputGetTeamPerformance
-} from '../interfaces/get.team-performance.interface';
+} from '../interfaces/get.team.performance.interface';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class GetTeamPerformanceController {

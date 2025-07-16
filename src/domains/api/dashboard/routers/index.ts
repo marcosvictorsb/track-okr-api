@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import { makeGetDashboardOverviewController } from '../factories/get.dashboard.overview.factory';
-import { getTeamPerformanceFactory } from '../factories/get.team-performance.factory';
+import { getTeamPerformanceFactory } from '../factories/get.team.performance.factory';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
 import { getDashboardOverviewSchema } from '../schemas/get.dashboard.overview.schema';
-import { getTeamPerformanceSchema } from '../schemas/get.team-performance.schema';
+import { getTeamPerformanceSchema } from '../schemas/get.team.performance.schema';
 
 const router = Router();
 

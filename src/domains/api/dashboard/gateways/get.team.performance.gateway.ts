@@ -3,7 +3,7 @@ import {
   IGetTeamPerformanceGateway,
   FindTeamsWithObjectivesCriteria,
   FindTeamObjectivesCriteria
-} from '../interfaces/get.team-performance.interface';
+} from '../interfaces/get.team.performance.interface';
 import { MixGetDashboardOverviewGateway } from '@adapters/gateways/api/dashboard';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';

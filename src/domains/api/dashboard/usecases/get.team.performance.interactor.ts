@@ -5,14 +5,14 @@ import {
   IGetTeamPerformanceGateway,
   FindTeamsWithObjectivesCriteria,
   FindTeamObjectivesCriteria
-} from '../interfaces/get.team-performance.interface';
+} from '../interfaces/get.team.performance.interface';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import {
   TeamPerformanceEntity,
   TeamPerformanceItem,
   TrendDirection
-} from '../entity/team-performance.entity';
+} from '../entity/team.performance.entity';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { DashboardOverviewEntity } from '../entity/dashboard.overview.entity';
