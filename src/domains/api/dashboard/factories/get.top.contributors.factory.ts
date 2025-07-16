@@ -6,11 +6,13 @@ import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
 import { ResultKeyUpdateRepository } from '@domains/api/results-keys/repository/result-key-update.repository';
+import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
 import UserModel from '@domains/api/users/model/user.model';
 import TeamModel from '@domains/api/teams/model/team.model';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
 import ResultKeyUpdateModel from '@domains/api/results-keys/model/result-key-update.model';
+import ProfileModel from '@domains/api/profile/model/profile.model';
 import { logger } from '@configs/logger';
 
 import { GetTopContributorsGateway } from '../gateways/get.top.contributors.gateway';
@@ -30,6 +32,9 @@ export function getTopContributorsFactory() {
   const resultKeyUpdateRepository = new ResultKeyUpdateRepository({
     model: ResultKeyUpdateModel
   });
+  const profileRepository = new ProfileRepository({
+    model: ProfileModel
+  });
 
   // Validation
   const userCompanyValidationGateway = new UserCompanyValidationGateway({
@@ -48,6 +53,7 @@ export function getTopContributorsFactory() {
     resultKeyRepository,
     resultKeyUpdateRepository,
     userRepository,
+    profileRepository,
     logging: logger
   });
 

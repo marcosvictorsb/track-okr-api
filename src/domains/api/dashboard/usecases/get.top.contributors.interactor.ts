@@ -85,6 +85,7 @@ export class GetTopContributorsInteractor {
       // Ordenar e paginar contributors
       const topContributors = await this.buildTopContributors(
         enrichedUserContributions,
+        objectivesWithResultKeys,
         limit,
         page
       );
@@ -186,6 +187,9 @@ export class GetTopContributorsInteractor {
         // Usar responsible_users array para determinar os usuários responsáveis
         const responsibleUsers = resultKey.responsible_users || [];
 
+        if (responsibleUsers.length === 0) {
+          continue; // Pular result keys sem responsáveis
+        }
         for (const userId of responsibleUsers) {
           if (userId) {
             // Obter contribuição existente ou criar nova
@@ -202,10 +206,6 @@ export class GetTopContributorsInteractor {
               resultKey.current_value,
               resultKey.target_value
             );
-
-            console.log({ current_value: resultKey.current_value });
-            console.log({ target_value: resultKey.target_value });
-            console.log(progress);
 
             contribution.totalProgress += progress;
             contribution.keyResultsUpdated += 1;
@@ -229,6 +229,7 @@ export class GetTopContributorsInteractor {
 
   private async buildTopContributors(
     userContributions: UserContribution[],
+    objectivesWithResultKeys: ObjectiveEntity[],
     limit: number,
     page: number
   ): Promise<ContributorItem[]> {
@@ -240,7 +241,10 @@ export class GetTopContributorsInteractor {
     const contributors: ContributorItem[] = [];
 
     for (const contribution of sortedContributions) {
-      const contributor = await this.buildSingleContributor(contribution);
+      const contributor = await this.buildSingleContributor(
+        contribution,
+        objectivesWithResultKeys
+      );
       if (contributor) {
         contributors.push(contributor);
       }
@@ -250,7 +254,8 @@ export class GetTopContributorsInteractor {
   }
 
   private async buildSingleContributor(
-    contribution: UserContribution
+    contribution: UserContribution,
+    objectivesWithResultKeys: ObjectiveEntity[]
   ): Promise<ContributorItem | null> {
     try {
       // Buscar dados do usuário
@@ -285,8 +290,11 @@ export class GetTopContributorsInteractor {
         contribution.contributions
       );
 
-      // TODO: Implementar contagem real de check-ins
-      const checkInsThisWeek = Math.floor(Math.random() * 5) + 1;
+      // Calcular check-ins da semana atual para este usuário específico
+      const checkInsThisWeek = await this.calculateUserCheckInsThisWeek(
+        contribution.userId,
+        objectivesWithResultKeys
+      );
 
       return {
         id: user.id || 0,
@@ -365,7 +373,6 @@ export class GetTopContributorsInteractor {
         if (resultKey.id) {
           const checkInCount = checkInCounts.get(resultKey.id) || 0;
           const responsibleUsers = resultKey.responsible_users || [];
-
           for (const userId of responsibleUsers) {
             const currentCount = userCheckInCounts.get(userId) || 0;
             userCheckInCounts.set(userId, currentCount + checkInCount);
@@ -385,5 +392,51 @@ export class GetTopContributorsInteractor {
     });
 
     return userContributions;
+  }
+
+  private async calculateUserCheckInsThisWeek(
+    userId: number,
+    objectives: ObjectiveEntity[]
+  ): Promise<number> {
+    // Coletar IDs dos result keys onde o usuário é responsável
+    const userResultKeyIds: number[] = [];
+
+    for (const objective of objectives) {
+      const resultKeys = objective.result_keys || [];
+      for (const resultKey of resultKeys) {
+        if (resultKey.id && resultKey.responsible_users?.includes(userId)) {
+          userResultKeyIds.push(resultKey.id);
+        }
+      }
+    }
+
+    if (userResultKeyIds.length === 0) {
+      return 0;
+    }
+
+    // Definir período da semana atual
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); // Domingo
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sábado
+    endOfWeek.setHours(23, 59, 59, 999);
+
+    // Buscar contagem de check-ins por result key para este usuário
+    const checkInCounts = await this.gateway.countCheckInsByResultKeyIds(
+      userResultKeyIds,
+      startOfWeek,
+      endOfWeek
+    );
+
+    // Somar todos os check-ins do usuário
+    let totalCheckIns = 0;
+    for (const count of checkInCounts.values()) {
+      totalCheckIns += count;
+    }
+
+    return totalCheckIns;
   }
 }

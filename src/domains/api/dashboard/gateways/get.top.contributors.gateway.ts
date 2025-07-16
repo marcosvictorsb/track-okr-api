@@ -8,6 +8,7 @@ import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
 import { IResultKeyUpdateRepository } from '@domains/api/results-keys/interfaces/result-key-update.interface';
 import { IUserRepository } from '@domains/api/users/interfaces';
+import { IProfileRepository } from '@domains/api/profile/interfaces/default.interfaces';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
@@ -24,6 +25,7 @@ export class GetTopContributorsGateway
   resultKeyRepository: IResultKeyRepository;
   resultKeyUpdateRepository: IResultKeyUpdateRepository;
   userRepository: IUserRepository;
+  profileRepository: IProfileRepository;
   logging: typeof logger;
 
   constructor(params: GetTopContributorsGatewayDependencies) {
@@ -33,6 +35,7 @@ export class GetTopContributorsGateway
     this.resultKeyRepository = params.resultKeyRepository;
     this.resultKeyUpdateRepository = params.resultKeyUpdateRepository;
     this.userRepository = params.userRepository;
+    this.profileRepository = params.profileRepository;
     this.logging = params.logging;
   }
 
@@ -87,9 +90,26 @@ export class GetTopContributorsGateway
   async findUserProfileAvatar(userId: number): Promise<string | undefined> {
     this.logging.info('Buscando avatar do usuário', { userId });
 
-    // TODO: Implementar busca real do avatar na tabela profile quando disponível
-    // Por enquanto retornando um avatar simulado
-    return `https://api.empresa.com/avatars/user-${userId}.jpg`;
+    try {
+      const profile = await this.profileRepository.findByUserId(userId);
+
+      if (profile && profile.photo_url) {
+        this.logging.info('Avatar encontrado para o usuário', {
+          userId,
+          avatar: profile.photo_url
+        });
+        return profile.photo_url;
+      }
+
+      this.logging.info('Avatar não encontrado para o usuário', { userId });
+      return undefined;
+    } catch (error) {
+      this.logging.error('Erro ao buscar avatar do usuário', {
+        userId,
+        error: error instanceof Error ? error.message : 'Erro desconhecido'
+      });
+      return undefined;
+    }
   }
 
   async countCheckInsByResultKeyIds(
