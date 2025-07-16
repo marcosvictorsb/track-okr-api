@@ -81,7 +81,7 @@ export interface IGetTopContributorsGateway {
     resultKeyIds: number[],
     startDate: Date,
     endDate: Date
-  ): Promise<Map<number, number>>;
+  ): Promise<Array<{ id_user: number; check_ins: number }>>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

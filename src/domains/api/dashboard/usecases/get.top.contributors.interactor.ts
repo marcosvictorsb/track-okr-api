@@ -357,33 +357,22 @@ export class GetTopContributorsInteractor {
     endOfWeek.setDate(startOfWeek.getDate() + 6); // Sábado
     endOfWeek.setHours(23, 59, 59, 999);
 
-    // Buscar contagem de check-ins por result key
-    const checkInCounts = await this.gateway.countCheckInsByResultKeyIds(
+    // Buscar contagem de check-ins agrupados por usuário
+    const userCheckInData = await this.gateway.countCheckInsByResultKeyIds(
       resultKeyIds,
       startOfWeek,
       endOfWeek
     );
 
-    // Mapear check-ins por usuário responsável
-    const userCheckInCounts = new Map<number, number>();
-
-    for (const objective of objectives) {
-      const resultKeys = objective.result_keys || [];
-      for (const resultKey of resultKeys) {
-        if (resultKey.id) {
-          const checkInCount = checkInCounts.get(resultKey.id) || 0;
-          const responsibleUsers = resultKey.responsible_users || [];
-          for (const userId of responsibleUsers) {
-            const currentCount = userCheckInCounts.get(userId) || 0;
-            userCheckInCounts.set(userId, currentCount + checkInCount);
-          }
-        }
-      }
-    }
+    // Criar um mapa para facilitar a busca
+    const userCheckInMap = new Map<number, number>();
+    userCheckInData.forEach(({ id_user, check_ins }) => {
+      userCheckInMap.set(id_user, check_ins);
+    });
 
     // Atualizar contribuições dos usuários com contagem real de check-ins
     userContributions.forEach((contribution) => {
-      const checkInsThisWeek = userCheckInCounts.get(contribution.userId) || 0;
+      const checkInsThisWeek = userCheckInMap.get(contribution.userId) || 0;
 
       contribution.contributions = TopContributorsEntity.calculateContributions(
         contribution.keyResultsUpdated,
@@ -424,19 +413,18 @@ export class GetTopContributorsInteractor {
     endOfWeek.setDate(startOfWeek.getDate() + 6); // Sábado
     endOfWeek.setHours(23, 59, 59, 999);
 
-    // Buscar contagem de check-ins por result key para este usuário
-    const checkInCounts = await this.gateway.countCheckInsByResultKeyIds(
+    // Buscar contagem de check-ins agrupados por usuário
+    const userCheckInData = await this.gateway.countCheckInsByResultKeyIds(
       userResultKeyIds,
       startOfWeek,
       endOfWeek
     );
 
-    // Somar todos os check-ins do usuário
-    let totalCheckIns = 0;
-    for (const count of checkInCounts.values()) {
-      totalCheckIns += count;
-    }
+    // Encontrar check-ins do usuário específico
+    const userCheckIns = userCheckInData.find(
+      (data) => data.id_user === userId
+    );
 
-    return totalCheckIns;
+    return userCheckIns ? userCheckIns.check_ins : 0;
   }
 }

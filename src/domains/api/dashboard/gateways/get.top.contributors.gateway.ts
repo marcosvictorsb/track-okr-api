@@ -116,14 +116,14 @@ export class GetTopContributorsGateway
     resultKeyIds: number[],
     startDate: Date,
     endDate: Date
-  ): Promise<Map<number, number>> {
+  ): Promise<Array<{ id_user: number; check_ins: number }>> {
     this.logging.info('Contando check-ins por result key IDs', {
       resultKeyIds,
       startDate,
       endDate
     });
 
-    const checkInCounts = new Map<number, number>();
+    const userCheckInCounts = new Map<number, number>();
 
     for (const resultKeyId of resultKeyIds) {
       // Buscar todas as atualizações do result key
@@ -131,16 +131,31 @@ export class GetTopContributorsGateway
         id_result_key: resultKeyId
       });
 
-      // Filtrar por período manualmente
-      const filteredUpdates = allUpdates.filter((update) => {
-        if (!update.created_at) return false;
-        const updateDate = new Date(update.created_at);
-        return updateDate >= startDate && updateDate <= endDate;
-      });
+      // Filtrar por período e agrupar por usuário
+      for (const update of allUpdates) {
+        if (!update.created_at || !update.id_user) continue;
 
-      checkInCounts.set(resultKeyId, filteredUpdates.length);
+        const updateDate = new Date(update.created_at);
+        if (updateDate >= startDate && updateDate <= endDate) {
+          const currentCount = userCheckInCounts.get(update.id_user) || 0;
+          userCheckInCounts.set(update.id_user, currentCount + 1);
+        }
+      }
     }
 
-    return checkInCounts;
+    // Converter Map para Array
+    const result = Array.from(userCheckInCounts.entries()).map(
+      ([id_user, check_ins]) => ({
+        id_user,
+        check_ins
+      })
+    );
+
+    this.logging.info('Check-ins agrupados por usuário', {
+      totalUsers: result.length,
+      result
+    });
+
+    return result;
   }
 }
