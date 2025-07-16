@@ -3,7 +3,7 @@ import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { IDashboardOverviewEntity } from '../entity/dashboard-overview.entity';
+import { IDashboardOverviewEntity } from '../entity/dashboard.overview.entity';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import {

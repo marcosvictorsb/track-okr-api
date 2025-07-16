@@ -1,6 +1,6 @@
-import { GetDashboardOverviewController } from '../controllers/get.dashboard-overview.controller';
-import { GetDashboardOverviewInteractor } from '../usecases/get.dashboard-overview.interactor';
-import { GetDashboardOverviewGateway } from '../gateways/get.dashboard-overview.gateway';
+import { GetDashboardOverviewController } from '../controllers/get.dashboard.overview.controller';
+import { GetDashboardOverviewInteractor } from '../usecases/get.dashboard.overview.interactor';
+import { GetDashboardOverviewGateway } from '../gateways/get.dashboard.overview.gateway';
 import { Presenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserCompanyValidationGateway } from '@domains/common/validations/gateways/user.company.validation.gateway';

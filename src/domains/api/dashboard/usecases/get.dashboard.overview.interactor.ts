@@ -5,7 +5,7 @@ import {
   IGetDashboardOverviewGateway,
   FindDashboardObjectiveCriteria,
   FindDashboardTeamCriteria
-} from '../interfaces/get.dashboard-overview.interface';
+} from '../interfaces/get.dashboard.overview.interface';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import {
@@ -13,7 +13,7 @@ import {
   DashboardOverviewEntity,
   TrendsComparison,
   DashboardStatistics
-} from '../entity/dashboard-overview.entity';
+} from '../entity/dashboard.overview.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { logger } from '@configs/logger';
 

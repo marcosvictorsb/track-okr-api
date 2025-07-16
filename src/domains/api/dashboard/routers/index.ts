@@ -1,8 +1,8 @@
 import { Router } from 'express';
-import { makeGetDashboardOverviewController } from '../factories/get.dashboard-overview.factory';
+import { makeGetDashboardOverviewController } from '../factories/get.dashboard.overview.factory';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { getDashboardOverviewSchema } from '../schemas/get.dashboard-overview.schema';
+import { getDashboardOverviewSchema } from '../schemas/get.dashboard.overview.schema';
 
 const router = Router();
 

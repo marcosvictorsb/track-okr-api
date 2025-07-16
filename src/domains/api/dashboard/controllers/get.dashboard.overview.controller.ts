@@ -3,7 +3,7 @@ import {
   IGetDashboardOverviewController,
   GetDashboardOverviewControllerDependencies,
   InputGetDashboardOverview
-} from '../interfaces/get.dashboard-overview.interface';
+} from '../interfaces/get.dashboard.overview.interface';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class GetDashboardOverviewController
