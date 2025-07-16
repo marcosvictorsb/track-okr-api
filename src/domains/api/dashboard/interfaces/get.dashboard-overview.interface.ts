@@ -6,7 +6,10 @@ import { UserCompanyValidationInteractor } from '@domains/common';
 import { IDashboardOverviewEntity } from '../entity/dashboard-overview.entity';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
-import { IResultKeyRepository } from '@domains/api/results-keys';
+import {
+  IResultKeyRepository,
+  ResultKeyEntity
+} from '@domains/api/results-keys';
 import { DataLogOutput } from '@adapters/services';
 import { logger } from '@configs/logger';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
@@ -51,6 +54,9 @@ export interface IGetDashboardOverviewGateway {
   findPreviousObjectives(
     criteria: FindDashboardObjectiveCriteria
   ): Promise<ObjectiveEntity[]>;
+  findResultKeysByObjectiveIds(
+    objectiveIds: number[]
+  ): Promise<ResultKeyEntity[]>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

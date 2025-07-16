@@ -7,7 +7,10 @@ import {
 import { MixGetDashboardOverviewGateway } from '@adapters/gateways/api/dashboard';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
-import { IResultKeyRepository } from '@domains/api/results-keys';
+import {
+  IResultKeyRepository,
+  ResultKeyEntity
+} from '@domains/api/results-keys';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { logger } from '@configs/logger';
@@ -74,5 +77,14 @@ export class GetDashboardOverviewGateway
       quarter: criteria.quarter,
       year: criteria.year
     });
+  }
+
+  public async findResultKeysByObjectiveIds(
+    objectiveIds: number[]
+  ): Promise<ResultKeyEntity[]> {
+    this.logging.info('Buscando os resultados chaves por ids', {
+      ids: JSON.stringify(objectiveIds)
+    });
+    return await this.resultKeyRepository.findByObjectiveIds(objectiveIds);
   }
 }
