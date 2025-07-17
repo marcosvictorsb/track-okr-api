@@ -16,7 +16,7 @@ export class GetOverviewController implements IGetOverviewController {
   public async getOverview(
     request: UserPayload,
     response: Response
-  ): Promise<void> {
+  ): Promise<Response> {
     const { quarter, year, team, status } = request.query;
     const { id_company, id: id_user } = request.user;
 
@@ -30,6 +30,6 @@ export class GetOverviewController implements IGetOverviewController {
     };
 
     const httpResponse = await this.interactor.execute(input);
-    response.status(httpResponse.status).json(httpResponse.body);
+    return response.status(httpResponse.status).json(httpResponse.body);
   }
 }

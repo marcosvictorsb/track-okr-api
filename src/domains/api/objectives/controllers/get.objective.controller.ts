@@ -16,7 +16,7 @@ export class GetObjectiveController implements IGetObjectiveController {
   public async getObjectives(
     request: UserPayload,
     response: Response
-  ): Promise<void> {
+  ): Promise<Response> {
     const { id_team, quarter, year } = request.query;
     const { id } = request.params;
     const { id_company, id: id_user } = request.user;
@@ -32,6 +32,6 @@ export class GetObjectiveController implements IGetObjectiveController {
     };
 
     const httpResponse = await this.interactor.execute(input);
-    response.status(httpResponse.status).json(httpResponse.body);
+    return response.status(httpResponse.status).json(httpResponse.body);
   }
 }

@@ -2,6 +2,8 @@ import { logger } from '@configs/logger';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from './default.interface';
 import { ObjectiveEntity } from '../entity/objective.entity';
+import { Response } from 'express';
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export interface DeleteObjectiveRequest {
   id: number;
@@ -18,7 +20,7 @@ export interface IDeleteObjectiveGatewayDependencies {
 }
 
 export interface IDeleteObjectiveController {
-  deleteObjective(request: unknown, response: unknown): Promise<void>;
+  deleteObjective(request: UserPayload, response: Response): Promise<Response>;
 }
 
 export interface IDeleteObjectiveGateway {

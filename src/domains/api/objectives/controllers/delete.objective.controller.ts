@@ -11,7 +11,7 @@ export class DeleteObjectiveController implements IDeleteObjectiveController {
   public async deleteObjective(
     request: UserPayload,
     response: Response
-  ): Promise<void> {
+  ): Promise<Response> {
     try {
       const { id } = request.params;
 
@@ -19,7 +19,7 @@ export class DeleteObjectiveController implements IDeleteObjectiveController {
         id: Number(id)
       });
 
-      response.status(200).json({
+      return response.status(200).json({
         success: true,
         message: 'Objective deleted successfully',
         data: { deleted: result.success }
@@ -29,7 +29,7 @@ export class DeleteObjectiveController implements IDeleteObjectiveController {
         error instanceof Error ? error.message : 'Internal server error';
       const statusCode = errorMessage.includes('not found') ? 404 : 400;
 
-      response.status(statusCode).json({
+      return response.status(statusCode).json({
         success: false,
         message: errorMessage
       });

@@ -1,3 +1,4 @@
+import { Response } from 'express';
 import { IPresenter } from '@protocols/presenter';
 import { ObjectiveEntity } from '../entity/objective.entity';
 import { UserCompanyValidationInteractor } from '@domains/common';
@@ -21,6 +22,7 @@ import {
   IProfileRepository
 } from '@domains/api/profile/interfaces';
 import { ProfileEntity } from '@domains/api/profile/entity';
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export interface GetObjectiveRequest {
   id?: number;
@@ -34,7 +36,7 @@ export interface GetObjectiveResponse {
 }
 
 export interface IGetObjectiveController {
-  getObjectives(request: unknown, response: unknown): Promise<void>;
+  getObjectives(request: UserPayload, response: Response): Promise<Response>;
 }
 
 // Get Objective Interfaces

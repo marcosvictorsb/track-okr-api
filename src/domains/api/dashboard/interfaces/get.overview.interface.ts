@@ -3,7 +3,6 @@ import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { IOverviewEntity } from '../entity/overview.entity';
 import {
   FindTeamCriteria,
   ITeamRepository
@@ -66,7 +65,7 @@ export interface IGetOverviewGateway {
 }
 
 export interface IGetOverviewController {
-  getOverview(request: UserPayload, response: Response): Promise<void>;
+  getOverview(request: UserPayload, response: Response): Promise<Response>;
 }
 
 export interface GetOverviewInteractorDependencies {
