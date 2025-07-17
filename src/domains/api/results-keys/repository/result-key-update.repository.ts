@@ -1,4 +1,4 @@
-import { ModelStatic } from 'sequelize';
+import { ModelStatic, Op } from 'sequelize';
 import {
   CreateResultKeyUpdateCriteria,
   FindResultKeyUpdateCriteria,
@@ -25,6 +25,11 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
     if (criteria.id !== undefined) conditions.id = criteria.id;
     if (criteria.id_result_key !== undefined)
       conditions.id_result_key = criteria.id_result_key;
+    if (criteria.ids_result_key && criteria.ids_result_key?.length) {
+      conditions.id_result_key = {
+        [Op.in]: criteria.ids_result_key
+      };
+    }
     if (criteria.id_user !== undefined) conditions.id_user = criteria.id_user;
     if (criteria.created_at !== undefined)
       conditions.created_at = criteria.created_at;
@@ -105,6 +110,7 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
         user?: { id: number; name: string };
         result_key?: { id: number; name: string };
       };
+
       return new ResultKeyUpdateEntity({
         id: data.id,
         id_result_key: data.id_result_key,

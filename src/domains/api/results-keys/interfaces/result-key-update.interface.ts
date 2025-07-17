@@ -12,6 +12,7 @@ export interface CreateResultKeyUpdateCriteria {
 export interface FindResultKeyUpdateCriteria {
   id?: number;
   id_result_key?: number;
+  ids_result_key?: number[];
   id_user?: number;
   created_at?: Date;
   new_value?: number;

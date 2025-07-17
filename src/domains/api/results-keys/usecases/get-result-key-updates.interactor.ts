@@ -57,7 +57,6 @@ export class GetKeyResultUpdateInteractor
 
       return this.presenter.ok(historyUpdates);
     } catch (error) {
-      console.log(error);
       this.loggerError('Erro ao buscar atualizações do resultado-chave', {
         error: error instanceof Error ? error.message : 'Erro desconhecido',
         requestTxt: JSON.stringify(input)

@@ -3,11 +3,13 @@ import { makeGetOverviewController } from '../factories/get.overview.factory';
 import { getTeamPerformanceFactory } from '../factories/get.team.performance.factory';
 import { getTopContributorsFactory } from '../factories/get.top.contributors.factory';
 import { getTemporalEvolutionFactory } from '../factories/get.temporal.evolution.factory';
+import { getRecentCheckInsFactory } from '../factories/get.recent-checkins.factory';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
 import { getTeamPerformanceSchema } from '../schemas/get.team.performance.schema';
 import { getTopContributorsSchema } from '../schemas/get.top.contributors.schema';
 import { getTemporalEvolutionSchema } from '../schemas/get.temporal.evolution.schema';
+import { getRecentCheckInsSchema } from '../schemas/get.recent-checkins.schema';
 import { getOverviewSchema } from '../schemas';
 
 const router = Router();
@@ -16,6 +18,7 @@ const getOverviewController = makeGetOverviewController();
 const getTeamPerformanceController = getTeamPerformanceFactory().controller;
 const getTopContributorsController = getTopContributorsFactory().controller;
 const getTemporalEvolutionController = getTemporalEvolutionFactory().controller;
+const getRecentCheckInsController = getRecentCheckInsFactory().controller;
 
 // GET /api/dashboard/overview - Visão Geral do Trimestre
 router.get(
@@ -54,6 +57,16 @@ router.get(
   validateSchema(getTemporalEvolutionSchema),
   async (req: UserPayload, res) => {
     await getTemporalEvolutionController.getTemporalEvolution(req, res);
+  }
+);
+
+// GET /api/dashboard/recent-checkins - Check-ins Recentes
+router.get(
+  '/recent-checkins',
+  authMiddleware,
+  validateSchema(getRecentCheckInsSchema),
+  async (req: UserPayload, res) => {
+    await getRecentCheckInsController.getRecentCheckIns(req, res);
   }
 );
 
