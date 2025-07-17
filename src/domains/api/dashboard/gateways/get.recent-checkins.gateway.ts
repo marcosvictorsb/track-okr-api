@@ -13,6 +13,8 @@ import { IUserRepository } from '@domains/api/users/interfaces/default.interface
 import { MixGetRecentCheckInGateway } from '@adapters/gateways/api/dashboard/get.recent.checkin.gateway';
 import { logger } from '@configs/logger';
 import { IProfileRepository } from '@domains/api/profile/interfaces';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
 
 export interface GetRecentCheckInsGatewayDependencies {
   objectiveRepository: IObjectiveRepository;
@@ -20,6 +22,8 @@ export interface GetRecentCheckInsGatewayDependencies {
   resultKeyUpdateRepository: IResultKeyUpdateRepository;
   userRepository: IUserRepository;
   profileRepository: IProfileRepository;
+  teamRepository: ITeamRepository;
+  userTeamRepository: IUserTeamRepository;
   logging: typeof logger;
 }
 
@@ -32,6 +36,8 @@ export class GetRecentCheckInsGateway
   protected resultKeyUpdateRepository: IResultKeyUpdateRepository;
   protected userRepository: IUserRepository;
   protected profileRepository: IProfileRepository;
+  protected teamRepository: ITeamRepository;
+  protected userTeamRepository: IUserTeamRepository;
 
   constructor(params: GetRecentCheckInsGatewayDependencies) {
     super(params);
@@ -40,6 +46,8 @@ export class GetRecentCheckInsGateway
     this.resultKeyUpdateRepository = params.resultKeyUpdateRepository;
     this.userRepository = params.userRepository;
     this.profileRepository = params.profileRepository;
+    this.userTeamRepository = params.userTeamRepository;
+    this.teamRepository = params.teamRepository;
   }
 
   public async findObjectivesByCompanyAndQuarter(
@@ -72,12 +80,17 @@ export class GetRecentCheckInsGateway
       ids_result_key: criteria.resultKeyIds
     });
 
-    console.log(checkIns);
-
     if (checkIns.length) {
-      checkIns.slice(0, criteria.limit || 20);
+      // Ordenar por data de criação (mais recente primeiro) e limitar
+      const sortedCheckIns = checkIns
+        .sort((a, b) => {
+          const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return dateB - dateA;
+        })
+        .slice(0, criteria.limit || 20);
 
-      return checkIns;
+      return sortedCheckIns;
     }
 
     return [];
@@ -108,8 +121,18 @@ export class GetRecentCheckInsGateway
   }
 
   public async findUserTeam(_userId: number): Promise<{ name: string } | null> {
-    // Por enquanto retorna um time padrão
-    // TODO: Implementar busca real do time do usuário quando a estrutura estiver pronta
-    return { name: 'Time Geral' };
+    const userTeam = await this.userTeamRepository.find({ id_user: _userId });
+    if (!userTeam) {
+      return {
+        name: 'Usuário sem time'
+      };
+    }
+    const team = await this.teamRepository.find({ id: userTeam.id_team });
+    if (team) {
+      return {
+        name: team.name
+      };
+    }
+    return { name: 'Usuário sem time' };
   }
 }

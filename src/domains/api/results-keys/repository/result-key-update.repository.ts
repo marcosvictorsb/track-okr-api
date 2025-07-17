@@ -117,6 +117,7 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
         previous_value: data.previous_value,
         new_value: data.new_value,
         comment: data.comment,
+        id_user: data.id_user,
         created_at: data.created_at,
         user_name: data.user?.name,
         result_key_name: data.result_key?.name

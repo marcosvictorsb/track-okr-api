@@ -17,6 +17,10 @@ import ResultKeyUpdateModel from '@domains/api/results-keys/model/result-key-upd
 import UserModel from '@domains/api/users/model/user.model';
 import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
 import { ProfileModel } from '@domains/api/profile/model';
+import TeamModel from '@domains/api/teams/model/team.model';
+import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import UserTeamModel from '@domains/common/user-teams/model/user-team.model';
+import { UserTeamRepository } from '@domains/common/user-teams/repository/user-team.repository';
 
 export function getRecentCheckInsFactory() {
   // Repositories
@@ -33,6 +37,13 @@ export function getRecentCheckInsFactory() {
   const profileRepository = new ProfileRepository({
     model: ProfileModel
   });
+  const teamRepository = new TeamRepository({
+    model: TeamModel // Assuming a TeamModel exists
+  });
+
+  const userTeamRepository = new UserTeamRepository({
+    model: UserTeamModel // Assuming a UserTeamModel exists
+  });
 
   // Gateway and Presenter
   const gateway = new GetRecentCheckInsGateway({
@@ -41,6 +52,8 @@ export function getRecentCheckInsFactory() {
     resultKeyUpdateRepository,
     userRepository,
     profileRepository,
+    teamRepository,
+    userTeamRepository,
     logging: logger
   });
   const presenter = new Presenter();
