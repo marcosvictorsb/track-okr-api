@@ -3,7 +3,7 @@ import {
   IGetTemporalEvolutionGateway,
   FindObjectivesByCompanyAndQuarterCriteria,
   FindResultKeyUpdatesByCriteria
-} from '../interfaces/get.temporal-evolution.interface';
+} from '../interfaces/get.temporal.evolution.interface';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';

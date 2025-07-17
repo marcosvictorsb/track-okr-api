@@ -1,1 +1,2 @@
-export * from './get.dashboard-overview.gateway';
+export * from './get.overview.gateway';
+export * from './get.top.contribuitors.gateways';

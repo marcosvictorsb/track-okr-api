@@ -2,7 +2,7 @@ import { Response } from 'express';
 import {
   GetTemporalEvolutionControllerDependencies,
   InputGetTemporalEvolution
-} from '../interfaces/get.temporal-evolution.interface';
+} from '../interfaces/get.temporal.evolution.interface';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { HttpResponse } from '@protocols/http';
 

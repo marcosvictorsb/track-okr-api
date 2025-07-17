@@ -3,4 +3,4 @@ import { LoggerMixin } from '../../../services';
 class BaseGateway {
   constructor(...args: any[]) {}
 }
-export const MixGetDashboardOverviewGateway = LoggerMixin(BaseGateway);
+export const MixGetOverviewGateway = LoggerMixin(BaseGateway);

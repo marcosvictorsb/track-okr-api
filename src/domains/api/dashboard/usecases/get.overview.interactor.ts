@@ -1,38 +1,36 @@
 import { HttpResponse } from '@protocols/http';
 import {
-  GetDashboardOverviewInteractorDependencies,
-  InputGetDashboardOverview,
-  IGetDashboardOverviewGateway,
-  FindDashboardObjectiveCriteria,
-  FindDashboardTeamCriteria
-} from '../interfaces/get.dashboard.overview.interface';
+  GetOverviewInteractorDependencies,
+  InputGetOverview,
+  IGetOverviewGateway
+} from '../interfaces/get.overview.interface';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import {
-  IDashboardOverviewEntity,
-  DashboardOverviewEntity,
-  TrendsComparison,
-  DashboardStatistics
-} from '../entity/dashboard.overview.entity';
+  IOverviewEntity,
+  OverviewEntity,
+  OverviewStatistics,
+  TrendsComparison
+} from '../entity/overview.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { logger } from '@configs/logger';
+import { FindTeamCriteria } from '@domains/api/teams/interfaces';
+import { FindObjectiveCriteria } from '@domains/api/objectives/interfaces';
 
-export class GetDashboardOverviewInteractor {
-  protected gateway: IGetDashboardOverviewGateway;
+export class GetOverviewInteractor {
+  protected gateway: IGetOverviewGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
 
-  constructor(params: GetDashboardOverviewInteractorDependencies) {
+  constructor(params: GetOverviewInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.userCompanyValidator = params.userCompanyValidator;
   }
 
-  public async execute(
-    input: InputGetDashboardOverview
-  ): Promise<HttpResponse> {
+  public async execute(input: InputGetOverview): Promise<HttpResponse> {
     try {
-      logger.info('Iniciando a busca dos dados do dashboard overview', {
+      logger.info('Iniciando a busca dos dados do  overview', {
         requestTxt: JSON.stringify(input)
       });
 
@@ -61,7 +59,7 @@ export class GetDashboardOverviewInteractor {
       // Buscar time se filtro foi informado
       let teamId: number | undefined;
       if (team) {
-        const teamCriteria: FindDashboardTeamCriteria = {
+        const teamCriteria: FindTeamCriteria = {
           name: team,
           id_company
         };
@@ -70,7 +68,7 @@ export class GetDashboardOverviewInteractor {
       }
 
       // Buscar objetivos do período atual
-      const objectiveCriteria: FindDashboardObjectiveCriteria = {
+      const objectiveCriteria: FindObjectiveCriteria = {
         id_company,
         quarter: targetQuarter,
         year: targetYear,
@@ -95,34 +93,34 @@ export class GetDashboardOverviewInteractor {
         });
       }
 
-      const overviewData = this.calculateDashboardOverview(
+      const overviewData = this.calculateOverview(
         objectives,
         targetQuarter,
         targetYear
       );
 
-      logger.info('Dashboard overview retornado com sucesso', {
+      logger.info(' overview retornado com sucesso', {
         requestTxt: `Quarter: ${overviewData.quarter}, Year: ${overviewData.year}, Total: ${overviewData.totalObjectives}`
       });
 
       return this.presenter.ok(overviewData);
     } catch (error) {
-      logger.error('Erro ao buscar dados do dashboard overview', {
+      logger.error('Erro ao buscar dados do  overview', {
         error: error instanceof Error ? error.message : 'Erro desconhecido',
         requestTxt: JSON.stringify(input)
       });
 
       return this.presenter.serverError(
-        'Erro interno do servidor ao buscar dados do dashboard'
+        'Erro interno do servidor ao buscar dados do '
       );
     }
   }
 
-  private calculateDashboardOverview(
+  private calculateOverview(
     objectives: ObjectiveEntity[],
     targetQuarter: number,
     targetYear: number
-  ): IDashboardOverviewEntity {
+  ): IOverviewEntity {
     const objectivesMetrics = this.calculateObjectivesMetrics(objectives);
     const teamPerformance = this.calculateTeamPerformance(objectives);
     const trendsComparison = this.buildTrendsComparison(
@@ -130,7 +128,7 @@ export class GetDashboardOverviewInteractor {
     );
     const statistics = this.buildStatistics(objectivesMetrics, teamPerformance);
 
-    return new DashboardOverviewEntity({
+    return new OverviewEntity({
       quarter: `Q${targetQuarter}`,
       year: targetYear,
       progress: objectivesMetrics.avgProgress,
@@ -193,7 +191,7 @@ export class GetDashboardOverviewInteractor {
     let totalProgress = 0;
 
     for (const kr of resultKeys) {
-      const progress = DashboardOverviewEntity.calculateProgress(
+      const progress = OverviewEntity.calculateProgress(
         kr.current_value,
         kr.target_value
       );
@@ -252,27 +250,24 @@ export class GetDashboardOverviewInteractor {
 
     return {
       lastQuarter: previousProgress,
-      change: DashboardOverviewEntity.calculateChange(
-        avgProgress,
-        previousProgress
-      )
+      change: OverviewEntity.calculateChange(avgProgress, previousProgress)
     };
   }
 
   private buildStatistics(
     objectivesMetrics: ReturnType<typeof this.calculateObjectivesMetrics>,
     _teamPerformance: number
-  ): DashboardStatistics {
+  ): OverviewStatistics {
     const previousProgress = 0; // TODO: implementar busca do período anterior
 
     return {
       generalProgress: {
         value: objectivesMetrics.avgProgress,
-        change: DashboardOverviewEntity.calculateChange(
+        change: OverviewEntity.calculateChange(
           objectivesMetrics.avgProgress,
           previousProgress
         ),
-        trend: DashboardOverviewEntity.calculateTrend(
+        trend: OverviewEntity.calculateTrend(
           objectivesMetrics.avgProgress,
           previousProgress
         )

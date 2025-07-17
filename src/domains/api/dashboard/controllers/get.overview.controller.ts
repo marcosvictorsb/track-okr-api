@@ -1,17 +1,15 @@
 import { Response } from 'express';
 import {
-  IGetDashboardOverviewController,
-  GetDashboardOverviewControllerDependencies,
-  InputGetDashboardOverview
-} from '../interfaces/get.dashboard.overview.interface';
+  IGetOverviewController,
+  GetOverviewControllerDependencies,
+  InputGetOverview
+} from '../interfaces/get.overview.interface';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
-export class GetDashboardOverviewController
-  implements IGetDashboardOverviewController
-{
-  protected interactor: GetDashboardOverviewControllerDependencies['interactor'];
+export class GetOverviewController implements IGetOverviewController {
+  protected interactor: GetOverviewControllerDependencies['interactor'];
 
-  constructor(params: GetDashboardOverviewControllerDependencies) {
+  constructor(params: GetOverviewControllerDependencies) {
     this.interactor = params.interactor;
   }
 
@@ -22,7 +20,7 @@ export class GetDashboardOverviewController
     const { quarter, year, team, status } = request.query;
     const { id_company, id: id_user } = request.user;
 
-    const input: InputGetDashboardOverview = {
+    const input: InputGetOverview = {
       quarter: quarter ? Number(quarter) : undefined,
       year: year ? Number(year) : undefined,
       team: team as string,

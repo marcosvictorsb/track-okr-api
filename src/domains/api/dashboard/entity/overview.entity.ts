@@ -10,7 +10,7 @@ export interface StatisticItem {
   total?: number;
 }
 
-export interface DashboardStatistics {
+export interface OverviewStatistics {
   generalProgress: StatisticItem;
   completedOkrs: StatisticItem;
   engagement: StatisticItem;
@@ -19,7 +19,7 @@ export interface DashboardStatistics {
   weeklyProgress: number;
 }
 
-export interface IDashboardOverviewEntity {
+export interface IOverviewEntity {
   quarter: string;
   year: number;
   progress: number;
@@ -31,10 +31,10 @@ export interface IDashboardOverviewEntity {
   totalKeyResults: number;
   avgTeamPerformance: number;
   trendsComparison: TrendsComparison;
-  statistics: DashboardStatistics;
+  statistics: OverviewStatistics;
 }
 
-export class DashboardOverviewEntity implements IDashboardOverviewEntity {
+export class OverviewEntity implements IOverviewEntity {
   readonly quarter: string;
   readonly year: number;
   readonly progress: number;
@@ -46,9 +46,9 @@ export class DashboardOverviewEntity implements IDashboardOverviewEntity {
   readonly totalKeyResults: number;
   readonly avgTeamPerformance: number;
   readonly trendsComparison: TrendsComparison;
-  readonly statistics: DashboardStatistics;
+  readonly statistics: OverviewStatistics;
 
-  constructor(params: IDashboardOverviewEntity) {
+  constructor(params: IOverviewEntity) {
     this.quarter = params.quarter;
     this.year = params.year;
     this.progress = params.progress;

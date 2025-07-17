@@ -4,7 +4,7 @@ import {
   FindTeamsWithObjectivesCriteria,
   FindTeamObjectivesCriteria
 } from '../interfaces/get.team.performance.interface';
-import { MixGetDashboardOverviewGateway } from '@adapters/gateways/api/dashboard';
+import { MixGetOverviewGateway } from '@adapters/gateways/api/dashboard';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import {
@@ -16,7 +16,7 @@ import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity
 import { logger } from '@configs/logger';
 
 export class GetTeamPerformanceGateway
-  extends MixGetDashboardOverviewGateway
+  extends MixGetOverviewGateway
   implements IGetTeamPerformanceGateway
 {
   teamRepository: ITeamRepository;

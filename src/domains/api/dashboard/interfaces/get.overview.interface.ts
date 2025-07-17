@@ -3,9 +3,15 @@ import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { IDashboardOverviewEntity } from '../entity/dashboard.overview.entity';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
-import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
+import { IOverviewEntity } from '../entity/overview.entity';
+import {
+  FindTeamCriteria,
+  ITeamRepository
+} from '@domains/api/teams/interfaces';
+import {
+  FindObjectiveCriteria,
+  IObjectiveRepository
+} from '@domains/api/objectives/interfaces';
 import {
   IResultKeyRepository,
   ResultKeyEntity
@@ -15,7 +21,7 @@ import { logger } from '@configs/logger';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 
-export interface InputGetDashboardOverview {
+export interface InputGetOverview {
   quarter?: number;
   year?: number;
   team?: string;
@@ -24,35 +30,33 @@ export interface InputGetDashboardOverview {
   id_user: number;
 }
 
-export interface FindDashboardTeamCriteria {
-  name?: string;
-  id_company: number;
-}
+// export interface Find
+// TeamCriteria {
+//   name?: string;
+//   id_company: number;
+// }
 
-export interface FindDashboardObjectiveCriteria {
-  id_company: number;
-  quarter: number;
-  year: number;
-  id_team?: number;
-  status?: string;
-}
+// export interface Find
+// ObjectiveCriteria {
+//   id_company: number;
+//   quarter: number;
+//   year: number;
+//   id_team?: number;
+//   status?: string;
+// }
 
-export type GetDashboardOverviewGatewayDependencies = {
+export type GetOverviewGatewayDependencies = {
   teamRepository: ITeamRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
   logging: typeof logger;
 };
 
-export interface IGetDashboardOverviewGateway {
-  findTeam(
-    criteria: FindDashboardTeamCriteria
-  ): Promise<TeamEntity | undefined>;
-  findObjectives(
-    criteria: FindDashboardObjectiveCriteria
-  ): Promise<ObjectiveEntity[]>;
+export interface IGetOverviewGateway {
+  findTeam(criteria: FindTeamCriteria): Promise<TeamEntity | undefined>;
+  findObjectives(criteria: FindObjectiveCriteria): Promise<ObjectiveEntity[]>;
   findPreviousObjectives(
-    criteria: FindDashboardObjectiveCriteria
+    criteria: FindObjectiveCriteria
   ): Promise<ObjectiveEntity[]>;
   findResultKeysByObjectiveIds(
     objectiveIds: number[]
@@ -61,18 +65,18 @@ export interface IGetDashboardOverviewGateway {
   loggerError(message: string, data?: DataLogOutput): void;
 }
 
-export interface IGetDashboardOverviewController {
+export interface IGetOverviewController {
   getOverview(request: UserPayload, response: Response): Promise<void>;
 }
 
-export interface GetDashboardOverviewInteractorDependencies {
-  gateway: IGetDashboardOverviewGateway;
+export interface GetOverviewInteractorDependencies {
+  gateway: IGetOverviewGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
 }
 
-export interface GetDashboardOverviewControllerDependencies {
+export interface GetOverviewControllerDependencies {
   interactor: {
-    execute(input: InputGetDashboardOverview): Promise<HttpResponse>;
+    execute(input: InputGetOverview): Promise<HttpResponse>;
   };
 }

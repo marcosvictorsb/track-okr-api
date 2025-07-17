@@ -4,10 +4,10 @@ import {
   InputGetTemporalEvolution,
   IGetTemporalEvolutionGateway,
   FindObjectivesByCompanyAndQuarterCriteria
-} from '../interfaces/get.temporal-evolution.interface';
+} from '../interfaces/get.temporal.evolution.interface';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { QuarterData } from '../entity/temporal-evolution.entity';
+import { QuarterData } from '../entity/temporal.evolution.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 
 export class GetTemporalEvolutionInteractor {

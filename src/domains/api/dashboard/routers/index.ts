@@ -1,18 +1,18 @@
 import { Router } from 'express';
-import { makeGetDashboardOverviewController } from '../factories/get.dashboard.overview.factory';
+import { makeGetOverviewController } from '../factories/get.overview.factory';
 import { getTeamPerformanceFactory } from '../factories/get.team.performance.factory';
 import { getTopContributorsFactory } from '../factories/get.top.contributors.factory';
-import { getTemporalEvolutionFactory } from '../factories/get.temporal-evolution.factory';
+import { getTemporalEvolutionFactory } from '../factories/get.temporal.evolution.factory';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { getDashboardOverviewSchema } from '../schemas/get.dashboard.overview.schema';
 import { getTeamPerformanceSchema } from '../schemas/get.team.performance.schema';
 import { getTopContributorsSchema } from '../schemas/get.top.contributors.schema';
-import { getTemporalEvolutionSchema } from '../schemas/get.temporal-evolution.schema';
+import { getTemporalEvolutionSchema } from '../schemas/get.temporal.evolution.schema';
+import { getOverviewSchema } from '../schemas';
 
 const router = Router();
 
-const getDashboardOverviewController = makeGetDashboardOverviewController();
+const getOverviewController = makeGetOverviewController();
 const getTeamPerformanceController = getTeamPerformanceFactory().controller;
 const getTopContributorsController = getTopContributorsFactory().controller;
 const getTemporalEvolutionController = getTemporalEvolutionFactory().controller;
@@ -21,9 +21,9 @@ const getTemporalEvolutionController = getTemporalEvolutionFactory().controller;
 router.get(
   '/overview',
   authMiddleware,
-  validateSchema(getDashboardOverviewSchema),
+  validateSchema(getOverviewSchema),
   async (req: UserPayload, res) => {
-    await getDashboardOverviewController.getOverview(req, res);
+    await getOverviewController.getOverview(req, res);
   }
 );
 

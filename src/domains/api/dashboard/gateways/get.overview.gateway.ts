@@ -1,12 +1,16 @@
 import {
-  GetDashboardOverviewGatewayDependencies,
-  IGetDashboardOverviewGateway,
-  FindDashboardTeamCriteria,
-  FindDashboardObjectiveCriteria
-} from '../interfaces/get.dashboard.overview.interface';
-import { MixGetDashboardOverviewGateway } from '@adapters/gateways/api/dashboard';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
-import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
+  GetOverviewGatewayDependencies,
+  IGetOverviewGateway
+} from '../interfaces/get.overview.interface';
+import { MixGetOverviewGateway } from '@adapters/gateways/api/dashboard';
+import {
+  FindTeamCriteria,
+  ITeamRepository
+} from '@domains/api/teams/interfaces';
+import {
+  FindObjectiveCriteria,
+  IObjectiveRepository
+} from '@domains/api/objectives/interfaces';
 import {
   IResultKeyRepository,
   ResultKeyEntity
@@ -15,16 +19,16 @@ import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { logger } from '@configs/logger';
 
-export class GetDashboardOverviewGateway
-  extends MixGetDashboardOverviewGateway
-  implements IGetDashboardOverviewGateway
+export class GetOverviewGateway
+  extends MixGetOverviewGateway
+  implements IGetOverviewGateway
 {
   teamRepository: ITeamRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
   logging: typeof logger;
 
-  constructor(params: GetDashboardOverviewGatewayDependencies) {
+  constructor(params: GetOverviewGatewayDependencies) {
     super(params);
     this.teamRepository = params.teamRepository;
     this.objectiveRepository = params.objectiveRepository;
@@ -32,9 +36,7 @@ export class GetDashboardOverviewGateway
     this.logging = params.logging;
   }
 
-  async findTeam(
-    criteria: FindDashboardTeamCriteria
-  ): Promise<TeamEntity | undefined> {
+  async findTeam(criteria: FindTeamCriteria): Promise<TeamEntity | undefined> {
     this.logging.info('Iniciando busca do time', { criteria });
 
     if (criteria.name) {
@@ -52,7 +54,7 @@ export class GetDashboardOverviewGateway
   }
 
   async findObjectives(
-    criteria: FindDashboardObjectiveCriteria
+    criteria: FindObjectiveCriteria
   ): Promise<ObjectiveEntity[]> {
     this.logging.info('Iniciando busca dos objetivos', { criteria });
 
@@ -66,7 +68,7 @@ export class GetDashboardOverviewGateway
   }
 
   async findPreviousObjectives(
-    criteria: FindDashboardObjectiveCriteria
+    criteria: FindObjectiveCriteria
   ): Promise<ObjectiveEntity[]> {
     this.logging.info('Iniciando busca dos objetivos do período anterior', {
       criteria

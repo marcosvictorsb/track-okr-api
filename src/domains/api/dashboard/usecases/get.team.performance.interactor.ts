@@ -15,7 +15,7 @@ import {
 } from '../entity/team.performance.entity';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { DashboardOverviewEntity } from '../entity/dashboard.overview.entity';
+import { OverviewEntity } from '../entity/overview.entity';
 import { logger } from '@configs/logger';
 
 export class GetTeamPerformanceInteractor {
@@ -192,7 +192,7 @@ export class GetTeamPerformanceInteractor {
 
       let objectiveProgress = 0;
       for (const kr of resultKeys) {
-        const progress = DashboardOverviewEntity.calculateProgress(
+        const progress = OverviewEntity.calculateProgress(
           kr.current_value,
           kr.target_value
         );

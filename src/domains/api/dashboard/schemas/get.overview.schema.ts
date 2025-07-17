@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const getDashboardOverviewSchema = z.object({
+export const getOverviewSchema = z.object({
   query: z.object({
     quarter: z
       .string()

@@ -13,7 +13,7 @@ import {
   PaginationInfo
 } from '../entity/top.contributors.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { DashboardOverviewEntity } from '../entity/dashboard.overview.entity';
+import { OverviewEntity } from '../entity/overview.entity';
 import { logger } from '@configs/logger';
 
 interface UserContribution {
@@ -202,7 +202,7 @@ export class GetTopContributorsInteractor {
             };
 
             // Calcular progresso do result key
-            const progress = DashboardOverviewEntity.calculateProgress(
+            const progress = OverviewEntity.calculateProgress(
               resultKey.current_value,
               resultKey.target_value
             );
