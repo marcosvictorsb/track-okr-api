@@ -188,7 +188,7 @@ export class GetTemporalEvolutionInteractor {
     const endMonth = quarterMonths[quarterMonths.length - 1]; // Último mês do trimestre
 
     // Buscar atualizações apenas do período do trimestre
-    const updates = await this.gateway.findResultKeyUpdatesByIds({
+    const updates = await this.gateway.findCheckinsByIds({
       resultKeyIds,
       startDate: new Date(year, startMonth, 1), // Primeiro dia do primeiro mês do trimestre
       endDate: new Date(year, endMonth + 1, 0) // Último dia do último mês do trimestre

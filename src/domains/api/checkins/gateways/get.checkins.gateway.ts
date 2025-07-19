@@ -1,32 +1,32 @@
-import { MixGetKeyResultUpdatesHistory } from '@adapters/gateways/api/result-key';
-import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
+import { MixGetCheckinsHistory } from '@adapters/gateways/api/result-key';
+import { CheckinsEntity } from '../entity/checkins.entity';
 import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
 } from '../../results-keys/interfaces/default.interface';
 import {
-  FindResultKeyUpdateCriteria,
-  IResultKeyUpdateRepository
-} from '../interfaces/result-key-update.interface';
+  FindCheckinsCriteria,
+  ICheckinsRepository
+} from '../interfaces/default.interface';
 import { logger } from '@configs/logger';
 import {
-  IGetKeyResultUpdateGateway,
-  IGetKeyResultUpdateGatewayDependencies
+  IGetCheckinsGateway,
+  IGetCheckinsGatewayDependencies
 } from '../interfaces';
 
-export class GetResultKeyUpdatesGateway
-  extends MixGetKeyResultUpdatesHistory
-  implements IGetKeyResultUpdateGateway
+export class GetCheckinsGateway
+  extends MixGetCheckinsHistory
+  implements IGetCheckinsGateway
 {
   resultKeyRepository: IResultKeyRepository;
-  resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  checkinsRepository: ICheckinsRepository;
   logging: typeof logger;
 
-  constructor(params: IGetKeyResultUpdateGatewayDependencies) {
+  constructor(params: IGetCheckinsGatewayDependencies) {
     super(params);
     this.resultKeyRepository = params.resultKeyRepository;
-    this.resultKeyUpdateRepository = params.resultKeyUpdateRepository;
+    this.checkinsRepository = params.checkinsRepository;
     this.logging = params.logging;
   }
 
@@ -41,12 +41,12 @@ export class GetResultKeyUpdatesGateway
   }
 
   public async findUpdatesByResultKey(
-    criteria: FindResultKeyUpdateCriteria
-  ): Promise<ResultKeyUpdateEntity[]> {
+    criteria: FindCheckinsCriteria
+  ): Promise<CheckinsEntity[]> {
     this.logging.info('Buscando atualizações do resultado-chave', {
       criteria: JSON.stringify(criteria)
     });
 
-    return await this.resultKeyUpdateRepository.findMany(criteria);
+    return await this.checkinsRepository.findMany(criteria);
   }
 }

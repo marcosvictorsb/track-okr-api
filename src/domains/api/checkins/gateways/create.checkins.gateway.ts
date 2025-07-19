@@ -1,29 +1,29 @@
 import {
-  ICreateResultKeyUpdateGateway,
-  ICreateResultKeyUpdateGatewayDependencies
-} from '../interfaces/create-result-key-update.interface';
-import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
+  ICreateCheckinsGateway,
+  ICreateCheckinsGatewayDependencies
+} from '../interfaces/create.checkins.interface';
+import { CheckinsEntity } from '../entity/checkins.entity';
 import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
 } from '../../results-keys/interfaces/default.interface';
-import { IResultKeyUpdateRepository } from '../interfaces/result-key-update.interface';
+import { ICheckinsRepository } from '../interfaces/default.interface';
 import { MixCreateObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';
 
-export class CreateResultKeyUpdateGateway
+export class CreateCheckinsGateway
   extends MixCreateObjectives
-  implements ICreateResultKeyUpdateGateway
+  implements ICreateCheckinsGateway
 {
   resultKeyRepository: IResultKeyRepository;
-  resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  checkinsRepository: ICheckinsRepository;
   logging: typeof logger;
 
-  constructor(params: ICreateResultKeyUpdateGatewayDependencies) {
+  constructor(params: ICreateCheckinsGatewayDependencies) {
     super(params);
     this.resultKeyRepository = params.resultKeyRepository;
-    this.resultKeyUpdateRepository = params.resultKeyUpdateRepository;
+    this.checkinsRepository = params.checkinsRepository;
     this.logging = params.logging;
   }
 
@@ -43,13 +43,13 @@ export class CreateResultKeyUpdateGateway
     new_value: number;
     comment?: string | null;
     id_user: number;
-  }): Promise<ResultKeyUpdateEntity> {
+  }): Promise<CheckinsEntity> {
     this.logging.info('Criando atualização de resultado-chave', {
       id_result_key: data.id_result_key,
       id_user: data.id_user
     });
 
-    return await this.resultKeyUpdateRepository.create(data);
+    return await this.checkinsRepository.create(data);
   }
 
   public async updateResultKeyCurrentValue(

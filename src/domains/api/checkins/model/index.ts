@@ -1,1 +1,1 @@
-export * from './result-key-update.model';
+export * from './checkin.model';

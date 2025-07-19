@@ -1,2 +1,2 @@
-export * from './create-result-key-update.gateway';
-export * from './get-result-key-updates.gateway';
+export * from './create.checkins.gateway';
+export * from './get.checkins.gateway';

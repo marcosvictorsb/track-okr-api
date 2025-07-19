@@ -1,20 +1,18 @@
 import { Response } from 'express';
 import {
-  IGetKeyResultUpdateController,
-  IGetKeyResultUpdateInteractor
-} from '../interfaces/get-result-key-updates.interface';
+  IGetCheckinsController,
+  IGetCheckinsInteractor
+} from '../interfaces/get.checkins.interface';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
-export class GetKeyResultUpdateController
-  implements IGetKeyResultUpdateController
-{
-  private interactor: IGetKeyResultUpdateInteractor;
+export class GetCheckinsController implements IGetCheckinsController {
+  private interactor: IGetCheckinsInteractor;
 
-  constructor(interactor: IGetKeyResultUpdateInteractor) {
+  constructor(interactor: IGetCheckinsInteractor) {
     this.interactor = interactor;
   }
 
-  public async getKeyResultUpdate(
+  public async getCheckins(
     request: UserPayload,
     response: Response
   ): Promise<Response> {

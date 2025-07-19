@@ -5,7 +5,7 @@ import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
 import { IUserRepository } from '@domains/api/users/interfaces';
-import { IResultKeyUpdateRepository } from '@domains/api/checkins/interfaces/result-key-update.interface';
+import { ICheckinsRepository } from '@domains/api/checkins/interfaces/default.interface';
 import { IProfileRepository } from '@domains/api/profile/interfaces/default.interfaces';
 import { logger } from '@configs/logger';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
@@ -29,7 +29,7 @@ export type GetTopContributorsGatewayDependencies = {
   teamRepository: ITeamRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
-  resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  checkinsRepository: ICheckinsRepository;
   userRepository: IUserRepository;
   profileRepository: IProfileRepository;
   logging: typeof logger;

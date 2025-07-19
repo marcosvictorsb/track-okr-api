@@ -1,25 +1,25 @@
 import { ModelStatic, Op } from 'sequelize';
 import {
-  CreateResultKeyUpdateCriteria,
-  FindResultKeyUpdateCriteria,
-  UpdateResultKeyUpdateCriteria,
-  IResultKeyUpdateRepository
-} from '../interfaces/result-key-update.interface';
-import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
-import ResultKeyUpdateModel from '@domains/api/checkins/model/result-key-update.model';
+  CreateCheckinsCriteria,
+  FindCheckinsCriteria,
+  UpdateCheckinsCriteria,
+  ICheckinsRepository
+} from '../interfaces/default.interface';
+import { CheckinsEntity } from '../entity/checkins.entity';
+import CheckinsModel from '@domains/api/checkins/model/checkin.model';
 
-export type ResultKeyUpdateRepositoryDependencies = {
-  model: ModelStatic<ResultKeyUpdateModel>;
+export type CheckinsRepositoryDependencies = {
+  model: ModelStatic<CheckinsModel>;
 };
 
-export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
-  private model: ModelStatic<ResultKeyUpdateModel>;
+export class CheckinsRepository implements ICheckinsRepository {
+  private model: ModelStatic<CheckinsModel>;
 
-  constructor(params: ResultKeyUpdateRepositoryDependencies) {
+  constructor(params: CheckinsRepositoryDependencies) {
     this.model = params.model;
   }
 
-  private getConditions(criteria: FindResultKeyUpdateCriteria) {
+  private getConditions(criteria: FindCheckinsCriteria) {
     const conditions: Record<string, unknown> = {};
 
     if (criteria.id !== undefined) conditions.id = criteria.id;
@@ -42,20 +42,20 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
   }
 
   public async create(
-    criteria: CreateResultKeyUpdateCriteria
-  ): Promise<ResultKeyUpdateEntity> {
-    const resultKeyUpdate = await this.model.create({
+    criteria: CreateCheckinsCriteria
+  ): Promise<CheckinsEntity> {
+    const Checkins = await this.model.create({
       ...criteria,
       created_at: new Date()
     });
 
-    return new ResultKeyUpdateEntity(resultKeyUpdate.toJSON());
+    return new CheckinsEntity(Checkins.toJSON());
   }
 
   public async findOne(
-    criteria: FindResultKeyUpdateCriteria
-  ): Promise<ResultKeyUpdateEntity | null> {
-    const resultKeyUpdate = await this.model.findOne({
+    criteria: FindCheckinsCriteria
+  ): Promise<CheckinsEntity | null> {
+    const Checkins = await this.model.findOne({
       where: this.getConditions(criteria),
       include: [
         {
@@ -70,14 +70,14 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
       raw: false
     });
 
-    if (!resultKeyUpdate) return null;
+    if (!Checkins) return null;
 
-    const data = resultKeyUpdate.toJSON() as ResultKeyUpdateEntity & {
+    const data = Checkins.toJSON() as CheckinsEntity & {
       user?: { id: number; name: string };
       result_key?: { id: number; name: string };
     };
 
-    return new ResultKeyUpdateEntity({
+    return new CheckinsEntity({
       ...data,
       user_name: data.user?.name,
       result_key_name: data.result_key?.name
@@ -85,9 +85,9 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
   }
 
   public async findMany(
-    criteria: FindResultKeyUpdateCriteria
-  ): Promise<ResultKeyUpdateEntity[]> {
-    const resultKeyUpdates = await this.model.findAll({
+    criteria: FindCheckinsCriteria
+  ): Promise<CheckinsEntity[]> {
+    const Checkinss = await this.model.findAll({
       where: this.getConditions(criteria),
       include: [
         {
@@ -103,15 +103,15 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
       raw: false
     });
 
-    if (!resultKeyUpdates || resultKeyUpdates.length === 0) return [];
+    if (!Checkinss || Checkinss.length === 0) return [];
 
-    return resultKeyUpdates.map((update) => {
-      const data = update.toJSON() as ResultKeyUpdateEntity & {
+    return Checkinss.map((update) => {
+      const data = update.toJSON() as CheckinsEntity & {
         user?: { id: number; name: string };
         result_key?: { id: number; name: string };
       };
 
-      return new ResultKeyUpdateEntity({
+      return new CheckinsEntity({
         id: data.id,
         id_result_key: data.id_result_key,
         previous_value: data.previous_value,
@@ -127,14 +127,14 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
 
   public async findByResultKeyId(
     id_result_key: number
-  ): Promise<ResultKeyUpdateEntity[]> {
+  ): Promise<CheckinsEntity[]> {
     return this.findMany({ id_result_key });
   }
 
   public async update(
-    criteria: FindResultKeyUpdateCriteria,
-    data: UpdateResultKeyUpdateCriteria
-  ): Promise<ResultKeyUpdateEntity | null> {
+    criteria: FindCheckinsCriteria,
+    data: UpdateCheckinsCriteria
+  ): Promise<CheckinsEntity | null> {
     const [affectedRows] = await this.model.update(
       { ...data, updated_at: new Date() },
       { where: this.getConditions(criteria) }
@@ -145,7 +145,7 @@ export class ResultKeyUpdateRepository implements IResultKeyUpdateRepository {
     return this.findOne(criteria);
   }
 
-  public async delete(criteria: FindResultKeyUpdateCriteria): Promise<boolean> {
+  public async delete(criteria: FindCheckinsCriteria): Promise<boolean> {
     const affectedRows = await this.model.destroy({
       where: this.getConditions(criteria)
     });

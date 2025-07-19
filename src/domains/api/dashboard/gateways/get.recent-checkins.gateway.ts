@@ -1,14 +1,16 @@
 import {
   IGetRecentCheckInsGateway,
-  FindObjectivesByCompanyAndQuarterCriteria,
-  FindResultKeyUpdatesCriteria
+  FindObjectivesByCompanyAndQuarterCriteria
 } from '../interfaces/get.recent-checkins.interface';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import { ResultKeyUpdateEntity } from '@domains/api/checkins/entity/result-key-update.entity';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces/default.interface';
 import { IResultKeyRepository } from '@domains/api/results-keys/interfaces/default.interface';
-import { IResultKeyUpdateRepository } from '@domains/api/checkins/interfaces/result-key-update.interface';
+import {
+  FindCheckinsCriteria,
+  ICheckinsRepository
+} from '@domains/api/checkins/interfaces/default.interface';
 import { IUserRepository } from '@domains/api/users/interfaces/default.interfaces';
 import { MixGetRecentCheckInGateway } from '@adapters/gateways/api/dashboard/get.recent.checkin.gateway';
 import { logger } from '@configs/logger';
@@ -19,7 +21,7 @@ import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
 export interface GetRecentCheckInsGatewayDependencies {
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
-  resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  checkinsRepository: ICheckinsRepository;
   userRepository: IUserRepository;
   profileRepository: IProfileRepository;
   teamRepository: ITeamRepository;
@@ -33,7 +35,7 @@ export class GetRecentCheckInsGateway
 {
   protected objectiveRepository: IObjectiveRepository;
   protected resultKeyRepository: IResultKeyRepository;
-  protected resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  protected checkinsRepository: ICheckinsRepository;
   protected userRepository: IUserRepository;
   protected profileRepository: IProfileRepository;
   protected teamRepository: ITeamRepository;
@@ -43,7 +45,7 @@ export class GetRecentCheckInsGateway
     super(params);
     this.objectiveRepository = params.objectiveRepository;
     this.resultKeyRepository = params.resultKeyRepository;
-    this.resultKeyUpdateRepository = params.resultKeyUpdateRepository;
+    this.checkinsRepository = params.checkinsRepository;
     this.userRepository = params.userRepository;
     this.profileRepository = params.profileRepository;
     this.userTeamRepository = params.userTeamRepository;
@@ -73,11 +75,11 @@ export class GetRecentCheckInsGateway
     return [];
   }
 
-  public async findRecentResultKeyUpdates(
-    criteria: FindResultKeyUpdatesCriteria
-  ): Promise<ResultKeyUpdateEntity[]> {
-    const checkIns = await this.resultKeyUpdateRepository.findMany({
-      ids_result_key: criteria.resultKeyIds
+  public async findRecentCheckins(
+    criteria: FindCheckinsCriteria
+  ): Promise<CheckinsEntity[]> {
+    const checkIns = await this.checkinsRepository.findMany({
+      ids_result_key: criteria.ids_result_key
     });
 
     if (checkIns.length) {

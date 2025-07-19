@@ -1,6 +1,6 @@
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { ResultKeyUpdateEntity } from '@domains/api/checkins/entity/result-key-update.entity';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
 
@@ -17,7 +17,7 @@ export interface FindObjectivesByCompanyAndQuarterCriteria {
   year: number;
 }
 
-export interface FindResultKeyUpdatesCriteria {
+export interface FindCheckinsCriteria {
   resultKeyIds: number[];
   limit?: number;
 }
@@ -31,9 +31,7 @@ export interface IGetRecentCheckInsGateway {
   findResultKeysByObjectiveIds(
     objectiveIds: number[]
   ): Promise<ResultKeyEntity[]>;
-  findRecentResultKeyUpdates(
-    criteria: FindResultKeyUpdatesCriteria
-  ): Promise<ResultKeyUpdateEntity[]>;
+  findRecentCheckins(criteria: FindCheckinsCriteria): Promise<CheckinsEntity[]>;
   findUserById(
     id: number
   ): Promise<{ id: number; name: string; avatar?: string } | null>;

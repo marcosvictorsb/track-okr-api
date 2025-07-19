@@ -4,11 +4,11 @@ import { UserCompanyValidationInteractor } from '@domains/common';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
-import { IResultKeyUpdateRepository } from '@domains/api/checkins/interfaces/result-key-update.interface';
+import { ICheckinsRepository } from '@domains/api/checkins/interfaces/default.interface';
 import { logger } from '@configs/logger';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import { ResultKeyUpdateEntity } from '@domains/api/checkins/entity/result-key-update.entity';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
 import { DataLogOutput } from '@adapters/services';
 
 // Input types
@@ -25,7 +25,7 @@ export type GetTemporalEvolutionGatewayDependencies = {
   teamRepository: ITeamRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
-  resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  checkinsRepository: ICheckinsRepository;
   logging: typeof logger;
 };
 
@@ -48,7 +48,7 @@ export interface FindObjectivesByCompanyAndQuarterCriteria {
   year: number;
 }
 
-export interface FindResultKeyUpdatesByCriteria {
+export interface FindCheckinsByCriteria {
   resultKeyIds: number[];
   startDate?: Date;
   endDate?: Date;
@@ -62,9 +62,9 @@ export interface IGetTemporalEvolutionGateway {
   findResultKeysByObjectiveIds(
     objectiveIds: number[]
   ): Promise<ResultKeyEntity[]>;
-  findResultKeyUpdatesByIds(
-    criteria: FindResultKeyUpdatesByCriteria
-  ): Promise<ResultKeyUpdateEntity[]>;
+  findCheckinsByIds(
+    criteria: FindCheckinsByCriteria
+  ): Promise<CheckinsEntity[]>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

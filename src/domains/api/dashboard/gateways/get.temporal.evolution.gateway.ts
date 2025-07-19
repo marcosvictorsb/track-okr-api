@@ -2,15 +2,15 @@ import {
   GetTemporalEvolutionGatewayDependencies,
   IGetTemporalEvolutionGateway,
   FindObjectivesByCompanyAndQuarterCriteria,
-  FindResultKeyUpdatesByCriteria
+  FindCheckinsByCriteria
 } from '../interfaces/get.temporal.evolution.interface';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
-import { IResultKeyUpdateRepository } from '@domains/api/checkins/interfaces/result-key-update.interface';
+import { ICheckinsRepository } from '@domains/api/checkins/interfaces/default.interface';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import { ResultKeyUpdateEntity } from '@domains/api/checkins/entity/result-key-update.entity';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
 import { logger } from '@configs/logger';
 import { DataLogOutput } from '@adapters/services';
 
@@ -20,14 +20,14 @@ export class GetTemporalEvolutionGateway
   teamRepository: ITeamRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
-  resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  checkinsRepository: ICheckinsRepository;
   logging: typeof logger;
 
   constructor(params: GetTemporalEvolutionGatewayDependencies) {
     this.teamRepository = params.teamRepository;
     this.objectiveRepository = params.objectiveRepository;
     this.resultKeyRepository = params.resultKeyRepository;
-    this.resultKeyUpdateRepository = params.resultKeyUpdateRepository;
+    this.checkinsRepository = params.checkinsRepository;
     this.logging = params.logging;
   }
 
@@ -64,19 +64,19 @@ export class GetTemporalEvolutionGateway
     return resultKeys;
   }
 
-  async findResultKeyUpdatesByIds(
-    criteria: FindResultKeyUpdatesByCriteria
-  ): Promise<ResultKeyUpdateEntity[]> {
+  async findCheckinsByIds(
+    criteria: FindCheckinsByCriteria
+  ): Promise<CheckinsEntity[]> {
     this.logging.info('Buscando atualizações de result keys', {
       resultKeyIds: criteria.resultKeyIds,
       startDate: criteria.startDate,
       endDate: criteria.endDate
     });
 
-    const allUpdates: ResultKeyUpdateEntity[] = [];
+    const allUpdates: CheckinsEntity[] = [];
 
     for (const resultKeyId of criteria.resultKeyIds) {
-      const updates = await this.resultKeyUpdateRepository.findMany({
+      const updates = await this.checkinsRepository.findMany({
         id_result_key: resultKeyId
       });
 

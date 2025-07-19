@@ -1,2 +1,2 @@
-export * from './create-result-key-update.factory';
-export * from './get-result-key-updates.factory';
+export * from './create.checkins.factory';
+export * from './get.checkins.factory';

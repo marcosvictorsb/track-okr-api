@@ -76,7 +76,7 @@ export class TemporalEvolutionEntity implements ITemporalEvolutionEntity {
   }
 
   public static calculateMonthlyProgress(
-    resultKeyUpdates: Array<{
+    checkins: Array<{
       id_result_key: number;
       new_value: number;
       target_value: number;
@@ -91,7 +91,7 @@ export class TemporalEvolutionEntity implements ITemporalEvolutionEntity {
     // Determinar os meses do trimestre
     const quarterMonths = TemporalEvolutionEntity.getQuarterMonths(quarter);
 
-    resultKeyUpdates.forEach((update) => {
+    checkins.forEach((update) => {
       const updateDate = new Date(update.created_at);
       if (updateDate.getFullYear() === year) {
         const month = updateDate.getMonth(); // 0-11

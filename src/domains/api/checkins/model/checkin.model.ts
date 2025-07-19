@@ -3,7 +3,7 @@ import { sequelize } from '@infra/database/connection/mysql';
 import ResultKeyModel from '../../results-keys/model/result-key.model';
 import UserModel from '@domains/api/users/model/user.model';
 
-interface ResultKeyUpdateModelAttributes {
+interface CheckinModelAttributes {
   id?: number;
   id_result_key: number;
   previous_value?: number | null;
@@ -15,9 +15,9 @@ interface ResultKeyUpdateModelAttributes {
   deleted_at?: Date;
 }
 
-class ResultKeyUpdateModel
-  extends Model<ResultKeyUpdateModelAttributes>
-  implements ResultKeyUpdateModelAttributes
+class CheckinModel
+  extends Model<CheckinModelAttributes>
+  implements CheckinModelAttributes
 {
   declare id?: number;
   declare id_result_key: number;
@@ -30,7 +30,7 @@ class ResultKeyUpdateModel
   declare deleted_at?: Date;
 }
 
-ResultKeyUpdateModel.init(
+CheckinModel.init(
   {
     id: {
       allowNull: false,
@@ -76,7 +76,7 @@ ResultKeyUpdateModel.init(
   },
   {
     sequelize,
-    modelName: 'ResultKeyUpdate',
+    modelName: 'CheckinModel',
     tableName: 'checkins',
     timestamps: true,
     paranoid: true,
@@ -87,20 +87,20 @@ ResultKeyUpdateModel.init(
 );
 
 // Definindo associações
-ResultKeyUpdateModel.belongsTo(ResultKeyModel, {
+CheckinModel.belongsTo(ResultKeyModel, {
   foreignKey: 'id_result_key',
   as: 'result_key'
 });
 
-ResultKeyUpdateModel.belongsTo(UserModel, {
+CheckinModel.belongsTo(UserModel, {
   foreignKey: 'id_user',
   as: 'user'
 });
 
 // Associação inversa no ResultKeyModel
-ResultKeyModel.hasMany(ResultKeyUpdateModel, {
+ResultKeyModel.hasMany(CheckinModel, {
   foreignKey: 'id_result_key',
   as: 'updates'
 });
 
-export default ResultKeyUpdateModel;
+export default CheckinModel;

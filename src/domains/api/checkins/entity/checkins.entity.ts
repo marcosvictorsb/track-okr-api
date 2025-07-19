@@ -1,4 +1,4 @@
-export interface IResultKeyUpdateEntity {
+export interface ICheckinsEntity {
   id?: number;
   id_result_key: number;
   previous_value?: number | null;
@@ -14,7 +14,7 @@ export interface IResultKeyUpdateEntity {
   result_key_name?: string;
 }
 
-export class ResultKeyUpdateEntity implements IResultKeyUpdateEntity {
+export class CheckinsEntity implements ICheckinsEntity {
   readonly id?: number;
   readonly id_result_key: number;
   readonly previous_value?: number | null;
@@ -29,7 +29,7 @@ export class ResultKeyUpdateEntity implements IResultKeyUpdateEntity {
   user_name?: string;
   result_key_name?: string;
 
-  constructor(data: IResultKeyUpdateEntity) {
+  constructor(data: ICheckinsEntity) {
     this.id = data.id;
     this.id_result_key = data.id_result_key;
     this.previous_value = data.previous_value;
@@ -43,7 +43,7 @@ export class ResultKeyUpdateEntity implements IResultKeyUpdateEntity {
     this.result_key_name = data.result_key_name;
   }
 
-  public toJson(): IResultKeyUpdateEntity {
+  public toJson(): ICheckinsEntity {
     return {
       id: this.id,
       id_result_key: this.id_result_key,

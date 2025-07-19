@@ -1,1 +1,1 @@
-export * from './get.key.result.updates.history.gateway';
+export * from './get.checkins.gateway';

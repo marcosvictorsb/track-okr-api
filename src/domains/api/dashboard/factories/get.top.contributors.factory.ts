@@ -5,7 +5,7 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
-import { ResultKeyUpdateRepository } from '@domains/api/checkins/repository/result-key-update.repository';
+import { CheckinsRepository } from '@domains/api/checkins/repository/checkins.repository';
 import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
 import UserModel from '@domains/api/users/model/user.model';
 import TeamModel from '@domains/api/teams/model/team.model';
@@ -17,7 +17,7 @@ import { logger } from '@configs/logger';
 import { GetTopContributorsGateway } from '../gateways/get.top.contributors.gateway';
 import { GetTopContributorsInteractor } from '../usecases/get.top.contributors.interactor';
 import { GetTopContributorsController } from '../controllers/get.top.contributors.controller';
-import ResultKeyUpdateModel from '@domains/api/checkins/model/result-key-update.model';
+import CheckinsModel from '@domains/api/checkins/model/checkin.model';
 
 export function getTopContributorsFactory() {
   // Repositories
@@ -29,8 +29,8 @@ export function getTopContributorsFactory() {
   const resultKeyRepository = new ResultKeyRepository({
     model: ResultKeyModel
   });
-  const resultKeyUpdateRepository = new ResultKeyUpdateRepository({
-    model: ResultKeyUpdateModel
+  const checkinsRepository = new CheckinsRepository({
+    model: CheckinsModel
   });
   const profileRepository = new ProfileRepository({
     model: ProfileModel
@@ -51,7 +51,7 @@ export function getTopContributorsFactory() {
     teamRepository,
     objectiveRepository,
     resultKeyRepository,
-    resultKeyUpdateRepository,
+    checkinsRepository,
     userRepository,
     profileRepository,
     logging: logger

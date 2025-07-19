@@ -3,7 +3,7 @@ import { GetRecentCheckInsInteractor } from '../usecases/get.recent-checkins.int
 import { GetRecentCheckInsController } from '../controllers/get.recent-checkins.controller';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
-import { ResultKeyUpdateRepository } from '@domains/api/checkins/repository/result-key-update.repository';
+import { CheckinsRepository } from '@domains/api/checkins/repository/checkins.repository';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { Presenter } from '@protocols/presenter';
@@ -20,7 +20,7 @@ import TeamModel from '@domains/api/teams/model/team.model';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import UserTeamModel from '@domains/common/user-teams/model/user-team.model';
 import { UserTeamRepository } from '@domains/common/user-teams/repository/user-team.repository';
-import ResultKeyUpdateModel from '@domains/api/checkins/model/result-key-update.model';
+import CheckinsModel from '@domains/api/checkins/model/checkin.model';
 
 export function getRecentCheckInsFactory() {
   // Repositories
@@ -30,8 +30,8 @@ export function getRecentCheckInsFactory() {
   const resultKeyRepository = new ResultKeyRepository({
     model: ResultKeyModel
   });
-  const resultKeyUpdateRepository = new ResultKeyUpdateRepository({
-    model: ResultKeyUpdateModel
+  const checkinsRepository = new CheckinsRepository({
+    model: CheckinsModel
   });
   const userRepository = new UserRepository({ model: UserModel });
   const profileRepository = new ProfileRepository({
@@ -49,7 +49,7 @@ export function getRecentCheckInsFactory() {
   const gateway = new GetRecentCheckInsGateway({
     objectiveRepository,
     resultKeyRepository,
-    resultKeyUpdateRepository,
+    checkinsRepository,
     userRepository,
     profileRepository,
     teamRepository,

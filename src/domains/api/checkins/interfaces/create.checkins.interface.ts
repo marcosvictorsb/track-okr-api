@@ -2,25 +2,25 @@ import { IPresenter } from '@protocols/presenter';
 import { HttpResponse } from '@protocols/http';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { DataLogOutput } from '@adapters/services';
-import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
+import { CheckinsEntity } from '../entity/checkins.entity';
 import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
 } from '../../results-keys/interfaces/default.interface';
-import { IResultKeyUpdateRepository } from './result-key-update.interface';
+import { ICheckinsRepository } from './default.interface';
 
-export interface CreateResultKeyUpdateRequest {
+export interface CreateCheckinsRequest {
   id_result_key: number;
   new_value: number;
   comment?: string;
 }
 
-export interface CreateResultKeyUpdateResponse {
-  update: ResultKeyUpdateEntity;
+export interface CreateCheckinsResponse {
+  update: CheckinsEntity;
 }
 
-export interface InputCreateResultKeyUpdate {
+export interface InputCreateCheckins {
   id_result_key: number;
   new_value: number;
   comment?: string;
@@ -28,23 +28,23 @@ export interface InputCreateResultKeyUpdate {
   id_user: number;
 }
 
-export interface CreateResultKeyUpdateInteractorDependencies {
-  gateway: ICreateResultKeyUpdateGateway;
+export interface CreateCheckinsInteractorDependencies {
+  gateway: ICreateCheckinsGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
 }
 
-export interface CreateResultKeyUpdateControllerDependencies {
+export interface CreateCheckinsControllerDependencies {
   interactor: {
-    execute(input: InputCreateResultKeyUpdate): Promise<HttpResponse>;
+    execute(input: InputCreateCheckins): Promise<HttpResponse>;
   };
 }
 
-export interface ICreateResultKeyUpdateController {
+export interface ICreateCheckinsController {
   createUpdate(request: unknown, response: unknown): Promise<unknown>;
 }
 
-export interface ICreateResultKeyUpdateGateway {
+export interface ICreateCheckinsGateway {
   findResultKey(
     criteria: FindResultKeyCriteria
   ): Promise<ResultKeyEntity | null>;
@@ -54,14 +54,14 @@ export interface ICreateResultKeyUpdateGateway {
     new_value: number;
     comment?: string | null;
     id_user: number;
-  }): Promise<ResultKeyUpdateEntity>;
+  }): Promise<CheckinsEntity>;
   updateResultKeyCurrentValue(id: number, new_value: number): Promise<boolean>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }
 
-export interface ICreateResultKeyUpdateGatewayDependencies {
+export interface ICreateCheckinsGatewayDependencies {
   resultKeyRepository: IResultKeyRepository;
-  resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  checkinsRepository: ICheckinsRepository;
   logging: typeof import('@configs/logger').logger;
 }

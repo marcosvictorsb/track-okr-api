@@ -1,14 +1,14 @@
 import { Response } from 'express';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import {
-  CreateResultKeyUpdateControllerDependencies,
-  InputCreateResultKeyUpdate
-} from '../interfaces/create-result-key-update.interface';
+  CreateCheckinsControllerDependencies,
+  InputCreateCheckins
+} from '../interfaces/create.checkins.interface';
 
-export class CreateResultKeyUpdateController {
-  protected interactor: CreateResultKeyUpdateControllerDependencies['interactor'];
+export class CreateCheckinsController {
+  protected interactor: CreateCheckinsControllerDependencies['interactor'];
 
-  constructor(params: CreateResultKeyUpdateControllerDependencies) {
+  constructor(params: CreateCheckinsControllerDependencies) {
     this.interactor = params.interactor;
   }
 
@@ -19,7 +19,7 @@ export class CreateResultKeyUpdateController {
     const resultKeyId = parseInt(request.params.id as string);
     const { new_value, comment } = request.body;
 
-    const input: InputCreateResultKeyUpdate = {
+    const input: InputCreateCheckins = {
       id_result_key: resultKeyId,
       new_value: parseFloat(new_value),
       comment: comment || undefined,

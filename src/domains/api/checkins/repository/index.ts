@@ -1,1 +1,1 @@
-export * from './result-key-update.repository';
+export * from './checkins.repository';

@@ -6,7 +6,7 @@ import {
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
-import { IResultKeyUpdateRepository } from '@domains/api/checkins/interfaces/result-key-update.interface';
+import { ICheckinsRepository } from '@domains/api/checkins/interfaces/default.interface';
 import { IUserRepository } from '@domains/api/users/interfaces';
 import { IProfileRepository } from '@domains/api/profile/interfaces/default.interfaces';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
@@ -23,7 +23,7 @@ export class GetTopContributorsGateway
   teamRepository: ITeamRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
-  resultKeyUpdateRepository: IResultKeyUpdateRepository;
+  checkinsRepository: ICheckinsRepository;
   userRepository: IUserRepository;
   profileRepository: IProfileRepository;
   logging: typeof logger;
@@ -33,7 +33,7 @@ export class GetTopContributorsGateway
     this.teamRepository = params.teamRepository;
     this.objectiveRepository = params.objectiveRepository;
     this.resultKeyRepository = params.resultKeyRepository;
-    this.resultKeyUpdateRepository = params.resultKeyUpdateRepository;
+    this.checkinsRepository = params.checkinsRepository;
     this.userRepository = params.userRepository;
     this.profileRepository = params.profileRepository;
     this.logging = params.logging;
@@ -127,7 +127,7 @@ export class GetTopContributorsGateway
 
     for (const resultKeyId of resultKeyIds) {
       // Buscar todas as atualizações do result key
-      const allUpdates = await this.resultKeyUpdateRepository.findMany({
+      const allUpdates = await this.checkinsRepository.findMany({
         id_result_key: resultKeyId
       });
 

@@ -1,24 +1,24 @@
 import { HttpResponse } from '@protocols/http';
 import {
-  CreateResultKeyUpdateInteractorDependencies,
-  InputCreateResultKeyUpdate,
-  ICreateResultKeyUpdateGateway
-} from '../interfaces/create-result-key-update.interface';
+  CreateCheckinsInteractorDependencies,
+  InputCreateCheckins,
+  ICreateCheckinsGateway
+} from '../interfaces/create.checkins.interface';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 
-export class CreateResultKeyUpdateInteractor {
-  protected gateway: ICreateResultKeyUpdateGateway;
+export class CreateCheckinsInteractor {
+  protected gateway: ICreateCheckinsGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
 
-  constructor(params: CreateResultKeyUpdateInteractorDependencies) {
+  constructor(params: CreateCheckinsInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.userCompanyValidator = params.userCompanyValidator;
   }
 
-  async execute(input: InputCreateResultKeyUpdate): Promise<HttpResponse> {
+  async execute(input: InputCreateCheckins): Promise<HttpResponse> {
     try {
       const { id_result_key, new_value, comment, id_company, id_user } = input;
 

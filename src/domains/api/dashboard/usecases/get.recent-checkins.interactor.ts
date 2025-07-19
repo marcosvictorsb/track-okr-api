@@ -65,7 +65,7 @@ export class GetRecentCheckInsInteractor {
       }
 
       // Buscar as últimas 20 atualizações
-      const recentUpdates = await this.gateway.findRecentResultKeyUpdates({
+      const recentUpdates = await this.gateway.findRecentCheckins({
         resultKeyIds,
         limit: 20
       });

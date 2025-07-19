@@ -1,29 +1,29 @@
 import { IPresenter } from '@protocols/presenter';
 import {
-  IGetKeyResultUpdateGateway,
-  IGetKeyResultUpdateInteractor,
-  IGetKeyResultUpdateInteractorDependencies,
-  InputGetKeyResultUpdate
-} from '../interfaces/get-result-key-updates.interface';
+  IGetCheckinsGateway,
+  IGetCheckinsInteractor,
+  IGetCheckinsInteractorDependencies,
+  InputGetCheckins
+} from '../interfaces/get.checkins.interface';
 // import { UserCompanyValidationInteractor } from '@domains/common';
-import { MixGetKeyResultUpdatesHistory } from '@adapters/gateways/api/result-key';
+import { MixGetCheckinsHistory } from '@adapters/gateways/api/result-key';
 import { HttpResponse } from '@protocols/http';
 
-export class GetKeyResultUpdateInteractor
-  extends MixGetKeyResultUpdatesHistory
-  implements IGetKeyResultUpdateInteractor
+export class GetCheckinsInteractor
+  extends MixGetCheckinsHistory
+  implements IGetCheckinsInteractor
 {
-  protected gateway: IGetKeyResultUpdateGateway;
+  protected gateway: IGetCheckinsGateway;
   protected presenter: IPresenter;
   // protected userCompanyValidator: UserCompanyValidationInteractor;
 
-  constructor(params: IGetKeyResultUpdateInteractorDependencies) {
+  constructor(params: IGetCheckinsInteractorDependencies) {
     super(params);
     this.gateway = params.gateway;
     this.presenter = params.presenter;
   }
 
-  public async execute(input: InputGetKeyResultUpdate): Promise<HttpResponse> {
+  public async execute(input: InputGetCheckins): Promise<HttpResponse> {
     try {
       this.gateway.loggerInfo(
         'Iniciando busca de atualizações do resultado-chave',

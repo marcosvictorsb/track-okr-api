@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const createResultKeyUpdateSchema = z.object({
+export const createCheckinsSchema = z.object({
   body: z.object({
     new_value: z
       .number()
