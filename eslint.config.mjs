@@ -31,7 +31,8 @@ export default [
       'dist/**',
       'uploads/**',
       'docs/**',
-      'deployment/**'
+      'deployment/**',
+      'src/infra/database/migrations/**'
     ]
   }
 ];

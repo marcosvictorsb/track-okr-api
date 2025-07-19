@@ -4,6 +4,7 @@ build/
 coverage/
 uploads/
 docs/
+src/infra/database/migrations/
 deployment/
 *.log
 .env
