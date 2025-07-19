@@ -1,10 +1,10 @@
 import { MixGetKeyResultUpdatesHistory } from '@adapters/gateways/api/result-key';
 import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
-import { ResultKeyEntity } from '../entity/result-key.entity';
+import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
-} from '../interfaces/default.interface';
+} from '../../results-keys/interfaces/default.interface';
 import {
   FindResultKeyUpdateCriteria,
   IResultKeyUpdateRepository

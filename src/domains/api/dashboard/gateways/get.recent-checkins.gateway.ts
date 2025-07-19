@@ -5,10 +5,10 @@ import {
 } from '../interfaces/get.recent-checkins.interface';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import { ResultKeyUpdateEntity } from '@domains/api/results-keys/entity/result-key-update.entity';
+import { ResultKeyUpdateEntity } from '@domains/api/checkins/entity/result-key-update.entity';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces/default.interface';
 import { IResultKeyRepository } from '@domains/api/results-keys/interfaces/default.interface';
-import { IResultKeyUpdateRepository } from '@domains/api/results-keys/interfaces/result-key-update.interface';
+import { IResultKeyUpdateRepository } from '@domains/api/checkins/interfaces/result-key-update.interface';
 import { IUserRepository } from '@domains/api/users/interfaces/default.interfaces';
 import { MixGetRecentCheckInGateway } from '@adapters/gateways/api/dashboard/get.recent.checkin.gateway';
 import { logger } from '@configs/logger';

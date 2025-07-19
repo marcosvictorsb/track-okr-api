@@ -7,10 +7,10 @@ import {
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
-import { IResultKeyUpdateRepository } from '@domains/api/results-keys/interfaces/result-key-update.interface';
+import { IResultKeyUpdateRepository } from '@domains/api/checkins/interfaces/result-key-update.interface';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import { ResultKeyUpdateEntity } from '@domains/api/results-keys/entity/result-key-update.entity';
+import { ResultKeyUpdateEntity } from '@domains/api/checkins/entity/result-key-update.entity';
 import { logger } from '@configs/logger';
 import { DataLogOutput } from '@adapters/services';
 

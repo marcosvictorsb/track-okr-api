@@ -3,12 +3,12 @@ import { HttpResponse } from '@protocols/http';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { DataLogOutput } from '@adapters/services';
 import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
-import { ResultKeyEntity } from '../entity/result-key.entity';
-import { IResultKeyUpdateRepository } from './result-key-update.interface';
+import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
-} from './default.interface';
+} from '../../results-keys/interfaces/default.interface';
+import { IResultKeyUpdateRepository } from './result-key-update.interface';
 
 export interface CreateResultKeyUpdateRequest {
   id_result_key: number;

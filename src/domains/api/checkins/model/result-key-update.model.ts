@@ -1,6 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '@infra/database/connection/mysql';
-import ResultKeyModel from './result-key.model';
+import ResultKeyModel from '../../results-keys/model/result-key.model';
 import UserModel from '@domains/api/users/model/user.model';
 
 interface ResultKeyUpdateModelAttributes {

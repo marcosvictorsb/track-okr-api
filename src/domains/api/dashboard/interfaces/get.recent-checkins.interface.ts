@@ -1,6 +1,6 @@
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { ResultKeyUpdateEntity } from '@domains/api/results-keys/entity/result-key-update.entity';
+import { ResultKeyUpdateEntity } from '@domains/api/checkins/entity/result-key-update.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
 

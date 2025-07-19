@@ -5,17 +5,17 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
-import { ResultKeyUpdateRepository } from '@domains/api/results-keys/repository/result-key-update.repository';
+import { ResultKeyUpdateRepository } from '@domains/api/checkins/repository/result-key-update.repository';
 import UserModel from '@domains/api/users/model/user.model';
 import TeamModel from '@domains/api/teams/model/team.model';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
-import ResultKeyUpdateModel from '@domains/api/results-keys/model/result-key-update.model';
 import { logger } from '@configs/logger';
 
 import { GetTemporalEvolutionGateway } from '../gateways/get.temporal.evolution.gateway';
 import { GetTemporalEvolutionInteractor } from '../usecases/get.temporal.evolution.interactor';
 import { GetTemporalEvolutionController } from '../controllers/get.temporal.evolution.controller';
+import ResultKeyUpdateModel from '@domains/api/checkins/model/result-key-update.model';
 
 export function getTemporalEvolutionFactory() {
   // Repositories

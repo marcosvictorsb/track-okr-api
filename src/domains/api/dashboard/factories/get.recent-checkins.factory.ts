@@ -3,7 +3,7 @@ import { GetRecentCheckInsInteractor } from '../usecases/get.recent-checkins.int
 import { GetRecentCheckInsController } from '../controllers/get.recent-checkins.controller';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
-import { ResultKeyUpdateRepository } from '@domains/api/results-keys/repository/result-key-update.repository';
+import { ResultKeyUpdateRepository } from '@domains/api/checkins/repository/result-key-update.repository';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { Presenter } from '@protocols/presenter';
@@ -13,7 +13,6 @@ import { logger } from '@configs/logger';
 // Models
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
-import ResultKeyUpdateModel from '@domains/api/results-keys/model/result-key-update.model';
 import UserModel from '@domains/api/users/model/user.model';
 import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
 import { ProfileModel } from '@domains/api/profile/model';
@@ -21,6 +20,7 @@ import TeamModel from '@domains/api/teams/model/team.model';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import UserTeamModel from '@domains/common/user-teams/model/user-team.model';
 import { UserTeamRepository } from '@domains/common/user-teams/repository/user-team.repository';
+import ResultKeyUpdateModel from '@domains/api/checkins/model/result-key-update.model';
 
 export function getRecentCheckInsFactory() {
   // Repositories

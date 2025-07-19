@@ -1,9 +1,9 @@
 import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
-import { ResultKeyEntity } from '../entity/result-key.entity';
+import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
-} from './default.interface';
+} from '../../results-keys/interfaces/default.interface';
 import {
   FindResultKeyUpdateCriteria,
   IResultKeyUpdateRepository

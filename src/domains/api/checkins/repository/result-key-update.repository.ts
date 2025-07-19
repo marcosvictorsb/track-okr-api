@@ -6,7 +6,7 @@ import {
   IResultKeyUpdateRepository
 } from '../interfaces/result-key-update.interface';
 import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
-import ResultKeyUpdateModel from '../model/result-key-update.model';
+import ResultKeyUpdateModel from '@domains/api/checkins/model/result-key-update.model';
 
 export type ResultKeyUpdateRepositoryDependencies = {
   model: ModelStatic<ResultKeyUpdateModel>;

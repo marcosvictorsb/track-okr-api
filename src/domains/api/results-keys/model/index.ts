@@ -1,1 +1,1 @@
-export { default } from './result-key.model';
+export * from './result-key.model';

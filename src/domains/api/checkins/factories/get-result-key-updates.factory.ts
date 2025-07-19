@@ -1,12 +1,12 @@
 import { GetResultKeyUpdatesGateway } from '../gateways/get-result-key-updates.gateway';
-import { ResultKeyRepository } from '../repository/result-key.repository';
+import { ResultKeyRepository } from '../../results-keys/repository/result-key.repository';
 import { ResultKeyUpdateRepository } from '../repository/result-key-update.repository';
-import ResultKeyModel from '../model/result-key.model';
-import ResultKeyUpdateModel from '../model/result-key-update.model';
+import ResultKeyModel from '../../results-keys/model/result-key.model';
 import { logger } from '@configs/logger';
 import { Presenter } from '@protocols/presenter';
-import { GetKeyResultUpdateController } from '../controllers';
-import { GetKeyResultUpdateInteractor } from '../usecases';
+import { GetKeyResultUpdateController } from '../../results-keys/controllers';
+import { GetKeyResultUpdateInteractor } from '../../results-keys/usecases';
+import ResultKeyUpdateModel from '../model/result-key-update.model';
 import { IGetKeyResultUpdateInteractorDependencies } from '../interfaces';
 
 export function makeGetResultKeyUpdatesFactory(): GetKeyResultUpdateController {

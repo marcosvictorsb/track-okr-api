@@ -3,11 +3,11 @@ import {
   ICreateResultKeyUpdateGatewayDependencies
 } from '../interfaces/create-result-key-update.interface';
 import { ResultKeyUpdateEntity } from '../entity/result-key-update.entity';
-import { ResultKeyEntity } from '../entity/result-key.entity';
+import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
-} from '../interfaces/default.interface';
+} from '../../results-keys/interfaces/default.interface';
 import { IResultKeyUpdateRepository } from '../interfaces/result-key-update.interface';
 import { MixCreateObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';

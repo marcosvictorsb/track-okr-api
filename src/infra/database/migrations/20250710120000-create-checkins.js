@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('result_key_updates', {
+    await queryInterface.createTable('checkins', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -62,32 +62,29 @@ module.exports = {
     });
 
     // Índice para buscar atualizações por resultado-chave
-    await queryInterface.addIndex('result_key_updates', ['id_result_key']);
+    await queryInterface.addIndex('checkins', ['id_result_key']);
 
     // Índice para buscar atualizações por usuário
-    await queryInterface.addIndex('result_key_updates', ['id_user']);
+    await queryInterface.addIndex('checkins', ['id_user']);
 
     // Índice composto para buscar atualizações por resultado-chave e data
-    await queryInterface.addIndex('result_key_updates', [
-      'id_result_key',
-      'created_at'
-    ]);
+    await queryInterface.addIndex('checkins', ['id_result_key', 'created_at']);
 
     // Índice para buscar por data de criação (para relatórios)
-    await queryInterface.addIndex('result_key_updates', ['created_at']);
+    await queryInterface.addIndex('checkins', ['created_at']);
   },
 
   async down(queryInterface) {
     // Remover os índices primeiro
-    await queryInterface.removeIndex('result_key_updates', ['created_at']);
-    await queryInterface.removeIndex('result_key_updates', [
+    await queryInterface.removeIndex('checkins', ['created_at']);
+    await queryInterface.removeIndex('checkins', [
       'id_result_key',
       'created_at'
     ]);
-    await queryInterface.removeIndex('result_key_updates', ['id_user']);
-    await queryInterface.removeIndex('result_key_updates', ['id_result_key']);
+    await queryInterface.removeIndex('checkins', ['id_user']);
+    await queryInterface.removeIndex('checkins', ['id_result_key']);
 
     // Remover a tabela
-    await queryInterface.dropTable('result_key_updates');
+    await queryInterface.dropTable('checkins');
   }
 };
