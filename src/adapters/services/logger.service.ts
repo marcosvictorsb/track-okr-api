@@ -36,6 +36,9 @@ export type DataLogOutput = {
 
   // resultado chave
   id_result_key?: number;
+
+  // password reset
+  token?: string;
 };
 
 type LoggerServiceDependencies = {
