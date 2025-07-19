@@ -12,12 +12,12 @@ export default [
   {
     rules: {
       eqeqeq: 'off',
-      "no-unused-vars": "off",
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { 
-          "argsIgnorePattern": "^_",
-          "varsIgnorePattern": "^_"
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_'
         }
       ],
       'prefer-const': ['error', { ignoreReadBeforeAssign: true }],
@@ -25,6 +25,13 @@ export default [
     }
   },
   {
-    ignores: ['.node_modules/*']
+    ignores: [
+      'node_modules/**',
+      'coverage/**',
+      'dist/**',
+      'uploads/**',
+      'docs/**',
+      'deployment/**'
+    ]
   }
 ];

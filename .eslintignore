@@ -2,6 +2,9 @@ node_modules/
 dist/
 build/
 coverage/
+uploads/
+docs/
+deployment/
 *.log
 .env
 .env.local
