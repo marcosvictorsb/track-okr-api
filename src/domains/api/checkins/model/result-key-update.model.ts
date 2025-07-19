@@ -77,7 +77,7 @@ ResultKeyUpdateModel.init(
   {
     sequelize,
     modelName: 'ResultKeyUpdate',
-    tableName: 'result_key_updates',
+    tableName: 'checkins',
     timestamps: true,
     paranoid: true,
     createdAt: 'created_at',
