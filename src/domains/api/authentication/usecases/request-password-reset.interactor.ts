@@ -59,8 +59,8 @@ export class RequestPasswordResetInteractor {
       }
 
       // Criar link de reset
-      const baseUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-      const resetLink = `${baseUrl}/reset-password?token=${resetToken}`;
+      const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}`;
 
       // Formatar data de expiração para exibição
       const expiryDate = expiresAt.toLocaleString('pt-BR', {

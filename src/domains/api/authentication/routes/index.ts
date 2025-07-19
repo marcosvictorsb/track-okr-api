@@ -29,7 +29,7 @@ authRoutes.post(
 );
 
 authRoutes.post(
-  '/confirm-password-reset',
+  '/confirm-password',
   validateSchema(confirmPasswordResetSchema),
   (request, response) =>
     confirmPasswordResetController.confirmPasswordReset(request, response)

@@ -17,7 +17,7 @@ export class ConfirmPasswordResetController {
   ): Promise<Response> {
     const input: InputConfirmPasswordReset = {
       token: request.body.token,
-      newPassword: request.body.newPassword
+      newPassword: request.body.password
     };
 
     const httpResponse = await this.interactor.execute(input);
