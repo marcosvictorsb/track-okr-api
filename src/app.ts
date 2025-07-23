@@ -18,7 +18,7 @@ const app: Express = express();
 
 // 1. Middleware de segurança - aplicados primeiro
 app.use(helmetConfig);
-app.use(globalLimiter);
+// app.use(globalLimiter);
 app.use(mongoSanitize());
 app.use(suspiciousRequestLogger);
 
