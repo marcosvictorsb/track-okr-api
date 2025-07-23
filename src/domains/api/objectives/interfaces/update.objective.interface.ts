@@ -33,6 +33,7 @@ export type InputUpdateObjective = {
   id_company: number;
   id_user: number;
   id_team?: number;
+  id_planner?: number;
 };
 
 export type UpdateObjectiveInteractorDependencies = {

@@ -29,7 +29,8 @@ export class UpdateObjectiveInteractor {
         year,
         id_company,
         id_user,
-        id_team
+        id_team,
+        id_planner
       } = input;
 
       this.gateway.loggerInfo('Iniciando atualização do objetivo', {
@@ -86,6 +87,7 @@ export class UpdateObjectiveInteractor {
       if (quarter !== undefined) updateData.quarter = quarter;
       if (year !== undefined) updateData.year = year;
       if (id_team !== undefined) updateData.id_team = id_team;
+      if (id_planner !== undefined) updateData.id_planner = id_planner;
 
       const objective = await this.gateway.update(id, updateData);
 

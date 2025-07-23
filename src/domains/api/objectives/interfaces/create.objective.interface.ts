@@ -26,6 +26,7 @@ export interface InputCreateObjective {
   year: number;
   id_company: number;
   id_user: number;
+  id_planner?: number;
 }
 
 export interface ICreateObjectiveGateway {

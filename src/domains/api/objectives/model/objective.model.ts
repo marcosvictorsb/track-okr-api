@@ -2,6 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '@infra/database/connection/mysql';
 import TeamModel from '@domains/api/teams/model/team.model';
 import CompanyModel from '@domains/api/companies/model/company.model';
+import PlannerModel from '@domains/api/planners/model/planner.model';
 
 interface ObjectiveModelAttributes {
   id?: number;
@@ -12,6 +13,7 @@ interface ObjectiveModelAttributes {
   status: string; // 'active' | 'cancelled' | 'completed';
   quarter: number;
   year: number;
+  id_planner?: number;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -29,6 +31,7 @@ class ObjectiveModel
   declare status: string; //'active' | 'cancelled' | 'completed';
   declare quarter: number;
   declare year: number;
+  declare id_planner?: number;
   declare created_at?: Date;
   declare updated_at?: Date;
   declare deleted_at?: Date;
@@ -77,6 +80,11 @@ ObjectiveModel.init(
       type: DataTypes.INTEGER,
       allowNull: false
     },
+    id_planner: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: { model: 'planners', key: 'id' }
+    },
     created_at: {
       allowNull: false,
       type: DataTypes.DATE,
@@ -112,6 +120,11 @@ ObjectiveModel.belongsTo(TeamModel, {
 ObjectiveModel.belongsTo(CompanyModel, {
   foreignKey: 'id_company',
   as: 'company'
+});
+
+ObjectiveModel.belongsTo(PlannerModel, {
+  foreignKey: 'id_planner',
+  as: 'planner'
 });
 
 export default ObjectiveModel;

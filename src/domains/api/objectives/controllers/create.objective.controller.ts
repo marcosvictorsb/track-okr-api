@@ -13,7 +13,8 @@ export class CreateObjectiveController {
     request: UserPayload,
     response: Response
   ): Promise<Response> {
-    const { title, description, id_team, quarter, year } = request.body;
+    const { title, description, id_team, quarter, year, id_planner } =
+      request.body;
     const { id_company, id: id_user } = request.user;
 
     const httpResponse = await this.interactor.execute({
@@ -23,7 +24,8 @@ export class CreateObjectiveController {
       quarter,
       year,
       id_company,
-      id_user
+      id_user,
+      id_planner: id_planner || undefined
     });
 
     return response.status(httpResponse.status).json(httpResponse.body);

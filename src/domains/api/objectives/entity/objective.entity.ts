@@ -11,6 +11,7 @@ export interface IObjectiveEntity {
   status: string; //'active' | 'cancelled' | 'completed';
   quarter: number;
   year: number;
+  id_planner?: number;
   result_keys?: ResultKeyEntity[];
   created_at?: Date;
   updated_at?: Date;
@@ -28,6 +29,7 @@ export class ObjectiveEntity implements IObjectiveEntity {
   status: string; //'active' | 'cancelled' | 'completed';
   readonly quarter: number;
   readonly year: number;
+  id_planner?: number;
   result_keys?: ResultKeyEntity[];
   readonly created_at?: Date;
   readonly updated_at?: Date;
@@ -44,6 +46,7 @@ export class ObjectiveEntity implements IObjectiveEntity {
     this.status = data.status;
     this.quarter = data.quarter;
     this.year = data.year;
+    this.id_planner = data.id_planner;
     this.result_keys = data.result_keys;
     this.created_at = data.created_at;
     this.updated_at = data.updated_at;
@@ -62,6 +65,7 @@ export class ObjectiveEntity implements IObjectiveEntity {
       status: this.status,
       quarter: this.quarter,
       year: this.year,
+      id_planner: this.id_planner,
       result_keys: this.result_keys,
       created_at: this.created_at,
       updated_at: this.updated_at,

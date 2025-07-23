@@ -27,7 +27,8 @@ export class CreateObjectiveInteractor {
         quarter,
         year,
         id_company,
-        id_user
+        id_user,
+        id_planner
       } = input;
 
       this.gateway.loggerInfo('Iniciando criação do objetivo', {
@@ -54,7 +55,8 @@ export class CreateObjectiveInteractor {
         quarter,
         year,
         status: 'active',
-        id_company
+        id_company,
+        id_planner
       });
 
       this.gateway.loggerInfo('Objetivo criado com sucesso');

@@ -33,6 +33,9 @@ export class UpdateObjectiveController {
       id_user: request.user.id,
       id_team: request.body.id_team
         ? parseInt(request.body.id_team as string)
+        : undefined,
+      id_planner: request.body.id_planner
+        ? parseInt(request.body.id_planner as string)
         : undefined
     };
 

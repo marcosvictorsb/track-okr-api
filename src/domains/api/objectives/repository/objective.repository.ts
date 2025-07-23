@@ -101,7 +101,8 @@ export class ObjectiveRepository implements IObjectiveRepository {
           quarter: objective.quarter,
           year: objective.year,
           status: objective.status,
-          id_company: objective.id_company
+          id_company: objective.id_company,
+          id_planner: objective.id_planner
         })
     );
   }
@@ -135,6 +136,7 @@ export class ObjectiveRepository implements IObjectiveRepository {
       id_team: updatedObjective.id_team,
       quarter: updatedObjective.quarter,
       year: updatedObjective.year,
+      id_planner: updatedObjective?.id_planner,
       status: updatedObjective.status
     });
   }

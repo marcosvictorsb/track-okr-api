@@ -10,6 +10,7 @@ export interface CreateObjectiveCriteria {
   status?: string; //'active' | 'cancelled' | 'completed';
   quarter: number;
   year: number;
+  id_planner?: number;
 }
 
 export interface FindObjectiveCriteria {
