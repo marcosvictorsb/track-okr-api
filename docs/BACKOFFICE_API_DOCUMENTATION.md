@@ -6,18 +6,242 @@ Este documento descreve todas as rotas disponíveis no backoffice para gerenciam
 
 **Base URL:** `http://localhost:3000/backoffice`
 
-## Autenticação
+# Documentação das APIs do Backoffice - Track OKR
 
-Todas as rotas do backoffice requerem autenticação via Bearer Token no header:
+## Visão Geral
+
+Este documento descreve todas as rotas disponíveis no backoffice para gerenciamento de planos de assinatura e pagamentos da Efí Pay.
+
+**Base URL:** `http://localhost:3000/backoffice`
+
+## 🔐 Sistema de Autenticação
+
+### Tipos de Rotas
+
+- **Rotas Públicas:** Login e refresh token (não requerem autenticação)
+- **Rotas Protegidas:** Todas as demais rotas requerem token JWT válido
+
+### Hierarquia de Permissões
+
+O sistema utiliza um modelo de permissões baseado em roles (funções):
+
+1. **Admin** - Acesso total ao sistema
+2. **Manager** - Pode gerenciar planos e sincronizar pagamentos
+3. **Analyst** - Apenas visualização de dados
+4. **Viewer** - Visualização limitada
+
+### Autenticação JWT
+
+Todas as rotas protegidas requerem autenticação via Bearer Token no header:
 
 ```
-Authorization: Bearer {token}
+Authorization: Bearer {access_token}
 ```
 
-**Tokens válidos para desenvolvimento:**
+---
 
-- `backoffice_dev_token_2025`
-- `admin_master_key_dev`
+## 🚪 Endpoints de Autenticação
+
+### 1. Login
+
+**Endpoint:** `POST /backoffice/auth/login`
+
+**Permissão:** Pública
+
+**Body:**
+
+```json
+{
+  "email": "admin@trackokr.com",
+  "password": "admin123!@#"
+}
+```
+
+**Resposta de Sucesso:**
+
+```json
+{
+  "success": true,
+  "message": "Login realizado com sucesso",
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token_type": "Bearer",
+    "expires_in": 28800,
+    "user": {
+      "id": 1,
+      "name": "Administrador do Sistema",
+      "email": "admin@trackokr.com",
+      "role": "admin",
+      "permissions": {
+        "subscription_plans": true,
+        "payments": true,
+        "users": true,
+        "stats": true,
+        "system": true
+      },
+      "is_active": true,
+      "last_login": "2025-07-24T13:00:00.000Z",
+      "created_at": "2025-07-24T12:00:00.000Z",
+      "updated_at": "2025-07-24T13:00:00.000Z"
+    }
+  }
+}
+```
+
+**Resposta de Erro:**
+
+```json
+{
+  "success": false,
+  "message": "Credenciais inválidas"
+}
+```
+
+### 2. Refresh Token
+
+**Endpoint:** `POST /backoffice/auth/refresh`
+
+**Permissão:** Pública
+
+**Body:**
+
+```json
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Resposta de Sucesso:**
+
+```json
+{
+  "success": true,
+  "message": "Token renovado com sucesso",
+  "data": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token_type": "Bearer",
+    "expires_in": 28800
+  }
+}
+```
+
+### 3. Logout
+
+**Endpoint:** `POST /backoffice/auth/logout`
+
+**Permissão:** Requer autenticação
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
+
+**Resposta de Sucesso:**
+
+```json
+{
+  "success": true,
+  "message": "Logout realizado com sucesso"
+}
+```
+
+### 4. Dados do Usuário Logado
+
+**Endpoint:** `GET /backoffice/auth/me`
+
+**Permissão:** Requer autenticação
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
+
+**Resposta de Sucesso:**
+
+```json
+{
+  "success": true,
+  "message": "Dados do usuário recuperados com sucesso",
+  "data": {
+    "id": 1,
+    "name": "Administrador do Sistema",
+    "email": "admin@trackokr.com",
+    "role": "admin",
+    "permissions": {
+      "subscription_plans": true,
+      "payments": true,
+      "users": true,
+      "stats": true,
+      "system": true
+    },
+    "is_active": true,
+    "last_login": "2025-07-24T13:00:00.000Z",
+    "created_at": "2025-07-24T12:00:00.000Z",
+    "updated_at": "2025-07-24T13:00:00.000Z"
+  }
+}
+```
+
+### 5. Verificar Token
+
+**Endpoint:** `GET /backoffice/auth/verify`
+
+**Permissão:** Requer autenticação
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
+
+**Resposta de Sucesso:**
+
+```json
+{
+  "success": true,
+  "message": "Token válido",
+  "valid": true,
+  "user": {
+    "id": 1,
+    "email": "admin@trackokr.com",
+    "name": "Administrador do Sistema",
+    "role": "admin"
+  }
+}
+```
+
+**Resposta de Erro:**
+
+```json
+{
+  "success": false,
+  "message": "Token inválido",
+  "valid": false
+}
+```
+
+### Usuário Padrão para Desenvolvimento
+
+Foi criado um usuário administrador padrão para facilitar o desenvolvimento:
+
+- **Email:** `admin@trackokr.com`
+- **Senha:** `admin123!@#`
+- **Role:** `admin`
+
+**⚠️ IMPORTANTE:** Altere a senha após o primeiro login em produção!
+
+### Códigos de Erro de Autenticação
+
+- `MISSING_TOKEN` - Token não fornecido
+- `INVALID_TOKEN` - Token inválido ou expirado
+- `USER_NOT_FOUND` - Usuário não encontrado
+- `USER_INACTIVE` - Usuário inativo
+- `INSUFFICIENT_ROLE` - Permissão insuficiente
+- `MISSING_PERMISSION` - Permissão específica não encontrada
 
 ---
 
@@ -26,6 +250,14 @@ Authorization: Bearer {token}
 ### 1. Listar Planos
 
 **Endpoint:** `GET /backoffice/subscription-plans`
+
+**Permissão:** Viewer, Analyst, Manager, Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
 
 **Query Parameters:**
 
@@ -64,6 +296,14 @@ Authorization: Bearer {token}
 
 **Endpoint:** `GET /backoffice/subscription-plans/{id}`
 
+**Permissão:** Viewer, Analyst, Manager, Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
+
 **Resposta de Sucesso:**
 
 ```json
@@ -100,6 +340,14 @@ Authorization: Bearer {token}
 ### 3. Criar Novo Plano
 
 **Endpoint:** `POST /backoffice/subscription-plans`
+
+**Permissão:** Manager, Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
 
 **Body (JSON):**
 
@@ -162,6 +410,14 @@ Authorization: Bearer {token}
 
 **Endpoint:** `PUT /backoffice/subscription-plans/{id}`
 
+**Permissão:** Manager, Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
+
 **Body (JSON):**
 
 ```json
@@ -188,6 +444,14 @@ Authorization: Bearer {token}
 
 **Endpoint:** `DELETE /backoffice/subscription-plans/{id}`
 
+**Permissão:** Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
+
 **Resposta de Sucesso:**
 
 ```json
@@ -200,6 +464,14 @@ Authorization: Bearer {token}
 ### 6. Sincronizar com Efí Pay
 
 **Endpoint:** `POST /backoffice/subscription-plans/sync-efi`
+
+**Permissão:** Manager, Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
 
 **Resposta de Sucesso:**
 
@@ -267,6 +539,14 @@ Authorization: Bearer {token}
 ### 1. Listar Pagamentos
 
 **Endpoint:** `GET /backoffice/payments`
+
+**Permissão:** Viewer, Analyst, Manager, Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
 
 **Query Parameters:**
 
@@ -338,6 +618,14 @@ Authorization: Bearer {token}
 
 **Endpoint:** `POST /backoffice/payments/{id}/sync-efi`
 
+**Permissão:** Manager, Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
+
 **Resposta de Sucesso:**
 
 ```json
@@ -358,6 +646,14 @@ Authorization: Bearer {token}
 ### 6. Sincronizar Todos os Pagamentos Pendentes
 
 **Endpoint:** `POST /backoffice/payments/sync-all-pending`
+
+**Permissão:** Admin
+
+**Headers:**
+
+```
+Authorization: Bearer {access_token}
+```
 
 **Resposta de Sucesso:**
 
@@ -583,7 +879,7 @@ async function getPaymentStats() {
 
 ### cURL Examples
 
-```bash
+````bash
 # Listar planos
 curl -X GET "http://localhost:3000/backoffice/subscription-plans" \
   -H "Authorization: Bearer backoffice_dev_token_2025"
@@ -591,6 +887,32 @@ curl -X GET "http://localhost:3000/backoffice/subscription-plans" \
 # Criar plano
 curl -X POST "http://localhost:3000/backoffice/subscription-plans" \
   -H "Authorization: Bearer backoffice_dev_token_2025" \
+---
+
+## 🧪 Exemplos de Uso com cURL
+
+### Fazer Login
+
+```bash
+# Login
+curl -X POST "http://localhost:3000/backoffice/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@trackokr.com",
+    "password": "admin123!@#"
+  }'
+````
+
+### Usar Token nas Requisições
+
+```bash
+# Listar planos (exemplo com token)
+curl -X GET "http://localhost:3000/backoffice/subscription-plans" \
+  -H "Authorization: Bearer SEU_ACCESS_TOKEN_AQUI"
+
+# Criar novo plano (requer manager/admin)
+curl -X POST "http://localhost:3000/backoffice/subscription-plans" \
+  -H "Authorization: Bearer SEU_ACCESS_TOKEN_AQUI" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Enterprise",
@@ -601,10 +923,74 @@ curl -X POST "http://localhost:3000/backoffice/subscription-plans" \
 
 # Testar conexão Efí Pay
 curl -X GET "http://localhost:3000/backoffice/subscription-plans/test-efi-connection" \
-  -H "Authorization: Bearer backoffice_dev_token_2025"
+  -H "Authorization: Bearer SEU_ACCESS_TOKEN_AQUI"
 ```
 
 ---
 
-**Última atualização:** 23 de julho de 2025
-**Versão da API:** 1.0.0
+## 📊 Resumo de Permissões por Role
+
+| Endpoint                                     | Viewer | Analyst | Manager | Admin |
+| -------------------------------------------- | ------ | ------- | ------- | ----- |
+| **Autenticação**                             |
+| POST /auth/login                             | ✅     | ✅      | ✅      | ✅    |
+| POST /auth/refresh                           | ✅     | ✅      | ✅      | ✅    |
+| POST /auth/logout                            | ✅     | ✅      | ✅      | ✅    |
+| GET /auth/me                                 | ✅     | ✅      | ✅      | ✅    |
+| GET /auth/verify                             | ✅     | ✅      | ✅      | ✅    |
+| **Planos de Assinatura**                     |
+| GET /subscription-plans                      | ✅     | ✅      | ✅      | ✅    |
+| GET /subscription-plans/:id                  | ✅     | ✅      | ✅      | ✅    |
+| GET /subscription-plans/test-efi-connection  | ✅     | ✅      | ✅      | ✅    |
+| POST /subscription-plans                     | ❌     | ❌      | ✅      | ✅    |
+| PUT /subscription-plans/:id                  | ❌     | ❌      | ✅      | ✅    |
+| DELETE /subscription-plans/:id               | ❌     | ❌      | ❌      | ✅    |
+| POST /subscription-plans/sync-efi            | ❌     | ❌      | ✅      | ✅    |
+| POST /subscription-plans/:id/create-efi-plan | ❌     | ❌      | ✅      | ✅    |
+| **Pagamentos**                               |
+| GET /payments                                | ✅     | ✅      | ✅      | ✅    |
+| GET /payments/pending                        | ✅     | ✅      | ✅      | ✅    |
+| GET /payments/overdue                        | ✅     | ✅      | ✅      | ✅    |
+| GET /payments/stats                          | ✅     | ✅      | ✅      | ✅    |
+| GET /payments/:id                            | ✅     | ✅      | ✅      | ✅    |
+| POST /payments/:id/sync-efi                  | ❌     | ❌      | ✅      | ✅    |
+| POST /payments/sync-all-pending              | ❌     | ❌      | ❌      | ✅    |
+
+### Descrição das Roles
+
+- **Viewer:** Apenas visualização de dados básicos
+- **Analyst:** Visualização completa de dados e relatórios
+- **Manager:** Pode gerenciar planos e sincronizar pagamentos individuais
+- **Admin:** Acesso total, incluindo operações perigosas como exclusões e sincronizações em lote
+
+---
+
+## 🔧 Configuração do Ambiente
+
+### Variáveis de Ambiente Necessárias
+
+```env
+# JWT Secrets para Backoffice
+BACKOFFICE_JWT_SECRET=sua_chave_secreta_jwt
+BACKOFFICE_JWT_EXPIRES_IN=8h
+BACKOFFICE_REFRESH_SECRET=sua_chave_refresh_token
+
+# Efí Pay (para integração com pagamentos)
+EFI_CLIENT_ID=seu_client_id
+EFI_CLIENT_SECRET=seu_client_secret
+EFI_ENVIRONMENT=sandbox # ou production
+EFI_WEBHOOK_SECRET=seu_webhook_secret
+```
+
+### Banco de Dados
+
+A tabela `backoffice_users` foi criada automaticamente via migration. Para criar o usuário administrador padrão:
+
+```bash
+npx sequelize-cli db:seed --seed 20250724130714-backoffice-admin-user.js
+```
+
+---
+
+**Última atualização:** 24 de julho de 2025
+**Versão da API:** 1.1.0

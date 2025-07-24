@@ -15,13 +15,15 @@ export interface RefreshTokenPayload extends JwtPayload {
 }
 
 export class BackofficeJWTService {
-  private static readonly JWT_SECRET =
-    process.env.BACKOFFICE_JWT_SECRET || 'backoffice_secret_key_2025';
-  private static readonly JWT_EXPIRES_IN =
-    process.env.BACKOFFICE_JWT_EXPIRES_IN || '8h';
-  private static readonly REFRESH_TOKEN_SECRET =
-    process.env.BACKOFFICE_REFRESH_SECRET || 'backoffice_refresh_secret_2025';
-  private static readonly REFRESH_EXPIRES_IN = '7d';
+  private static readonly JWT_SECRET: string =
+    (process.env.BACKOFFICE_JWT_SECRET as string) ||
+    'backoffice_secret_key_2025';
+  private static readonly JWT_EXPIRES_IN: string =
+    (process.env.BACKOFFICE_JWT_EXPIRES_IN as string) || '8h';
+  private static readonly REFRESH_TOKEN_SECRET: string =
+    (process.env.BACKOFFICE_REFRESH_SECRET as string) ||
+    'backoffice_refresh_secret_2025';
+  private static readonly REFRESH_EXPIRES_IN: string = '7d';
 
   /**
    * Gera token de acesso JWT
@@ -37,11 +39,8 @@ export class BackofficeJWTService {
       permissions: user.permissions
     };
 
-    return jwt.sign(payload, this.JWT_SECRET as string, {
-      expiresIn: this.JWT_EXPIRES_IN,
-      issuer: 'track-okr-backoffice',
-      audience: 'backoffice-users',
-      subject: user.id.toString()
+    return jwt.sign(payload, this.JWT_SECRET, {
+      expiresIn: 28800 // 8 horas em segundos
     });
   }
 
@@ -58,11 +57,8 @@ export class BackofficeJWTService {
       tokenType: 'refresh'
     };
 
-    return jwt.sign(payload, this.REFRESH_TOKEN_SECRET as string, {
-      expiresIn: this.REFRESH_EXPIRES_IN,
-      issuer: 'track-okr-backoffice',
-      audience: 'backoffice-users',
-      subject: user.id.toString()
+    return jwt.sign(payload, this.REFRESH_TOKEN_SECRET, {
+      expiresIn: 604800 // 7 dias em segundos
     });
   }
 
@@ -71,10 +67,10 @@ export class BackofficeJWTService {
    */
   static verifyAccessToken(token: string): BackofficeJWTPayload | null {
     try {
-      const decoded = jwt.verify(token, this.JWT_SECRET as string, {
-        issuer: 'track-okr-backoffice',
-        audience: 'backoffice-users'
-      }) as BackofficeJWTPayload;
+      const decoded = jwt.verify(
+        token,
+        this.JWT_SECRET
+      ) as BackofficeJWTPayload;
 
       return decoded;
     } catch (error) {
@@ -88,10 +84,10 @@ export class BackofficeJWTService {
    */
   static verifyRefreshToken(token: string): RefreshTokenPayload | null {
     try {
-      return jwt.verify(token, this.REFRESH_TOKEN_SECRET as string, {
-        issuer: 'track-okr-backoffice',
-        audience: 'backoffice-users'
-      }) as RefreshTokenPayload;
+      return jwt.verify(
+        token,
+        this.REFRESH_TOKEN_SECRET
+      ) as RefreshTokenPayload;
     } catch (error) {
       console.error('Erro na verificação do refresh token:', error);
       return null;
@@ -109,7 +105,7 @@ export class BackofficeJWTService {
       access_token: accessToken,
       refresh_token: refreshToken,
       token_type: 'Bearer',
-      expires_in: this.parseExpirationTime(this.JWT_EXPIRES_IN),
+      expires_in: 28800, // 8 horas
       user: user.toSafeObject()
     };
   }
