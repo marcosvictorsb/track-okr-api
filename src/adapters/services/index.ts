@@ -3,3 +3,4 @@ export * from './logger.service';
 export * from './encryption.service';
 export * from './token.service';
 export * from './email.service';
+export * from './backoffice-jwt.service';
