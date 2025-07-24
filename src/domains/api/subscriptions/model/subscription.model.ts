@@ -2,10 +2,10 @@ import Company from '@domains/api/companies/model/company.model';
 import { sequelize } from '@infra/database/connection/mysql';
 import { DataTypes, Model } from 'sequelize';
 
-
 class Subscription extends Model {
   declare id?: number;
   declare id_company?: number;
+  declare subscription_plan_id?: number;
   declare amount_users?: number;
   declare status?: string;
   declare id_external_payment?: string;
@@ -26,6 +26,14 @@ Subscription.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: Company, key: 'id' }
+    },
+    subscription_plan_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'subscription_plans',
+        key: 'id'
+      }
     },
     amount_users: DataTypes.INTEGER,
     status: DataTypes.STRING, // ('active', 'cancelled'),
