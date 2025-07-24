@@ -12,6 +12,7 @@ export interface CreatePlanRequest {
   price_monthly: number;
   price_yearly?: number;
   features: object;
+  efi_plan_id?: string;
   create_efi_plan?: boolean;
 }
 

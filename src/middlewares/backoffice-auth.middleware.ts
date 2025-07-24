@@ -84,7 +84,7 @@ export class BackofficeAuthMiddleware {
         // Verificar permissão específica
         if (
           options.requiredPermission &&
-          !user.hasPermission(options.requiredPermission)
+          !user.hasPermission!(options.requiredPermission)
         ) {
           return res.status(403).json({
             success: false,

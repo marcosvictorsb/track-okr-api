@@ -112,7 +112,7 @@ export class BackofficeAuthController {
       return res.status(200).json({
         success: true,
         message: 'Dados do usuário recuperados com sucesso',
-        data: user.toSafeObject()
+        data: user
       });
     } catch (error) {
       console.error('Erro ao buscar dados do usuário:', error);

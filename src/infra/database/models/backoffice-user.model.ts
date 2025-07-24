@@ -94,13 +94,34 @@ export class BackofficeUserModel
     const {
       password: _password,
       password_reset_token: _resetToken,
+      password_reset_expires: _resetExpires,
       ...safeData
     } = this.toJSON();
     return safeData;
   }
 
+  // Método para retornar apenas os dataValues limpos
+  public toPlainObject() {
+    return this.dataValues;
+  }
+
+  // Método para dados públicos (ainda mais limitado)
+  public toPublicObject() {
+    const {
+      password: _password,
+      password_reset_token: _resetToken,
+      password_reset_expires: _resetExpires,
+      created_by: _createdBy,
+      last_login_ip: _lastLoginIp,
+      deleted_at: _deletedAt,
+      ...publicData
+    } = this.toJSON();
+    return publicData;
+  }
+
   // Método para validar senha
   public async validatePassword(password: string): Promise<boolean> {
+    console.log({ password, storedPassword: this.password });
     return bcryptjs.compare(password, this.password);
   }
 }

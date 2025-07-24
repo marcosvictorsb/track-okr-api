@@ -1,6 +1,10 @@
 import { BackofficeUserRepository } from '../repository/backoffice-user.repository';
 import { BackofficeJWTService } from '../../../../adapters/services/backoffice-jwt.service';
 import { BackofficeUserModel } from '../../../../infra/database/models/backoffice-user.model';
+import {
+  BackofficeUserEntity,
+  BackofficeUserPublicEntity
+} from '../entities/backoffice-user.entity';
 
 export interface LoginRequest {
   email: string;
@@ -15,7 +19,7 @@ export interface LoginResponse {
     refresh_token: string;
     token_type: string;
     expires_in: number;
-    user: ReturnType<BackofficeUserModel['toSafeObject']>;
+    user: BackofficeUserPublicEntity;
   };
 }
 
@@ -52,8 +56,12 @@ export class BackofficeAuthUseCase {
         };
       }
 
-      // Buscar usuário por email
-      const user = await this.backofficeUserRepository.findByEmail(email);
+      // Buscar usuário com senha (precisa do modelo Sequelize)
+      const user =
+        await this.backofficeUserRepository.findByEmailWithPassword(email);
+
+      console.log(user);
+
       if (!user) {
         return {
           success: false,
@@ -81,13 +89,32 @@ export class BackofficeAuthUseCase {
       // Atualizar último login
       await this.backofficeUserRepository.updateLastLogin(user.id);
 
-      // Gerar tokens
+      // Gerar tokens (usar o modelo para o JWT)
       const tokenData = BackofficeJWTService.generateTokenPair(user);
+
+      // Converter user para entidade pública
+      const userEntity = new BackofficeUserPublicEntity({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        permissions: user.permissions,
+        is_active: user.is_active,
+        last_login: user.last_login,
+        created_at: user.created_at,
+        updated_at: user.updated_at
+      });
 
       return {
         success: true,
         message: 'Login realizado com sucesso',
-        data: tokenData
+        data: {
+          access_token: tokenData.access_token,
+          refresh_token: tokenData.refresh_token,
+          token_type: tokenData.token_type,
+          expires_in: tokenData.expires_in,
+          user: userEntity
+        }
       };
     } catch (error) {
       console.error('Erro no login do backoffice:', error);
@@ -124,14 +151,25 @@ export class BackofficeAuthUseCase {
         };
       }
 
-      // Buscar usuário
-      const user = await this.backofficeUserRepository.findById(
+      // Buscar usuário (precisa do modelo para gerar JWT)
+      const userEntity = await this.backofficeUserRepository.findById(
         tokenPayload.id
       );
-      if (!user || !user.is_active) {
+      if (!userEntity || !userEntity.is_active) {
         return {
           success: false,
           message: 'Usuário não encontrado ou inativo'
+        };
+      }
+
+      // Buscar modelo para gerar tokens
+      const user = await this.backofficeUserRepository.findByIdModel(
+        tokenPayload.id
+      );
+      if (!user) {
+        return {
+          success: false,
+          message: 'Usuário não encontrado'
         };
       }
 
@@ -170,7 +208,7 @@ export class BackofficeAuthUseCase {
         return false;
       }
 
-      return user.hasPermission(requiredRole);
+      return user.hasPermission!(requiredRole);
     } catch (error) {
       console.error('Erro na verificação de permissão:', error);
       return false;
@@ -200,11 +238,27 @@ export class BackofficeAuthUseCase {
   }
 
   /**
-   * Verificar se o usuário existe e está ativo
+   * Verificar se o usuário existe e está ativo (retorna entidade)
    */
-  async validateUser(userId: number): Promise<BackofficeUserModel | null> {
+  async validateUser(userId: number): Promise<BackofficeUserEntity | null> {
     try {
       const user = await this.backofficeUserRepository.findById(userId);
+      if (!user || !user.is_active) {
+        return null;
+      }
+      return user;
+    } catch (error) {
+      console.error('Erro na validação do usuário:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Verificar se o usuário existe e está ativo (retorna model para uso interno)
+   */
+  async validateUserModel(userId: number): Promise<BackofficeUserModel | null> {
+    try {
+      const user = await this.backofficeUserRepository.findByIdModel(userId);
       if (!user || !user.is_active) {
         return null;
       }

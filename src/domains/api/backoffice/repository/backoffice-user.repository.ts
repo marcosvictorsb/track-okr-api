@@ -3,82 +3,84 @@ import {
   BackofficeUserAttributes,
   BackofficeUserCreationAttributes
 } from '@infra/database/models/backoffice-user.model';
+import { BackofficeUserEntity } from '../entities/backoffice-user.entity';
 import { Op } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
-
 export interface IBackofficeUserRepository {
+  // Métodos principais que retornam entidades (uso comum)
   create(
     userData: BackofficeUserCreationAttributes
-  ): Promise<BackofficeUserModel>;
-  findById(id: number): Promise<BackofficeUserModel | null>;
-  findByEmail(email: string): Promise<BackofficeUserModel | null>;
-  findByEmailWithPassword(email: string): Promise<BackofficeUserModel | null>;
-  findAll(includeInactive?: boolean): Promise<BackofficeUserModel[]>;
+  ): Promise<BackofficeUserEntity>;
+  findById(id: number): Promise<BackofficeUserEntity | null>;
+  findByEmail(email: string): Promise<BackofficeUserEntity | null>;
+  findByEmailWithPassword(email: string): Promise<BackofficeUserModel | null>; // Precisa do modelo para validação de senha
+  findAll(includeInactive?: boolean): Promise<BackofficeUserEntity[]>;
   update(
     id: number,
     userData: Partial<BackofficeUserAttributes>
-  ): Promise<BackofficeUserModel | null>;
+  ): Promise<BackofficeUserEntity | null>;
+
+  // Métodos auxiliares
   updateLastLogin(id: number, ip?: string): Promise<void>;
   deactivate(id: number): Promise<boolean>;
   generatePasswordResetToken(email: string): Promise<string | null>;
-  findByResetToken(token: string): Promise<BackofficeUserModel | null>;
+  findByResetToken(token: string): Promise<BackofficeUserModel | null>; // Precisa do modelo para reset
   resetPassword(token: string, newPassword: string): Promise<boolean>;
+
+  // Métodos que retornam modelos Sequelize (para casos específicos)
+  findByIdModel(id: number): Promise<BackofficeUserModel | null>;
+  findByEmailModel(email: string): Promise<BackofficeUserModel | null>;
+  findAllModels(includeInactive?: boolean): Promise<BackofficeUserModel[]>;
+  createModel(
+    userData: BackofficeUserCreationAttributes
+  ): Promise<BackofficeUserModel>;
+
+  // Métodos correspondentes que retornam entidades
+  createEntity(
+    userData: BackofficeUserCreationAttributes
+  ): Promise<BackofficeUserEntity>;
+  findByIdEntity(id: number): Promise<BackofficeUserEntity | null>;
+  findByEmailEntity(email: string): Promise<BackofficeUserEntity | null>;
+  findAllEntities(includeInactive?: boolean): Promise<BackofficeUserEntity[]>;
+  findByEmailWithPasswordEntity(
+    email: string
+  ): Promise<BackofficeUserEntity | null>;
 }
 
 export class BackofficeUserRepository implements IBackofficeUserRepository {
+  // ==============================================
+  // MÉTODOS PRINCIPAIS (RETORNAM ENTIDADES)
+  // ==============================================
+
   async create(
     userData: BackofficeUserCreationAttributes
-  ): Promise<BackofficeUserModel> {
-    // Criptografar senha antes de salvar
-    const hashedPassword = await bcrypt.hash(userData.password, 12);
-
-    return await BackofficeUserModel.create({
-      ...userData,
-      password: hashedPassword
-    });
+  ): Promise<BackofficeUserEntity> {
+    const model = await this.createModel(userData);
+    return new BackofficeUserEntity(model.dataValues);
   }
 
-  async findById(id: number): Promise<BackofficeUserModel | null> {
-    return await BackofficeUserModel.findByPk(id);
+  async findById(id: number): Promise<BackofficeUserEntity | null> {
+    const model = await this.findByIdModel(id);
+    return model ? new BackofficeUserEntity(model.dataValues) : null;
   }
 
-  async findByEmail(email: string): Promise<BackofficeUserModel | null> {
-    return await BackofficeUserModel.findOne({
-      where: { email: email.toLowerCase() }
-    });
-  }
-
-  async findByEmailWithPassword(
-    email: string
-  ): Promise<BackofficeUserModel | null> {
-    return await BackofficeUserModel.scope('withPassword').findOne({
-      where: { email: email.toLowerCase() }
-    });
+  async findByEmail(email: string): Promise<BackofficeUserEntity | null> {
+    const model = await this.findByEmailModel(email);
+    return model ? new BackofficeUserEntity(model.dataValues) : null;
   }
 
   async findAll(
     includeInactive: boolean = false
-  ): Promise<BackofficeUserModel[]> {
-    const whereClause = includeInactive ? {} : { is_active: true };
-
-    return await BackofficeUserModel.findAll({
-      where: whereClause,
-      include: [
-        {
-          model: BackofficeUserModel,
-          as: 'creator',
-          attributes: ['id', 'name', 'email']
-        }
-      ],
-      order: [['created_at', 'DESC']]
-    });
+  ): Promise<BackofficeUserEntity[]> {
+    const models = await this.findAllModels(includeInactive);
+    return models.map((model) => new BackofficeUserEntity(model.dataValues));
   }
 
   async update(
     id: number,
     userData: Partial<BackofficeUserAttributes>
-  ): Promise<BackofficeUserModel | null> {
+  ): Promise<BackofficeUserEntity | null> {
     const updateData = { ...userData };
 
     // Se estiver atualizando a senha, criptografar
@@ -102,6 +104,90 @@ export class BackofficeUserRepository implements IBackofficeUserRepository {
     return await this.findById(id);
   }
 
+  // ==============================================
+  // MÉTODOS QUE RETORNAM MODELOS SEQUELIZE
+  // ==============================================
+
+  async createModel(
+    userData: BackofficeUserCreationAttributes
+  ): Promise<BackofficeUserModel> {
+    // Criptografar senha antes de salvar
+    const hashedPassword = await bcrypt.hash(userData.password, 12);
+
+    return await BackofficeUserModel.create({
+      ...userData,
+      password: hashedPassword
+    });
+  }
+
+  async findByIdModel(id: number): Promise<BackofficeUserModel | null> {
+    return await BackofficeUserModel.findByPk(id);
+  }
+
+  async findByEmailModel(email: string): Promise<BackofficeUserModel | null> {
+    return await BackofficeUserModel.findOne({
+      where: { email: email.toLowerCase() }
+    });
+  }
+
+  async findAllModels(
+    includeInactive: boolean = false
+  ): Promise<BackofficeUserModel[]> {
+    const whereClause = includeInactive ? {} : { is_active: true };
+
+    return await BackofficeUserModel.findAll({
+      where: whereClause,
+      order: [['created_at', 'DESC']]
+    });
+  }
+
+  async findByEmailWithPassword(
+    email: string
+  ): Promise<BackofficeUserModel | null> {
+    return await BackofficeUserModel.scope('withPassword').findOne({
+      where: { email: email.toLowerCase() }
+    });
+  }
+
+  // ==============================================
+  // MÉTODOS CORRESPONDENTES QUE RETORNAM ENTIDADES
+  // ==============================================
+
+  async createEntity(
+    userData: BackofficeUserCreationAttributes
+  ): Promise<BackofficeUserEntity> {
+    const model = await this.createModel(userData);
+    return new BackofficeUserEntity(model.dataValues);
+  }
+
+  async findByIdEntity(id: number): Promise<BackofficeUserEntity | null> {
+    const model = await this.findByIdModel(id);
+    return model ? new BackofficeUserEntity(model.dataValues) : null;
+  }
+
+  async findByEmailEntity(email: string): Promise<BackofficeUserEntity | null> {
+    const model = await this.findByEmailModel(email);
+    return model ? new BackofficeUserEntity(model.dataValues) : null;
+  }
+
+  async findAllEntities(
+    includeInactive: boolean = false
+  ): Promise<BackofficeUserEntity[]> {
+    const models = await this.findAllModels(includeInactive);
+    return models.map((model) => new BackofficeUserEntity(model.dataValues));
+  }
+
+  async findByEmailWithPasswordEntity(
+    email: string
+  ): Promise<BackofficeUserEntity | null> {
+    const model = await this.findByEmailWithPassword(email);
+    return model ? new BackofficeUserEntity(model.dataValues) : null;
+  }
+
+  // ==============================================
+  // MÉTODOS AUXILIARES
+  // ==============================================
+
   async updateLastLogin(id: number, ip?: string): Promise<void> {
     await BackofficeUserModel.update(
       {
@@ -122,7 +208,7 @@ export class BackofficeUserRepository implements IBackofficeUserRepository {
   }
 
   async generatePasswordResetToken(email: string): Promise<string | null> {
-    const user = await this.findByEmail(email);
+    const user = await this.findByEmailModel(email);
     if (!user || !user.is_active) {
       return null;
     }
