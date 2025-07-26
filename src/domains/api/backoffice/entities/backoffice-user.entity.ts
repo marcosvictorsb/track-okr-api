@@ -1,8 +1,11 @@
+import bcryptjs from 'bcryptjs';
+
 export class BackofficeUserEntity {
   public readonly id?: number;
   public readonly name: string;
   public readonly email: string;
-  public readonly role: "admin" | "manager" | "analyst" | "viewer";
+  public readonly password?: string;
+  public readonly role: 'admin' | 'manager' | 'analyst' | 'viewer';
   public readonly permissions?: object;
   public readonly is_active: boolean;
   public readonly last_login?: Date | null;
@@ -16,7 +19,8 @@ export class BackofficeUserEntity {
     id?: number;
     name: string;
     email: string;
-    role: "admin" | "manager" | "analyst" | "viewer";
+    password?: string;
+    role: 'admin' | 'manager' | 'analyst' | 'viewer';
     permissions?: object;
     is_active: boolean;
     last_login?: Date | null;
@@ -29,6 +33,7 @@ export class BackofficeUserEntity {
     this.id = params.id;
     this.name = params.name;
     this.email = params.email;
+    this.password = params.password;
     this.role = params.role;
     this.permissions = params.permissions;
     this.is_active = params.is_active;
@@ -41,37 +46,41 @@ export class BackofficeUserEntity {
   }
 
   hasPermission(permission: string): boolean {
-    if (this.role === "admin") return true;
-    if (!this.permissions || typeof this.permissions !== "object") return false;
+    if (this.role === 'admin') return true;
+    if (!this.permissions || typeof this.permissions !== 'object') return false;
     const perms = this.permissions as Record<string, boolean>;
     return perms[permission] === true;
   }
 
-  canAccess(resource: string, action: string = "read"): boolean {
-    if (this.role === "admin") return true;
+  canAccess(resource: string, action: string = 'read'): boolean {
+    if (this.role === 'admin') return true;
     const rolePermissions = {
       manager: {
-        subscription_plans: ["read", "create", "update"],
-        payments: ["read", "update"],
-        users: ["read", "create"],
-        stats: ["read"],
-        dashboard: ["read"]
+        subscription_plans: ['read', 'create', 'update'],
+        payments: ['read', 'update'],
+        users: ['read', 'create'],
+        stats: ['read'],
+        dashboard: ['read']
       },
       analyst: {
-        subscription_plans: ["read"],
-        payments: ["read"],
-        stats: ["read"],
-        dashboard: ["read"]
+        subscription_plans: ['read'],
+        payments: ['read'],
+        stats: ['read'],
+        dashboard: ['read']
       },
       viewer: {
-        subscription_plans: ["read"],
-        payments: ["read"],
-        stats: ["read"],
-        dashboard: ["read"]
+        subscription_plans: ['read'],
+        payments: ['read'],
+        stats: ['read'],
+        dashboard: ['read']
       }
     };
-    const userRolePerms = rolePermissions[this.role as keyof typeof rolePermissions];
-    if (!userRolePerms || !userRolePerms[resource as keyof typeof userRolePerms]) {
+    const userRolePerms =
+      rolePermissions[this.role as keyof typeof rolePermissions];
+    if (
+      !userRolePerms ||
+      !userRolePerms[resource as keyof typeof userRolePerms]
+    ) {
       return false;
     }
     const resourcePerms = userRolePerms[resource as keyof typeof userRolePerms];
@@ -83,7 +92,7 @@ export class BackofficeUserPublicEntity {
   public readonly id?: number;
   public readonly name: string;
   public readonly email: string;
-  public readonly role: "admin" | "manager" | "analyst" | "viewer";
+  public readonly role: 'admin' | 'manager' | 'analyst' | 'viewer';
   public readonly permissions?: object;
   public readonly is_active: boolean;
   public readonly last_login?: Date | null;
@@ -94,7 +103,7 @@ export class BackofficeUserPublicEntity {
     id?: number;
     name: string;
     email: string;
-    role: "admin" | "manager" | "analyst" | "viewer";
+    role: 'admin' | 'manager' | 'analyst' | 'viewer';
     permissions?: object;
     is_active: boolean;
     last_login?: Date | null;

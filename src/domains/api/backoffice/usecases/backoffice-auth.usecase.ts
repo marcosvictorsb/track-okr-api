@@ -5,6 +5,7 @@ import {
   BackofficeUserEntity,
   BackofficeUserPublicEntity
 } from '../entities/backoffice-user.entity';
+import bcryptjs from 'bcryptjs';
 
 export interface LoginRequest {
   email: string;
@@ -78,7 +79,10 @@ export class BackofficeAuthUseCase {
       }
 
       // Verificar senha
-      const isPasswordValid = await user.validatePassword(password);
+      const isPasswordValid = await this.validatePassword(
+        password,
+        user.password as string
+      );
       if (!isPasswordValid) {
         return {
           success: false,
@@ -87,7 +91,7 @@ export class BackofficeAuthUseCase {
       }
 
       // Atualizar último login
-      await this.backofficeUserRepository.updateLastLogin(user.id);
+      await this.backofficeUserRepository.updateLastLogin(user.id as number);
 
       // Gerar tokens (usar o modelo para o JWT)
       const tokenData = BackofficeJWTService.generateTokenPair(user);
@@ -123,6 +127,11 @@ export class BackofficeAuthUseCase {
         message: 'Erro interno do servidor'
       };
     }
+  }
+
+  async validatePassword(password: string, storedPassword: string) {
+    console.log({ password, storedPassword });
+    return bcryptjs.compare(password, storedPassword);
   }
 
   /**

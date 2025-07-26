@@ -1,5 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { BackofficeUserModel } from '@infra/database/models/backoffice-user.model';
+import { BackofficeUserEntity } from '@domains/api/backoffice/entities/backoffice-user.entity';
 
 export interface BackofficeJWTPayload extends JwtPayload {
   id: number;
@@ -28,7 +29,7 @@ export class BackofficeJWTService {
   /**
    * Gera token de acesso JWT
    */
-  static generateAccessToken(user: BackofficeUserModel): string {
+  static generateAccessToken(user: BackofficeUserEntity): string {
     const payload: Omit<
       BackofficeJWTPayload,
       'iat' | 'exp' | 'aud' | 'iss' | 'sub'
@@ -47,7 +48,7 @@ export class BackofficeJWTService {
   /**
    * Gera refresh token
    */
-  static generateRefreshToken(user: BackofficeUserModel): string {
+  static generateRefreshToken(user: BackofficeUserEntity): string {
     const payload: Omit<
       RefreshTokenPayload,
       'iat' | 'exp' | 'aud' | 'iss' | 'sub'
@@ -97,7 +98,7 @@ export class BackofficeJWTService {
   /**
    * Gera par de tokens (access + refresh)
    */
-  static generateTokenPair(user: BackofficeUserModel) {
+  static generateTokenPair(user: BackofficeUserEntity) {
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
 
@@ -106,7 +107,7 @@ export class BackofficeJWTService {
       refresh_token: refreshToken,
       token_type: 'Bearer',
       expires_in: 28800, // 8 horas
-      user: user.toSafeObject()
+      user: user
     };
   }
 

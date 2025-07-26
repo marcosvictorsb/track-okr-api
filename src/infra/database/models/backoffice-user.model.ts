@@ -1,5 +1,4 @@
 import { DataTypes, Model } from 'sequelize';
-import bcryptjs from 'bcryptjs';
 import { sequelize } from '../connection/mysql';
 
 export interface BackofficeUserAttributes {
@@ -31,24 +30,24 @@ export interface BackofficeUserCreationAttributes {
 }
 
 export class BackofficeUserModel
-  extends Model<BackofficeUserAttributes, BackofficeUserCreationAttributes>
+  extends Model<BackofficeUserAttributes>
   implements BackofficeUserAttributes
 {
-  public id!: number;
-  public name!: string;
-  public email!: string;
-  public password!: string;
-  public role!: 'admin' | 'manager' | 'analyst' | 'viewer';
-  public permissions?: object;
-  public is_active!: boolean;
-  public last_login?: Date;
-  public last_login_ip?: string;
-  public password_reset_token?: string;
-  public password_reset_expires?: Date;
-  public created_by?: number;
-  public created_at!: Date;
-  public updated_at!: Date;
-  public deleted_at?: Date;
+  declare id: number;
+  declare name: string;
+  declare email: string;
+  declare password: string;
+  declare role: 'admin' | 'manager' | 'analyst' | 'viewer';
+  declare permissions?: object;
+  declare is_active: boolean;
+  declare last_login?: Date;
+  declare last_login_ip?: string;
+  declare password_reset_token?: string;
+  declare password_reset_expires?: Date;
+  declare created_by?: number;
+  declare created_at: Date;
+  declare updated_at: Date;
+  declare deleted_at?: Date;
 
   // Método para verificar permissões
   public hasPermission(permission: string): boolean {
@@ -117,12 +116,6 @@ export class BackofficeUserModel
       ...publicData
     } = this.toJSON();
     return publicData;
-  }
-
-  // Método para validar senha
-  public async validatePassword(password: string): Promise<boolean> {
-    console.log({ password, storedPassword: this.password });
-    return bcryptjs.compare(password, this.password);
   }
 }
 

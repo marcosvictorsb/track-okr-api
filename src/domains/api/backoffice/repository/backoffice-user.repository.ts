@@ -14,7 +14,7 @@ export interface IBackofficeUserRepository {
   ): Promise<BackofficeUserEntity>;
   findById(id: number): Promise<BackofficeUserEntity | null>;
   findByEmail(email: string): Promise<BackofficeUserEntity | null>;
-  findByEmailWithPassword(email: string): Promise<BackofficeUserModel | null>; // Precisa do modelo para validação de senha
+  findByEmailWithPassword(email: string): Promise<BackofficeUserEntity | null>; // Precisa do modelo para validação de senha
   findAll(includeInactive?: boolean): Promise<BackofficeUserEntity[]>;
   update(
     id: number,
@@ -116,7 +116,11 @@ export class BackofficeUserRepository implements IBackofficeUserRepository {
 
     return await BackofficeUserModel.create({
       ...userData,
-      password: hashedPassword
+      password: hashedPassword,
+      id: 0,
+      created_at: new Date(),
+      updated_at: new Date(),
+      is_active: userData.is_active !== undefined ? userData.is_active : true
     });
   }
 
@@ -143,10 +147,12 @@ export class BackofficeUserRepository implements IBackofficeUserRepository {
 
   async findByEmailWithPassword(
     email: string
-  ): Promise<BackofficeUserModel | null> {
-    return await BackofficeUserModel.scope('withPassword').findOne({
+  ): Promise<BackofficeUserEntity | null> {
+    const user = await BackofficeUserModel.scope('withPassword').findOne({
       where: { email: email.toLowerCase() }
     });
+
+    return user ? new BackofficeUserEntity(user) : null;
   }
 
   // ==============================================
@@ -181,7 +187,7 @@ export class BackofficeUserRepository implements IBackofficeUserRepository {
     email: string
   ): Promise<BackofficeUserEntity | null> {
     const model = await this.findByEmailWithPassword(email);
-    return model ? new BackofficeUserEntity(model.dataValues) : null;
+    return model ? new BackofficeUserEntity(model) : null;
   }
 
   // ==============================================
