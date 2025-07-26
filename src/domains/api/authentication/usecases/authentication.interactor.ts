@@ -46,13 +46,16 @@ export class AuthenticationInteractor {
         id_company: user.id_company
       });
 
+      const profile = await this.gateway.getProfile(user.id as number);
+
       return this.presenter.ok({
         name: user.name,
         email: user.email,
-        token: credential
+        token: credential,
+        avatar: profile?.photo_url || ''
       });
     } catch (error) {
-      this.gateway.loggerError('Error ao buscar o token', { error });
+      this.gateway.loggerError('Error ao buscar o token', error);
       return this.presenter.serverError(error);
     }
   }
