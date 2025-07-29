@@ -1,0 +1,32 @@
+{
+  "apps": [
+    {
+      "name": "track-okr-production",
+      "script": "dist/server.js",
+      "cwd": "/opt/trackokr/production/api",
+      "instances": 2,
+      "exec_mode": "cluster",
+      "watch": false,
+      "max_memory_restart": "512M",
+      "env": {
+        "NODE_ENV": "production",
+        "PORT": 3001,
+        "DB_NAME": "track_okr_production",
+        "DB_USER": "trackokr_prod",
+        "REDIS_DB": "0",
+        "APP_ENV": "production",
+        "LOG_LEVEL": "info"
+      },
+      "error_file": "/opt/trackokr/production/logs/api-error.log",
+      "out_file": "/opt/trackokr/production/logs/api-out.log",
+      "log_file": "/opt/trackokr/production/logs/api-combined.log",
+      "time": true,
+      "autorestart": true,
+      "max_restarts": 10,
+      "min_uptime": "10s",
+      "restart_delay": 4000,
+      "kill_timeout": 5000,
+      "listen_timeout": 8000
+    }
+  ]
+}

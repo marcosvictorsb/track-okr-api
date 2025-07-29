@@ -1,0 +1,31 @@
+{
+  "apps": [
+    {
+      "name": "track-okr-api",
+      "script": "dist/server.js",
+      "cwd": "./",
+      "instances": 1,
+      "exec_mode": "fork",
+      "watch": false,
+      "max_memory_restart": "512M",
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": 3000
+      },
+      "env_production": {
+        "NODE_ENV": "production",
+        "PORT": 3000
+      },
+      "error_file": "./logs/api-error.log",
+      "out_file": "./logs/api-out.log",
+      "log_file": "./logs/api-combined.log",
+      "time": true,
+      "autorestart": true,
+      "max_restarts": 10,
+      "min_uptime": "10s",
+      "restart_delay": 4000,
+      "module_alias": true,
+      "node_args": "-r module-alias/register"
+    }
+  ]
+}

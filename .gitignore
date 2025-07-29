@@ -111,6 +111,4 @@ source/
 .deploys
 current
 
-deployment/
-
 uploads/avatars/*
