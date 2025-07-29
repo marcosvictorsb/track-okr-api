@@ -52,6 +52,7 @@ export class AuthenticationInteractor {
         name: user.name,
         email: user.email,
         token: credential,
+        role: user.role,
         avatar: profile?.photo_url || ''
       });
     } catch (error) {
