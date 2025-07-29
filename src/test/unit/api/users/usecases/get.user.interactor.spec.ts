@@ -37,7 +37,8 @@ describe('GetUserInteractor', () => {
       loggerError: vi.fn(),
       findUser: vi.fn(),
       findUsers: vi.fn(),
-      findUserTeams: vi.fn()
+      findUserTeams: vi.fn(),
+      getProfileByIds: vi.fn().mockResolvedValue([])
     };
 
     mockPresenter = {
@@ -234,9 +235,9 @@ describe('GetUserInteractor', () => {
       vi.mocked(mockGateway.findUserTeams!).mockResolvedValue(userTeams);
 
       const expectedResult = [
-        { ...users[1], current_team_id: 20 }, // ACTIVE first
-        { ...users[2], current_team_id: null }, // PENDING_ACTIVATION second (deleted team)
-        { ...users[0], current_team_id: 10 } // INACTIVE last
+        { ...users[1], current_team_id: 20, position: null, photo_url: null }, // ACTIVE first
+        { ...users[2], current_team_id: null, position: null, photo_url: null }, // PENDING_ACTIVATION second (deleted team)
+        { ...users[0], current_team_id: 10, position: null, photo_url: null } // INACTIVE last
       ];
 
       // Act
@@ -297,7 +298,9 @@ describe('GetUserInteractor', () => {
       vi.mocked(mockGateway.findUsers!).mockResolvedValue(users);
       vi.mocked(mockGateway.findUserTeams!).mockResolvedValue([]);
 
-      const expectedResult = [{ ...mockUser, current_team_id: null }];
+      const expectedResult = [
+        { ...mockUser, current_team_id: null, position: null, photo_url: null }
+      ];
 
       // Act
       await interactor.execute(mockInput);
@@ -328,7 +331,9 @@ describe('GetUserInteractor', () => {
       vi.mocked(mockGateway.findUsers!).mockResolvedValue(users);
       vi.mocked(mockGateway.findUserTeams!).mockResolvedValue(userTeams);
 
-      const expectedResult = [{ ...users[0], current_team_id: 20 }];
+      const expectedResult = [
+        { ...users[0], current_team_id: 20, position: null, photo_url: null }
+      ];
 
       // Act
       await interactor.execute(mockInput);
@@ -346,7 +351,9 @@ describe('GetUserInteractor', () => {
       vi.mocked(mockGateway.findUsers!).mockResolvedValue(users);
       vi.mocked(mockGateway.findUserTeams!).mockResolvedValue([]);
 
-      const expectedResult = [{ ...mockUser, current_team_id: null }];
+      const expectedResult = [
+        { ...mockUser, current_team_id: null, position: null, photo_url: null }
+      ];
 
       // Act
       await interactor.execute(mockInput);
@@ -391,9 +398,11 @@ describe('GetUserInteractor', () => {
         idsUser: users.map((u) => u.id)
       });
       expect(mockPresenter.ok).toHaveBeenCalled();
-      const resultData = vi.mocked(mockPresenter.ok).mock
-        .calls[0]?.[0] as UserEntity[];
-      expect(resultData).toHaveLength(100);
+      const mockedOk = vi.mocked(mockPresenter.ok);
+      if (mockedOk?.mock) {
+        const resultData = mockedOk.mock.calls[0]?.[0] as UserEntity[];
+        expect(resultData).toHaveLength(100);
+      }
     });
 
     it('should sort users correctly by status priority', async () => {
@@ -419,19 +428,21 @@ describe('GetUserInteractor', () => {
       await interactor.execute(mockInput);
 
       // Assert
-      const resultData = vi.mocked(mockPresenter.ok).mock
-        .calls[0]?.[0] as UserEntity[];
+      const mockedOk = vi.mocked(mockPresenter.ok);
+      if (mockedOk?.mock) {
+        const resultData = mockedOk.mock.calls[0]?.[0] as UserEntity[];
 
-      // Check that ACTIVE users come first
-      expect(resultData[0].status).toBe(UserStatus.ACTIVE);
-      expect(resultData[1].status).toBe(UserStatus.ACTIVE);
+        // Check that ACTIVE users come first
+        expect(resultData[0].status).toBe(UserStatus.ACTIVE);
+        expect(resultData[1].status).toBe(UserStatus.ACTIVE);
 
-      // Then PENDING_ACTIVATION
-      expect(resultData[2].status).toBe(UserStatus.PENDING_ACTIVATION);
+        // Then PENDING_ACTIVATION
+        expect(resultData[2].status).toBe(UserStatus.PENDING_ACTIVATION);
 
-      // Finally INACTIVE
-      expect(resultData[3].status).toBe(UserStatus.INACTIVE);
-      expect(resultData[4].status).toBe(UserStatus.INACTIVE);
+        // Finally INACTIVE
+        expect(resultData[3].status).toBe(UserStatus.INACTIVE);
+        expect(resultData[4].status).toBe(UserStatus.INACTIVE);
+      }
     });
   });
 });

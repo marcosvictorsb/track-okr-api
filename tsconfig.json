@@ -2,6 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
+    "moduleResolution": "node",
     "allowJs": true,
     "checkJs": false,
     "outDir": "./dist",
@@ -14,6 +15,7 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "typeRoots": ["node_modules/@types", "./src/@types"],
+    "skipLibCheck": true,
     "baseUrl": "./src",
     "paths": {
       "@adapters/*": ["adapters/*"],
