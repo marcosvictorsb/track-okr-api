@@ -3,7 +3,7 @@
     {
       "name": "track-okr-production",
       "script": "dist/server.js",
-      "cwd": "/opt/trackokr/production/api",
+      "cwd": "/var/www/gunno/production/track-okr-api",
       "instances": 2,
       "exec_mode": "cluster",
       "watch": false,
@@ -17,9 +17,9 @@
         "APP_ENV": "production",
         "LOG_LEVEL": "info"
       },
-      "error_file": "/opt/trackokr/production/logs/api-error.log",
-      "out_file": "/opt/trackokr/production/logs/api-out.log",
-      "log_file": "/opt/trackokr/production/logs/api-combined.log",
+      "error_file": "/var/www/gunno/production/logs/api-error.log",
+      "out_file": "/var/www/gunno/production/logs/api-out.log",
+      "log_file": "/var/www/gunno/production/logs/api-combined.log",
       "time": true,
       "autorestart": true,
       "max_restarts": 10,

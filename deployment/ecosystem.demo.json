@@ -3,7 +3,7 @@
     {
       "name": "track-okr-demo",
       "script": "dist/server.js",
-      "cwd": "/opt/trackokr/demo/api",
+      "cwd": "/var/www/gunno/testing/track-okr-api",
       "instances": 1,
       "exec_mode": "cluster",
       "watch": false,
@@ -19,9 +19,9 @@
         "ENABLE_DEMO_FEATURES": "true",
         "AUTO_RESET_DEMO_DATA": "true"
       },
-      "error_file": "/opt/trackokr/demo/logs/api-error.log",
-      "out_file": "/opt/trackokr/demo/logs/api-out.log",
-      "log_file": "/opt/trackokr/demo/logs/api-combined.log",
+      "error_file": "/var/www/gunno/testing/logs/api-error.log",
+      "out_file": "/var/www/gunno/testing/logs/api-out.log",
+      "log_file": "/var/www/gunno/testing/logs/api-combined.log",
       "time": true,
       "autorestart": true,
       "max_restarts": 15,
