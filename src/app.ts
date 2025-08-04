@@ -12,6 +12,12 @@ import {
 import routers from '@configs/routers';
 import { logger } from '@configs/logger';
 import { asyncLocalStorage } from '@configs/async.context';
+import {
+  prometheusMiddleware,
+  metricsEndpoint,
+  healthCheckWithMetrics
+} from '@middlewares/prometheus.middleware';
+import { config as prometheusConfig } from '@configs/prometheus';
 import uuid4 from 'uuid4';
 
 const app: Express = express();
@@ -34,14 +40,27 @@ app.use((req, res, next) => {
   });
 });
 
-// 3. CORS
+// 3. Prometheus metrics middleware (se habilitado)
+if (prometheusConfig.enabled) {
+  app.use(prometheusMiddleware());
+  logger.info(`Prometheus metrics enabled on ${prometheusConfig.endpoint}`);
+}
+
+// 4. CORS
 app.use(corsMiddleware);
 
-// 4. Body parsing
+// 5. Body parsing
 app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
 app.use(bodyParser.json({ limit: '10mb' }));
 
-// 5. Static files com headers de segurança e CORS específico
+// 6. Endpoints específicos do Prometheus
+if (prometheusConfig.enabled) {
+  app.get(prometheusConfig.endpoint, metricsEndpoint());
+  app.get('/health', healthCheckWithMetrics());
+  logger.info(`Metrics endpoint available at ${prometheusConfig.endpoint}`);
+}
+
+// 7. Static files com headers de segurança e CORS específico
 app.use(
   '/uploads',
   corsMiddleware,
@@ -61,10 +80,10 @@ app.use(
   })
 );
 
-// 6. Routes
+// 8. Routes
 app.use(routers);
 
-// 7. Error handling - aplicados por último
+// 9. Error handling - aplicados por último
 app.use(notFoundHandler);
 app.use(secureErrorHandler);
 
