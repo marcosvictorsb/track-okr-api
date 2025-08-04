@@ -7,7 +7,8 @@ import promClient from 'prom-client';
 
 // Configurar registry baseado no ambiente
 const environment = process.env.NODE_ENV || 'development';
-const appName = `GUNNO - ${environment}`; // Nome da aplicação com o ambiente
+const appName = `GUNNO_${environment}`; // Nome válido para métricas do Prometheus
+const appDisplayName = `GUNNO - ${environment}`; // Nome para exibição
 
 // Registry principal
 const register = new promClient.Registry();
@@ -22,7 +23,8 @@ promClient.collectDefaultMetrics({
 
 // Labels padrão para todas as métricas
 register.setDefaultLabels({
-  app: appName,
+  app: appDisplayName,
+  service: appName,
   environment: environment,
   version: process.env.npm_package_version || '1.0.0'
 });
