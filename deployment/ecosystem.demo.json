@@ -8,17 +8,7 @@
       "exec_mode": "cluster",
       "watch": false,
       "max_memory_restart": "256M",
-      "env": {
-        "NODE_ENV": "demo",
-        "PORT": 3002,
-        "DB_NAME": "track_okr_demo",
-        "DB_USER": "trackokr_demo",
-        "REDIS_DB": "1",
-        "APP_ENV": "demo",
-        "LOG_LEVEL": "debug",
-        "ENABLE_DEMO_FEATURES": "true",
-        "AUTO_RESET_DEMO_DATA": "true"
-      },
+      "env_file": ".env",
       "error_file": "/var/www/gunno/testing/logs/api-error.log",
       "out_file": "/var/www/gunno/testing/logs/api-out.log",
       "log_file": "/var/www/gunno/testing/logs/api-combined.log",
