@@ -1,4 +1,4 @@
-import { SubscriptionPlanModel } from '@infra/database/models/subscription-plan.model';
+import { SubscriptionPlanModel } from '@domains/api/subscription-plans/model/subscription-plan.model';
 
 export async function seedDefaultPlans(): Promise<void> {
   try {

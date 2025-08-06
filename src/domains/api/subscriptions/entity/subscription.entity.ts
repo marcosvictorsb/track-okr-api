@@ -1,8 +1,9 @@
 export class SubscriptionEntity {
   public readonly id?: number;
-  public readonly id_company: string; // UUID
+  public readonly id_company: number;
+  public readonly subscription_plan_id?: number;
   public readonly amount_users: number;
-  public readonly status: string; // 'active' | 'inactive'
+  public readonly status: string; // 'active' | 'cancelled'
   public readonly id_external_payment: string;
   public readonly created_at?: Date;
   public readonly updated_at?: Date | null;
@@ -10,7 +11,8 @@ export class SubscriptionEntity {
 
   constructor(params: {
     id?: number;
-    id_company: string;
+    id_company: number;
+    subscription_plan_id?: number;
     amount_users: number;
     status: string;
     id_external_payment: string;
@@ -20,6 +22,7 @@ export class SubscriptionEntity {
   }) {
     this.id = params.id;
     this.id_company = params.id_company;
+    this.subscription_plan_id = params.subscription_plan_id;
     this.amount_users = params.amount_users;
     this.status = params.status;
     this.id_external_payment = params.id_external_payment;
@@ -33,7 +36,7 @@ export class SubscriptionEntity {
     params: Partial<SubscriptionEntity> = {}
   ): SubscriptionEntity {
     return new SubscriptionEntity({
-      id_company: params.id_company || '',
+      id_company: params.id_company || 0,
       amount_users: params.amount_users || 0,
       status: params.status || 'active',
       id_external_payment: params.id_external_payment || '',
@@ -42,10 +45,11 @@ export class SubscriptionEntity {
   }
 
   // Método para serializar (opcional)
-  public toJSON(): Record<string, any> {
+  public toJSON(): Record<string, unknown> {
     return {
       id: this.id,
       id_company: this.id_company,
+      subscription_plan_id: this.subscription_plan_id,
       amount_users: this.amount_users,
       status: this.status,
       id_external_payment: this.id_external_payment,

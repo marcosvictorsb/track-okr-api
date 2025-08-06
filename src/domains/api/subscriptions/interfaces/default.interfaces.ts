@@ -5,20 +5,22 @@ import SubscriptionModel from '@domains/api/subscriptions/model/subscription.mod
 export enum SubscriptionStatus {
   ACTIVE = 'active',
   CANCELLED = 'cancelled'
-};
+}
 
 export type CreateSubscriptionCriteria = {
   id_company: number;
+  subscription_plan_id?: number;
   amount_users: number;
-  status: SubscriptionStatus
+  status: SubscriptionStatus;
   id_external_payment: string;
 };
 
 export type FindSubscriptionCriteria = {
   id?: number;
   id_company?: number;
+  subscription_plan_id?: number;
   amount_users?: number;
-  status?: SubscriptionStatus
+  status?: SubscriptionStatus;
   id_external_payment?: string;
 };
 
@@ -29,8 +31,9 @@ export type DeleteSubscriptionCriteria = {
 export type UpdateSubscriptionCriteria = {
   id?: number;
   id_company?: number;
+  subscription_plan_id?: number;
   amount_users?: number;
-  status?: SubscriptionStatus
+  status?: SubscriptionStatus;
   id_external_payment?: string;
 };
 

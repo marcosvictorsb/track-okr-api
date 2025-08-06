@@ -2,7 +2,7 @@ import {
   SubscriptionPlanModel,
   SubscriptionPlanAttributes,
   SubscriptionPlanCreationAttributes
-} from '@infra/database/models/subscription-plan.model';
+} from '@domains/api/subscription-plans/model/subscription-plan.model';
 
 export interface ISubscriptionPlanRepository {
   create(

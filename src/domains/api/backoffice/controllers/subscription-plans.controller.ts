@@ -271,26 +271,38 @@ export class BackofficeSubscriptionPlansController {
    */
   async testEfiConnection(req: Request, res: Response): Promise<void> {
     try {
-      const plans = await efiPayService.listPlans(0, 1);
+      const testResult = await efiPayService.testConnection();
 
-      res.json({
-        success: true,
-        message: 'Conexão com Efí Pay funcionando',
-        data: {
-          connection_status: 'ok',
-          timestamp: new Date().toISOString(),
-          sample_response: plans
-        }
-      });
-    } catch (error: any) {
+      if (testResult.success) {
+        res.json({
+          success: true,
+          message: testResult.message,
+          data: {
+            connection_status: 'ok',
+            environment:
+              process.env.EFI_SANDBOX === 'true' ? 'sandbox' : 'production',
+            timestamp: new Date().toISOString()
+          }
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: testResult.message,
+          data: {
+            connection_status: 'error',
+            environment:
+              process.env.EFI_SANDBOX === 'true' ? 'sandbox' : 'production',
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erro desconhecido';
       res.status(500).json({
         success: false,
-        message: 'Erro na conexão com Efí Pay',
-        error: error.message,
-        data: {
-          connection_status: 'error',
-          timestamp: new Date().toISOString()
-        }
+        message: 'Erro ao testar conexão com Efí Pay',
+        error: errorMessage
       });
     }
   }

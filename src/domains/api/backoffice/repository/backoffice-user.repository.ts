@@ -2,7 +2,7 @@ import {
   BackofficeUserModel,
   BackofficeUserAttributes,
   BackofficeUserCreationAttributes
-} from '@infra/database/models/backoffice-user.model';
+} from '@domains/api/backoffice/models/backoffice-user.model';
 import { BackofficeUserEntity } from '../entities/backoffice-user.entity';
 import { Op } from 'sequelize';
 import bcrypt from 'bcryptjs';

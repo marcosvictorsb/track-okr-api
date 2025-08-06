@@ -1,12 +1,30 @@
 import { Request, Response } from 'express';
 import { EfiPayService } from '@adapters/services/efi-pay.service';
 import { SubscriptionPaymentRepository } from '@domains/api/subscription-payments/repository/subscription-payment.repository';
+import {
+  ProcessPaymentWebhookUseCase,
+  EfiWebhookData
+} from '@domains/api/subscription-payments/usecases/subscription-payment.usecases';
+import { SubscriptionRepository } from '@domains/api/subscriptions/repository/subscription.repository';
+import { ProcessSubscriptionWebhookUseCase } from '@domains/api/subscriptions/usecases/subscription.usecases';
+import SubscriptionModel from '@domains/api/subscriptions/model/subscription.model';
 
 export class EfiWebhookController {
   private paymentRepository: SubscriptionPaymentRepository;
+  private subscriptionRepository: SubscriptionRepository;
+  private processPaymentWebhookUseCase: ProcessPaymentWebhookUseCase;
+  private processSubscriptionWebhookUseCase: ProcessSubscriptionWebhookUseCase;
 
   constructor() {
     this.paymentRepository = new SubscriptionPaymentRepository();
+    this.subscriptionRepository = new SubscriptionRepository({
+      model: SubscriptionModel
+    });
+    this.processPaymentWebhookUseCase = new ProcessPaymentWebhookUseCase(
+      this.paymentRepository
+    );
+    this.processSubscriptionWebhookUseCase =
+      new ProcessSubscriptionWebhookUseCase(this.subscriptionRepository);
   }
 
   /**
@@ -32,130 +50,22 @@ export class EfiWebhookController {
         return;
       }
 
-      const webhookData = req.body;
+      const webhookData: EfiWebhookData = req.body;
       console.log('Webhook Efí Pay recebido:', webhookData);
 
-      // Processar diferentes tipos de eventos
-      switch (webhookData.evento) {
-        case 'cobranca_paga':
-          await this.handlePaymentPaid(webhookData);
-          break;
-
-        case 'cobranca_vencida':
-          await this.handlePaymentOverdue(webhookData);
-          break;
-
-        case 'cobranca_cancelada':
-          await this.handlePaymentCancelled(webhookData);
-          break;
-
-        case 'assinatura_cancelada':
-          await this.handleSubscriptionCancelled(webhookData);
-          break;
-
-        case 'assinatura_suspensa':
-          await this.handleSubscriptionSuspended(webhookData);
-          break;
-
-        default:
-          console.log(`Evento não tratado: ${webhookData.evento}`);
+      // Processar diferentes tipos de eventos usando use cases
+      if (webhookData.evento.startsWith('cobranca_')) {
+        await this.processPaymentWebhookUseCase.execute(webhookData);
+      } else if (webhookData.evento.startsWith('assinatura_')) {
+        await this.processSubscriptionWebhookUseCase.execute(webhookData);
+      } else {
+        console.log(`Evento não tratado: ${webhookData.evento}`);
       }
 
       res.status(200).json({ status: 'processed' });
     } catch (error) {
       console.error('Erro no webhook Efí Pay:', error);
       res.status(500).json({ error: 'Erro interno do servidor' });
-    }
-  }
-
-  private async handlePaymentPaid(webhookData: any): Promise<void> {
-    try {
-      const chargeId = webhookData.data?.charge_id;
-      if (!chargeId) return;
-
-      const payment = await this.paymentRepository.findByEfiChargeId(chargeId);
-      if (!payment) {
-        console.warn(`Pagamento não encontrado para charge_id: ${chargeId}`);
-        return;
-      }
-
-      await this.paymentRepository.update(payment.id, {
-        status: 'paid',
-        paid_at: new Date(),
-        webhook_data: webhookData
-      });
-
-      console.log(`Pagamento ${payment.id} marcado como pago`);
-    } catch (error) {
-      console.error('Erro ao processar pagamento pago:', error);
-    }
-  }
-
-  private async handlePaymentOverdue(webhookData: any): Promise<void> {
-    try {
-      const chargeId = webhookData.data?.charge_id;
-      if (!chargeId) return;
-
-      const payment = await this.paymentRepository.findByEfiChargeId(chargeId);
-      if (!payment) {
-        console.warn(`Pagamento não encontrado para charge_id: ${chargeId}`);
-        return;
-      }
-
-      await this.paymentRepository.update(payment.id, {
-        status: 'overdue',
-        webhook_data: webhookData
-      });
-
-      console.log(`Pagamento ${payment.id} marcado como vencido`);
-    } catch (error) {
-      console.error('Erro ao processar pagamento vencido:', error);
-    }
-  }
-
-  private async handlePaymentCancelled(webhookData: any): Promise<void> {
-    try {
-      const chargeId = webhookData.data?.charge_id;
-      if (!chargeId) return;
-
-      const payment = await this.paymentRepository.findByEfiChargeId(chargeId);
-      if (!payment) {
-        console.warn(`Pagamento não encontrado para charge_id: ${chargeId}`);
-        return;
-      }
-
-      await this.paymentRepository.update(payment.id, {
-        status: 'cancelled',
-        webhook_data: webhookData
-      });
-
-      console.log(`Pagamento ${payment.id} cancelado`);
-    } catch (error) {
-      console.error('Erro ao processar cancelamento de pagamento:', error);
-    }
-  }
-
-  private async handleSubscriptionCancelled(webhookData: any): Promise<void> {
-    try {
-      const subscriptionId = webhookData.data?.subscription_id;
-      console.log(`Assinatura ${subscriptionId} cancelada na Efí Pay`);
-
-      // Aqui você implementaria a lógica para cancelar a assinatura local
-      // Buscar pela subscription que tem o efi_subscription_id correspondente
-      // e atualizar o status para 'cancelled'
-    } catch (error) {
-      console.error('Erro ao processar cancelamento de assinatura:', error);
-    }
-  }
-
-  private async handleSubscriptionSuspended(webhookData: any): Promise<void> {
-    try {
-      const subscriptionId = webhookData.data?.subscription_id;
-      console.log(`Assinatura ${subscriptionId} suspensa na Efí Pay`);
-
-      // Implementar lógica para suspender assinatura local
-    } catch (error) {
-      console.error('Erro ao processar suspensão de assinatura:', error);
     }
   }
 }

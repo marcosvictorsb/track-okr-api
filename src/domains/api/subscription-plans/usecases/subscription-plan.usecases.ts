@@ -1,9 +1,10 @@
+import { CreatePlanRequest as EfiCreatePlanRequest } from '@adapters/services/efi-pay.service';
 import { SubscriptionPlanRepository } from '../repository/subscription-plan.repository';
-import { efiPayService, EfiPlanData } from '@adapters/services/efi-pay.service';
+import { efiPayService } from '@adapters/services/efi-pay.service';
 import {
   SubscriptionPlanModel,
   SubscriptionPlanCreationAttributes
-} from '@infra/database/models/subscription-plan.model';
+} from '@domains/api/subscription-plans/model/subscription-plan.model';
 
 export interface CreatePlanRequest {
   name: string;
@@ -25,15 +26,10 @@ export class CreateSubscriptionPlanUseCase {
     // Se solicitado, criar o plano na Efí Pay
     if (request.create_efi_plan) {
       try {
-        const efiPlanData: EfiPlanData = {
+        const efiPlanData: EfiCreatePlanRequest = {
           name: request.name,
-          interval: 30, // Mensal
-          repeats: 0, // Indefinido
-          value: Math.round(request.price_monthly * 100), // Converter para centavos
-          metadata: {
-            custom_id: `plan_${Date.now()}`,
-            notification_url: process.env.EFI_WEBHOOK_URL
-          }
+          interval: 1, // 1 mês (máximo 24)
+          repeats: 12 // 12 meses (mínimo 2)
         };
 
         const efiResponse = await efiPayService.createPlan(efiPlanData);

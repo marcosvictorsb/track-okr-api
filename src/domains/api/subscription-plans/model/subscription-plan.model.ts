@@ -1,5 +1,5 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '../connection/mysql';
+import { sequelize } from '../../../../infra/database/connection/mysql';
 
 export interface SubscriptionPlanAttributes {
   id: number;

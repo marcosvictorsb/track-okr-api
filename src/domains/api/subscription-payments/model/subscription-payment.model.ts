@@ -1,17 +1,26 @@
 import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '../connection/mysql';
+import { sequelize } from '@infra/database/connection/mysql';
 
 export interface SubscriptionPaymentAttributes {
   id: number;
   subscription_id: number;
   company_id: number;
   efi_charge_id?: string;
+  efi_subscription_id?: string;
   txid?: string;
   amount: number;
-  status: 'pending' | 'paid' | 'cancelled' | 'failed' | 'refunded' | 'overdue';
+  status:
+    | 'pending'
+    | 'paid'
+    | 'cancelled'
+    | 'failed'
+    | 'refunded'
+    | 'overdue'
+    | 'expired';
   payment_method?: string;
   due_date?: Date;
   paid_at?: Date;
+  payment_link?: string;
   description?: string;
   webhook_data?: object;
   created_at: Date;
@@ -22,12 +31,21 @@ export interface SubscriptionPaymentCreationAttributes {
   subscription_id: number;
   company_id: number;
   efi_charge_id?: string;
+  efi_subscription_id?: string;
   txid?: string;
   amount: number;
-  status: 'pending' | 'paid' | 'cancelled' | 'failed' | 'refunded' | 'overdue';
+  status:
+    | 'pending'
+    | 'paid'
+    | 'cancelled'
+    | 'failed'
+    | 'refunded'
+    | 'overdue'
+    | 'expired';
   payment_method?: string;
   due_date?: Date;
   paid_at?: Date;
+  payment_link?: string;
   description?: string;
   webhook_data?: object;
 }
@@ -43,6 +61,7 @@ export class SubscriptionPaymentModel
   public subscription_id!: number;
   public company_id!: number;
   public efi_charge_id?: string;
+  public efi_subscription_id?: string;
   public txid?: string;
   public amount!: number;
   public status!:
@@ -51,10 +70,12 @@ export class SubscriptionPaymentModel
     | 'cancelled'
     | 'failed'
     | 'refunded'
-    | 'overdue';
+    | 'overdue'
+    | 'expired';
   public payment_method?: string;
   public due_date?: Date;
   public paid_at?: Date;
+  public payment_link?: string;
   public description?: string;
   public webhook_data?: object;
   public created_at!: Date;
@@ -89,6 +110,10 @@ SubscriptionPaymentModel.init(
       allowNull: true,
       unique: true
     },
+    efi_subscription_id: {
+      type: DataTypes.STRING(100),
+      allowNull: true
+    },
     txid: {
       type: DataTypes.STRING(100),
       allowNull: true
@@ -104,7 +129,8 @@ SubscriptionPaymentModel.init(
         'cancelled',
         'failed',
         'refunded',
-        'overdue'
+        'overdue',
+        'expired'
       ),
       allowNull: false,
       defaultValue: 'pending'
@@ -119,6 +145,10 @@ SubscriptionPaymentModel.init(
     },
     paid_at: {
       type: DataTypes.DATE,
+      allowNull: true
+    },
+    payment_link: {
+      type: DataTypes.TEXT,
       allowNull: true
     },
     description: {

@@ -1,6 +1,6 @@
 import { BackofficeUserRepository } from '../repository/backoffice-user.repository';
 import { BackofficeJWTService } from '../../../../adapters/services/backoffice-jwt.service';
-import { BackofficeUserModel } from '../../../../infra/database/models/backoffice-user.model';
+import { BackofficeUserModel } from '../models/backoffice-user.model';
 import {
   BackofficeUserEntity,
   BackofficeUserPublicEntity

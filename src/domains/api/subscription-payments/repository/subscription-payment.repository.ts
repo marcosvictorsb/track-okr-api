@@ -2,7 +2,7 @@ import {
   SubscriptionPaymentModel,
   SubscriptionPaymentAttributes,
   SubscriptionPaymentCreationAttributes
-} from '@infra/database/models/subscription-payment.model';
+} from '../model/subscription-payment.model';
 import { Op } from 'sequelize';
 
 export interface ISubscriptionPaymentRepository {

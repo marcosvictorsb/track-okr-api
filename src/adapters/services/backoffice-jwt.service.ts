@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { BackofficeUserModel } from '@infra/database/models/backoffice-user.model';
+import { BackofficeUserModel } from '@domains/api/backoffice/models/backoffice-user.model';
 import { BackofficeUserEntity } from '@domains/api/backoffice/entities/backoffice-user.entity';
 
 export interface BackofficeJWTPayload extends JwtPayload {
