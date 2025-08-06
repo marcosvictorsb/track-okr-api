@@ -171,29 +171,18 @@ export class EfiPayService {
     // Interceptor para debug
     this.apiClient.interceptors.request.use(
       (config) => {
-        console.log(`[EFI Pay] ${config.method?.toUpperCase()} ${config.url}`, {
-          headers: config.headers,
-          data: config.data
-        });
         return config;
       },
       (error) => {
-        console.error('[EFI Pay] Request Error:', error);
         return Promise.reject(error);
       }
     );
 
     this.apiClient.interceptors.response.use(
       (response) => {
-        console.log(`[EFI Pay] Response ${response.status}:`, response.data);
         return response;
       },
       (error) => {
-        console.error('[EFI Pay] Response Error:', {
-          status: error.response?.status,
-          data: error.response?.data,
-          message: error.message
-        });
         return Promise.reject(error);
       }
     );
@@ -217,8 +206,6 @@ export class EfiPayService {
           'Credenciais da Efí Pay não configuradas. Verifique EFI_CLIENT_ID e EFI_CLIENT_SECRET'
         );
       }
-
-      console.log('[EFI Pay] Iniciando autenticação...');
 
       const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString(
         'base64'
@@ -245,18 +232,11 @@ export class EfiPayService {
       // Configurar interceptor para adicionar o token em todas as requisições
       this.apiClient.defaults.headers.common['Authorization'] =
         `Bearer ${this.accessToken}`;
-
-      console.log('[EFI Pay] Autenticação realizada com sucesso');
     } catch (error: unknown) {
       const axiosError = error as {
         response?: { data?: unknown; status?: number };
         message?: string;
       };
-      console.error('[EFI Pay] Erro na autenticação:', {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message
-      });
       throw new Error(
         `Falha na autenticação com a Efí Pay: ${axiosError.message}`
       );
@@ -273,16 +253,10 @@ export class EfiPayService {
       const response = await this.apiClient.post('/v1/plan', planData);
       return response.data;
     } catch (error: unknown) {
-      console.log(error);
       const axiosError = error as {
         response?: { data?: unknown; status?: number };
         message?: string;
       };
-      console.error('[EFI Pay] Erro ao criar plano:', {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message
-      });
       throw new Error(`Falha ao criar plano na Efí Pay: ${axiosError.message}`);
     }
   }
@@ -306,11 +280,6 @@ export class EfiPayService {
         response?: { data?: unknown; status?: number };
         message?: string;
       };
-      console.error('[EFI Pay] Erro ao criar assinatura:', {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message
-      });
       throw new Error(
         `Falha ao criar assinatura na Efí Pay: ${axiosError.message}`
       );
@@ -331,11 +300,6 @@ export class EfiPayService {
         response?: { data?: unknown; status?: number };
         message?: string;
       };
-      console.error('[EFI Pay] Erro ao criar cobrança:', {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message
-      });
       throw new Error(
         `Falha ao criar cobrança na Efí Pay: ${axiosError.message}`
       );
@@ -356,11 +320,6 @@ export class EfiPayService {
         response?: { data?: unknown; status?: number };
         message?: string;
       };
-      console.error('[EFI Pay] Erro ao consultar cobrança:', {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message
-      });
       throw new Error(
         `Falha ao consultar cobrança na Efí Pay: ${axiosError.message}`
       );
@@ -385,11 +344,6 @@ export class EfiPayService {
         response?: { data?: unknown; status?: number };
         message?: string;
       };
-      console.error('[EFI Pay] Erro ao consultar assinatura:', {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message
-      });
       throw new Error(
         `Falha ao consultar assinatura na Efí Pay: ${axiosError.message}`
       );
@@ -414,11 +368,6 @@ export class EfiPayService {
         response?: { data?: unknown; status?: number };
         message?: string;
       };
-      console.error('[EFI Pay] Erro ao cancelar assinatura:', {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message
-      });
       throw new Error(
         `Falha ao cancelar assinatura na Efí Pay: ${axiosError.message}`
       );
@@ -444,11 +393,6 @@ export class EfiPayService {
         response?: { data?: unknown; status?: number };
         message?: string;
       };
-      console.error('[EFI Pay] Erro ao listar planos:', {
-        status: axiosError.response?.status,
-        data: axiosError.response?.data,
-        message: axiosError.message
-      });
       throw new Error(
         `Falha ao listar planos na Efí Pay: ${axiosError.message}`
       );
