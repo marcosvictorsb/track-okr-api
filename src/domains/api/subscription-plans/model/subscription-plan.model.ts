@@ -30,17 +30,17 @@ export class SubscriptionPlanModel
   extends Model<SubscriptionPlanAttributes, SubscriptionPlanCreationAttributes>
   implements SubscriptionPlanAttributes
 {
-  public id!: number;
-  public name!: string;
-  public description?: string;
-  public max_users!: number;
-  public price_monthly!: number;
-  public price_yearly?: number;
-  public features!: object;
-  public efi_plan_id?: string;
-  public is_active!: boolean;
-  public created_at!: Date;
-  public updated_at!: Date;
+  declare id: number;
+  declare name: string;
+  declare description?: string;
+  declare max_users: number;
+  declare price_monthly: number;
+  declare price_yearly?: number;
+  declare features: object;
+  declare efi_plan_id?: string;
+  declare is_active: boolean;
+  declare created_at: Date;
+  declare updated_at: Date;
 }
 
 SubscriptionPlanModel.init(

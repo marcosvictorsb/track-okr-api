@@ -85,8 +85,8 @@ export class CreateSubscriptionPaymentUseCase {
 
       // Criar registro local
       const paymentData: SubscriptionPaymentCreationAttributes = {
-        subscription_id: request.subscription_id,
-        company_id: request.company_id,
+        id_subscription: request.subscription_id,
+        id_company: request.company_id,
         efi_charge_id: efiResponse.data.charge_id,
         amount: request.amount,
         status: 'pending',

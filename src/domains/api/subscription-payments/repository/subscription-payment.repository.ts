@@ -54,7 +54,7 @@ export class SubscriptionPaymentRepository
     subscriptionId: number
   ): Promise<SubscriptionPaymentModel[]> {
     return await SubscriptionPaymentModel.findAll({
-      where: { subscription_id: subscriptionId },
+      where: { id_subscription: subscriptionId },
       order: [['created_at', 'DESC']]
     });
   }
@@ -63,7 +63,7 @@ export class SubscriptionPaymentRepository
     companyId: number
   ): Promise<SubscriptionPaymentModel[]> {
     return await SubscriptionPaymentModel.findAll({
-      where: { company_id: companyId },
+      where: { id_company: companyId },
       order: [['created_at', 'DESC']]
     });
   }

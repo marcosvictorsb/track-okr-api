@@ -3,8 +3,8 @@ import { sequelize } from '@infra/database/connection/mysql';
 
 export interface SubscriptionPaymentAttributes {
   id: number;
-  subscription_id: number;
-  company_id: number;
+  id_subscription: number;
+  id_company: number;
   efi_charge_id?: string;
   efi_subscription_id?: string;
   txid?: string;
@@ -28,8 +28,8 @@ export interface SubscriptionPaymentAttributes {
 }
 
 export interface SubscriptionPaymentCreationAttributes {
-  subscription_id: number;
-  company_id: number;
+  id_subscription: number;
+  id_company: number;
   efi_charge_id?: string;
   efi_subscription_id?: string;
   txid?: string;
@@ -57,14 +57,14 @@ export class SubscriptionPaymentModel
   >
   implements SubscriptionPaymentAttributes
 {
-  public id!: number;
-  public subscription_id!: number;
-  public company_id!: number;
-  public efi_charge_id?: string;
-  public efi_subscription_id?: string;
-  public txid?: string;
-  public amount!: number;
-  public status!:
+  declare id: number;
+  declare id_subscription: number;
+  declare id_company: number;
+  declare efi_charge_id?: string;
+  declare efi_subscription_id?: string;
+  declare txid?: string;
+  declare amount: number;
+  declare status:
     | 'pending'
     | 'paid'
     | 'cancelled'
@@ -72,14 +72,14 @@ export class SubscriptionPaymentModel
     | 'refunded'
     | 'overdue'
     | 'expired';
-  public payment_method?: string;
-  public due_date?: Date;
-  public paid_at?: Date;
-  public payment_link?: string;
-  public description?: string;
-  public webhook_data?: object;
-  public created_at!: Date;
-  public updated_at!: Date;
+  declare payment_method?: string;
+  declare due_date?: Date;
+  declare paid_at?: Date;
+  declare payment_link?: string;
+  declare description?: string;
+  declare webhook_data?: object;
+  declare created_at: Date;
+  declare updated_at: Date;
 }
 
 SubscriptionPaymentModel.init(
@@ -89,7 +89,7 @@ SubscriptionPaymentModel.init(
       primaryKey: true,
       autoIncrement: true
     },
-    subscription_id: {
+    id_subscription: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -97,7 +97,7 @@ SubscriptionPaymentModel.init(
         key: 'id'
       }
     },
-    company_id: {
+    id_company: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
@@ -177,10 +177,10 @@ SubscriptionPaymentModel.init(
     underscored: true,
     indexes: [
       {
-        fields: ['subscription_id']
+        fields: ['id_subscription']
       },
       {
-        fields: ['company_id']
+        fields: ['id_company']
       },
       {
         fields: ['status']
