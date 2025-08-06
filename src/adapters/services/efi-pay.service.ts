@@ -273,6 +273,7 @@ export class EfiPayService {
       const response = await this.apiClient.post('/v1/plan', planData);
       return response.data;
     } catch (error: unknown) {
+      console.log(error);
       const axiosError = error as {
         response?: { data?: unknown; status?: number };
         message?: string;

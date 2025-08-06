@@ -233,13 +233,8 @@ export class BackofficeSubscriptionPlansController {
 
       const efiPlanData = {
         name: plan.name,
-        interval: 30,
-        repeats: 0,
-        value: Math.round(plan.price_monthly * 100),
-        metadata: {
-          custom_id: `local_plan_${plan.id}`,
-          notification_url: process.env.EFI_WEBHOOK_URL
-        }
+        interval: 1, // 1 mês (máximo 24)
+        repeats: 12 // 12 meses (mínimo 2)
       };
 
       const efiResponse = await efiPayService.createPlan(efiPlanData);
@@ -256,11 +251,13 @@ export class BackofficeSubscriptionPlansController {
           efi_response: efiResponse.data
         }
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erro desconhecido';
       res.status(500).json({
         success: false,
         message: 'Erro ao criar plano na Efí Pay',
-        error: error.message
+        error: errorMessage
       });
     }
   }
