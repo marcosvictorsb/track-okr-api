@@ -6,7 +6,7 @@ import crypto from 'crypto';
 export interface CreatePlanRequest {
   name: string;
   interval: number; // Máximo 24 (meses)
-  repeats: number; // Mínimo 2
+  repeats: number | null; // Mínimo 2
 }
 
 export interface EfiChargeData {

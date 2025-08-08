@@ -9,11 +9,8 @@ import {
 export interface CreatePlanRequest {
   name: string;
   description?: string;
-  max_users: number;
-  price_monthly: number;
-  price_yearly?: number;
-  features: object;
-  efi_plan_id?: string;
+  interval: number;
+  repeats: number | null;
   create_efi_plan?: boolean;
 }
 
@@ -28,8 +25,8 @@ export class CreateSubscriptionPlanUseCase {
       try {
         const efiPlanData: EfiCreatePlanRequest = {
           name: request.name,
-          interval: 1, // 1 mês (máximo 24)
-          repeats: 12 // 12 meses (mínimo 2)
+          interval: request.interval,
+          repeats: !request.repeats ? request.repeats : null
         };
 
         const efiResponse = await efiPayService.createPlan(efiPlanData);
@@ -44,10 +41,8 @@ export class CreateSubscriptionPlanUseCase {
     const planData: SubscriptionPlanCreationAttributes = {
       name: request.name,
       description: request.description,
-      max_users: request.max_users,
-      price_monthly: request.price_monthly,
-      price_yearly: request.price_yearly,
-      features: request.features,
+      interval: request?.interval,
+      repeats: request.repeats,
       efi_plan_id: efiPlanId,
       is_active: true
     };

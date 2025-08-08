@@ -90,7 +90,7 @@ export class BackofficeSubscriptionPlansController {
       const planData = req.body;
 
       // Validações básicas
-      if (!planData.name || !planData.price_monthly || !planData.max_users) {
+      if (!planData.name || planData.interval < 0) {
         res.status(400).json({
           success: false,
           message: 'Campos obrigatórios: name, price_monthly, max_users'

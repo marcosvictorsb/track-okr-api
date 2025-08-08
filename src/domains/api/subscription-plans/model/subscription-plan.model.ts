@@ -5,23 +5,20 @@ export interface SubscriptionPlanAttributes {
   id: number;
   name: string;
   description?: string;
-  max_users: number;
-  price_monthly: number;
-  price_yearly?: number;
-  features: object;
+  interval: number;
+  repeats: number | null;
   efi_plan_id?: string;
   is_active: boolean;
   created_at: Date;
   updated_at: Date;
+  deleted_at?: Date | null;
 }
 
 export interface SubscriptionPlanCreationAttributes {
   name: string;
   description?: string;
-  max_users: number;
-  price_monthly: number;
-  price_yearly?: number;
-  features: object;
+  interval: number;
+  repeats: number | null;
   efi_plan_id?: string;
   is_active: boolean;
 }
@@ -33,14 +30,13 @@ export class SubscriptionPlanModel
   declare id: number;
   declare name: string;
   declare description?: string;
-  declare max_users: number;
-  declare price_monthly: number;
-  declare price_yearly?: number;
-  declare features: object;
+  declare interval: number;
+  declare repeats: number | null;
   declare efi_plan_id?: string;
   declare is_active: boolean;
   declare created_at: Date;
   declare updated_at: Date;
+  declare deleted_at?: Date | null;
 }
 
 SubscriptionPlanModel.init(
@@ -58,23 +54,13 @@ SubscriptionPlanModel.init(
       type: DataTypes.TEXT,
       allowNull: true
     },
-    max_users: {
+    interval: {
       type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 10
-    },
-    price_monthly: {
-      type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
-    price_yearly: {
-      type: DataTypes.DECIMAL(10, 2),
+    repeats: {
+      type: DataTypes.INTEGER,
       allowNull: true
-    },
-    features: {
-      type: DataTypes.JSON,
-      allowNull: false,
-      defaultValue: {}
     },
     efi_plan_id: {
       type: DataTypes.STRING(100),
@@ -95,6 +81,10 @@ SubscriptionPlanModel.init(
       type: DataTypes.DATE,
       allowNull: false,
       defaultValue: DataTypes.NOW
+    },
+    deleted_at: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   },
   {
