@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../../../../infra/database/connection/mysql';
 
-export interface SubscriptionPlanAttributes {
+export interface PlanAttributes {
   id: number;
   name: string;
   description?: string;
@@ -14,7 +14,7 @@ export interface SubscriptionPlanAttributes {
   deleted_at?: Date | null;
 }
 
-export interface SubscriptionPlanCreationAttributes {
+export interface PlanCreationAttributes {
   name: string;
   description?: string;
   interval: number;
@@ -23,9 +23,9 @@ export interface SubscriptionPlanCreationAttributes {
   is_active: boolean;
 }
 
-export class SubscriptionPlanModel
-  extends Model<SubscriptionPlanAttributes, SubscriptionPlanCreationAttributes>
-  implements SubscriptionPlanAttributes
+export class PlanModel
+  extends Model<PlanAttributes, PlanCreationAttributes>
+  implements PlanAttributes
 {
   declare id: number;
   declare name: string;
@@ -39,7 +39,7 @@ export class SubscriptionPlanModel
   declare deleted_at?: Date | null;
 }
 
-SubscriptionPlanModel.init(
+PlanModel.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -89,7 +89,7 @@ SubscriptionPlanModel.init(
   },
   {
     sequelize,
-    tableName: 'subscription_plans',
+    tableName: 'plans',
     timestamps: true,
     underscored: true,
     indexes: [

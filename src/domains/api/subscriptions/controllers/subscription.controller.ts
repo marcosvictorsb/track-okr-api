@@ -7,7 +7,7 @@ import {
   CreateSubscriptionRequest
 } from '../usecases/subscription.usecases';
 import { SubscriptionRepository } from '../repository/subscription.repository';
-import { SubscriptionPlanRepository } from '@domains/api/subscription-plans/repository/subscription-plan.repository';
+import { SubscriptionPlanRepository } from '@domains/api/plans/repository/plan.repository';
 import SubscriptionModel from '../model/subscription.model';
 
 export class SubscriptionController {

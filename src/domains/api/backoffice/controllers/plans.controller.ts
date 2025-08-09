@@ -1,33 +1,36 @@
 import { Request, Response } from 'express';
 import {
-  CreateSubscriptionPlanUseCase,
-  ListSubscriptionPlansUseCase,
-  GetSubscriptionPlanUseCase,
-  UpdateSubscriptionPlanUseCase,
-  DeleteSubscriptionPlanUseCase
-} from '@domains/api/subscription-plans/usecases/subscription-plan.usecases';
-import { SubscriptionPlanRepository } from '@domains/api/subscription-plans/repository/subscription-plan.repository';
+  CreatePlanUseCase,
+  ListPlansUseCase,
+  GetPlanUseCase,
+  UpdatePlanUseCase,
+  DeletePlanUseCase
+} from '@domains/api/plans/usecases/plan.usecases';
+import { PlanRepository } from '@domains/api/plans/repository/plan.repository';
 import { efiPayService } from '@adapters/services/efi-pay.service';
+import { logger } from '@configs/logger';
 
-export class BackofficeSubscriptionPlansController {
-  private createUseCase: CreateSubscriptionPlanUseCase;
-  private listUseCase: ListSubscriptionPlansUseCase;
-  private getUseCase: GetSubscriptionPlanUseCase;
-  private updateUseCase: UpdateSubscriptionPlanUseCase;
-  private deleteUseCase: DeleteSubscriptionPlanUseCase;
-  private repository: SubscriptionPlanRepository;
+export class BackofficePlansController {
+  private createUseCase: CreatePlanUseCase;
+  private listUseCase: ListPlansUseCase;
+  private getUseCase: GetPlanUseCase;
+  private updateUseCase: UpdatePlanUseCase;
+  private deleteUseCase: DeletePlanUseCase;
+  private repository: PlanRepository;
+  private logging: typeof logger;
 
   constructor() {
-    this.repository = new SubscriptionPlanRepository();
-    this.createUseCase = new CreateSubscriptionPlanUseCase(this.repository);
-    this.listUseCase = new ListSubscriptionPlansUseCase(this.repository);
-    this.getUseCase = new GetSubscriptionPlanUseCase(this.repository);
-    this.updateUseCase = new UpdateSubscriptionPlanUseCase(this.repository);
-    this.deleteUseCase = new DeleteSubscriptionPlanUseCase(this.repository);
+    this.repository = new PlanRepository();
+    this.createUseCase = new CreatePlanUseCase(this.repository);
+    this.listUseCase = new ListPlansUseCase(this.repository);
+    this.getUseCase = new GetPlanUseCase(this.repository);
+    this.updateUseCase = new UpdatePlanUseCase(this.repository);
+    this.deleteUseCase = new DeletePlanUseCase(this.repository);
+    this.logging = logger;
   }
 
   /**
-   * GET /backoffice/subscription-plans
+   * GET /backoffice/-plans
    * Lista todos os planos
    */
   async list(req: Request, res: Response): Promise<void> {
@@ -52,7 +55,7 @@ export class BackofficeSubscriptionPlansController {
   }
 
   /**
-   * GET /backoffice/subscription-plans/:id
+   * GET /backoffice/-plans/:id
    * Busca um plano específico
    */
   async get(req: Request, res: Response): Promise<void> {
@@ -82,12 +85,14 @@ export class BackofficeSubscriptionPlansController {
   }
 
   /**
-   * POST /backoffice/subscription-plans
+   * POST /backoffice/-plans
    * Cria um novo plano
    */
   async create(req: Request, res: Response): Promise<void> {
     try {
       const planData = req.body;
+
+      this.logging.info('Criando novo plano de assinatura', { planData });
 
       // Validações básicas
       if (!planData.name || planData.interval < 0) {
@@ -99,6 +104,8 @@ export class BackofficeSubscriptionPlansController {
       }
 
       const plan = await this.createUseCase.execute(planData);
+
+      this.logging.info('Plano de assinatura criado');
 
       res.status(201).json({
         success: true,
@@ -115,7 +122,7 @@ export class BackofficeSubscriptionPlansController {
   }
 
   /**
-   * PUT /backoffice/subscription-plans/:id
+   * PUT /backoffice/-plans/:id
    * Atualiza um plano
    */
   async update(req: Request, res: Response): Promise<void> {
@@ -148,7 +155,7 @@ export class BackofficeSubscriptionPlansController {
   }
 
   /**
-   * DELETE /backoffice/subscription-plans/:id
+   * DELETE /backoffice/-plans/:id
    * Desativa um plano
    */
   async delete(req: Request, res: Response): Promise<void> {
@@ -178,7 +185,7 @@ export class BackofficeSubscriptionPlansController {
   }
 
   /**
-   * POST /backoffice/subscription-plans/sync-efi
+   * POST /backoffice/-plans/sync-efi
    * Sincroniza planos com a Efí Pay
    */
   async syncWithEfi(req: Request, res: Response): Promise<void> {
@@ -207,7 +214,7 @@ export class BackofficeSubscriptionPlansController {
   }
 
   /**
-   * POST /backoffice/subscription-plans/:id/create-efi-plan
+   * POST /backoffice/-plans/:id/create-efi-plan
    * Cria um plano local na Efí Pay
    */
   async createEfiPlan(req: Request, res: Response): Promise<void> {
@@ -263,7 +270,7 @@ export class BackofficeSubscriptionPlansController {
   }
 
   /**
-   * GET /backoffice/subscription-plans/test-efi-connection
+   * GET /backoffice/-plans/test-efi-connection
    * Testa a conexão com a Efí Pay
    */
   async testEfiConnection(req: Request, res: Response): Promise<void> {

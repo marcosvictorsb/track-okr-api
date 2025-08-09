@@ -1,5 +1,5 @@
 import { SubscriptionRepository } from '../repository/subscription.repository';
-import { SubscriptionPlanRepository } from '@domains/api/subscription-plans/repository/subscription-plan.repository';
+import { SubscriptionPlanRepository } from '@domains/api/plans/repository/plan.repository';
 import {
   efiPayService,
   EfiSubscriptionData
@@ -33,9 +33,7 @@ export class CreateSubscriptionUseCase {
     private subscriptionPlanRepository: SubscriptionPlanRepository
   ) {}
 
-  async execute(
-    request: CreateSubscriptionRequest
-  ): Promise<SubscriptionEntity> {
+  async execute(request: CreateSubscriptionRequest): Promise<void> {
     // Buscar o plano
     const plan = await this.subscriptionPlanRepository.findById(
       request.subscription_plan_id
@@ -60,36 +58,33 @@ export class CreateSubscriptionUseCase {
 
     try {
       // Criar assinatura na EFI Pay
-      const efiSubscriptionData: EfiSubscriptionData = {
-        plan_id: plan.efi_plan_id,
-        items: [
-          {
-            name: plan.name,
-            amount: 1,
-            value: Math.round(plan.price_monthly * 100) // converter para centavos
-          }
-        ],
-        customer: request.customer_data,
-        payment_method: request.payment_method,
-        metadata: {
-          custom_id: `company_${request.company_id}`,
-          notification_url: `${process.env.APP_URL}/webhook/efi-pay`
-        }
-      };
-
-      const efiResponse =
-        await efiPayService.createSubscription(efiSubscriptionData);
-
+      // const efiSubscriptionData: EfiSubscriptionData = {
+      //   plan_id: plan.efi_plan_id,
+      //   items: [
+      //     {
+      //       name: plan.name,
+      //       amount: 1,
+      //       value: Math.round(plan.price_monthly * 100) // converter para centavos
+      //     }
+      //   ],
+      //   customer: request.customer_data,
+      //   payment_method: request.payment_method,
+      //   metadata: {
+      //     custom_id: `company_${request.company_id}`,
+      //     notification_url: `${process.env.APP_URL}/webhook/efi-pay`
+      //   }
+      // };
+      // const efiResponse =
+      //   await efiPayService.createSubscription(efiSubscriptionData);
       // Criar registro local
-      const subscriptionData: CreateSubscriptionCriteria = {
-        id_company: request.company_id,
-        subscription_plan_id: request.subscription_plan_id,
-        amount_users: request.amount_users,
-        status: SubscriptionStatus.ACTIVE,
-        id_external_payment: efiResponse.data.subscription_id
-      };
-
-      return await this.subscriptionRepository.create(subscriptionData);
+      // const subscriptionData: CreateSubscriptionCriteria = {
+      //   id_company: request.company_id,
+      //   subscription_plan_id: request.subscription_plan_id,
+      //   amount_users: request.amount_users,
+      //   status: SubscriptionStatus.ACTIVE,
+      //   id_external_payment: efiResponse.data.subscription_id
+      // };
+      // return await this.subscriptionRepository.create(subscriptionData);
     } catch (error) {
       console.error('Erro ao criar assinatura:', error);
       throw new Error('Falha ao criar assinatura');

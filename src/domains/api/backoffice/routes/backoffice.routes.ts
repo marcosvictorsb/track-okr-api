@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { BackofficeSubscriptionPlansController } from '../controllers/subscription-plans.controller';
-import { BackofficePaymentsController } from '../controllers/payments.controller';
+import { BackofficePlansController } from '../controllers/plans.controller';
+// import { BackofficePaymentsController } from '../controllers/payments.controller';
 import { BackofficeAuthController } from '../controllers/backoffice-auth.controller';
 import { BackofficeAuthMiddleware } from '../../../../middlewares/backoffice-auth.middleware';
 import { backofficeAuditLog } from '@middlewares/backoffice.middleware';
@@ -8,8 +8,8 @@ import { backofficeAuditLog } from '@middlewares/backoffice.middleware';
 const backofficeRouter = Router();
 
 // Instanciar controllers
-const plansController = new BackofficeSubscriptionPlansController();
-const paymentsController = new BackofficePaymentsController();
+const plansController = new BackofficePlansController();
+// const paymentsController = new BackofficePaymentsController();
 const authController = new BackofficeAuthController();
 
 // ====== ROTAS DE AUTENTICAÇÃO (SEM MIDDLEWARE) ======
@@ -40,51 +40,49 @@ backofficeRouter.get('/auth/verify', (req, res) =>
 // ====== ROTAS DE PLANOS DE ASSINATURA ======
 
 // Listar planos (todos podem ver)
-backofficeRouter.get('/subscription-plans', (req, res) =>
-  plansController.list(req, res)
-);
+backofficeRouter.get('/-plans', (req, res) => plansController.list(req, res));
 
 // Buscar plano por ID (todos podem ver)
-backofficeRouter.get('/subscription-plans/:id', (req, res) =>
+backofficeRouter.get('/-plans/:id', (req, res) =>
   plansController.get(req, res)
 );
 
 // Testar conexão com Efí Pay (todos podem testar)
-backofficeRouter.get('/subscription-plans/test-efi-connection', (req, res) =>
+backofficeRouter.get('/-plans/test-efi-connection', (req, res) =>
   plansController.testEfiConnection(req, res)
 );
 
 // Criar novo plano (apenas manager e admin)
 backofficeRouter.post(
-  '/subscription-plans',
+  '/-plans',
   BackofficeAuthMiddleware.requireManager(),
   (req, res) => plansController.create(req, res)
 );
 
 // Atualizar plano (apenas manager e admin)
 backofficeRouter.put(
-  '/subscription-plans/:id',
+  '/-plans/:id',
   BackofficeAuthMiddleware.requireManager(),
   (req, res) => plansController.update(req, res)
 );
 
 // Desativar plano (apenas admin)
 backofficeRouter.delete(
-  '/subscription-plans/:id',
+  '/-plans/:id',
   BackofficeAuthMiddleware.requireAdmin(),
   (req, res) => plansController.delete(req, res)
 );
 
 // Sincronizar com Efí Pay (apenas manager e admin)
 backofficeRouter.post(
-  '/subscription-plans/sync-efi',
+  '/-plans/sync-efi',
   BackofficeAuthMiddleware.requireManager(),
   (req, res) => plansController.syncWithEfi(req, res)
 );
 
 // Criar plano na Efí Pay (apenas manager e admin)
 backofficeRouter.post(
-  '/subscription-plans/:id/create-efi-plan',
+  '/-plans/:id/create-efi-plan',
   BackofficeAuthMiddleware.requireManager(),
   (req, res) => plansController.createEfiPlan(req, res)
 );
@@ -92,42 +90,42 @@ backofficeRouter.post(
 // ====== ROTAS DE PAGAMENTOS ======
 
 // Listar pagamentos (todos podem ver)
-backofficeRouter.get('/payments', (req, res) =>
-  paymentsController.list(req, res)
-);
+// backofficeRouter.get('/payments', (req, res) =>
+//   paymentsController.list(req, res)
+// );
 
-// Pagamentos pendentes (todos podem ver)
-backofficeRouter.get('/payments/pending', (req, res) =>
-  paymentsController.listPending(req, res)
-);
+// // Pagamentos pendentes (todos podem ver)
+// backofficeRouter.get('/payments/pending', (req, res) =>
+//   paymentsController.listPending(req, res)
+// );
 
-// Pagamentos em atraso (todos podem ver)
-backofficeRouter.get('/payments/overdue', (req, res) =>
-  paymentsController.listOverdue(req, res)
-);
+// // Pagamentos em atraso (todos podem ver)
+// backofficeRouter.get('/payments/overdue', (req, res) =>
+//   paymentsController.listOverdue(req, res)
+// );
 
-// Estatísticas de pagamentos (todos podem ver)
-backofficeRouter.get('/payments/stats', (req, res) =>
-  paymentsController.getStats(req, res)
-);
+// // Estatísticas de pagamentos (todos podem ver)
+// backofficeRouter.get('/payments/stats', (req, res) =>
+//   paymentsController.getStats(req, res)
+// );
 
-// Buscar pagamento por ID (todos podem ver)
-backofficeRouter.get('/payments/:id', (req, res) =>
-  paymentsController.get(req, res)
-);
+// // Buscar pagamento por ID (todos podem ver)
+// backofficeRouter.get('/payments/:id', (req, res) =>
+//   paymentsController.get(req, res)
+// );
 
-// Sincronizar pagamento com Efí Pay (apenas manager e admin)
-backofficeRouter.post(
-  '/payments/:id/sync-efi',
-  BackofficeAuthMiddleware.requireManager(),
-  (req, res) => paymentsController.syncWithEfi(req, res)
-);
+// // Sincronizar pagamento com Efí Pay (apenas manager e admin)
+// backofficeRouter.post(
+//   '/payments/:id/sync-efi',
+//   BackofficeAuthMiddleware.requireManager(),
+//   (req, res) => paymentsController.syncWithEfi(req, res)
+// );
 
-// Sincronizar todos os pagamentos pendentes (apenas admin)
-backofficeRouter.post(
-  '/payments/sync-all-pending',
-  BackofficeAuthMiddleware.requireAdmin(),
-  (req, res) => paymentsController.syncAllPending(req, res)
-);
+// // Sincronizar todos os pagamentos pendentes (apenas admin)
+// backofficeRouter.post(
+//   '/payments/sync-all-pending',
+//   BackofficeAuthMiddleware.requireAdmin(),
+//   (req, res) => paymentsController.syncAllPending(req, res)
+// );
 
 export { backofficeRouter };
