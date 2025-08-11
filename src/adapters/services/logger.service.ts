@@ -14,9 +14,11 @@ export type DataLogOutput = {
   id_expense?: number;
   id_income?: number;
   email?: string;
+  role?: string;
 
   // company
   id_company?: number;
+  company_name?: string;
   amount_users?: number;
 
   // planner
@@ -39,6 +41,14 @@ export type DataLogOutput = {
 
   // password reset
   token?: string;
+
+  // plan
+  plan?: string;
+  plan_id?: number;
+  trial_days?: number;
+
+  // subscription
+  subscription_id?: number;
 };
 
 type LoggerServiceDependencies = {

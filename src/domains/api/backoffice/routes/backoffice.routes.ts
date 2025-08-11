@@ -1,14 +1,16 @@
-import { Router } from 'express';
+import { Router, Request, Response } from 'express';
 import { BackofficePlansController } from '../controllers/plans.controller';
 // import { BackofficePaymentsController } from '../controllers/payments.controller';
 import { BackofficeAuthController } from '../controllers/backoffice-auth.controller';
 import { BackofficeAuthMiddleware } from '../../../../middlewares/backoffice-auth.middleware';
 import { backofficeAuditLog } from '@middlewares/backoffice.middleware';
+import * as factories from '../factories/index';
 
 const backofficeRouter = Router();
 
-// Instanciar controllers
-const plansController = new BackofficePlansController();
+// ====== CONTROLLERS ======
+const { listPlanController } = factories;
+
 // const paymentsController = new BackofficePaymentsController();
 const authController = new BackofficeAuthController();
 
@@ -40,52 +42,54 @@ backofficeRouter.get('/auth/verify', (req, res) =>
 // ====== ROTAS DE PLANOS DE ASSINATURA ======
 
 // Listar planos (todos podem ver)
-backofficeRouter.get('/-plans', (req, res) => plansController.list(req, res));
-
-// Buscar plano por ID (todos podem ver)
-backofficeRouter.get('/-plans/:id', (req, res) =>
-  plansController.get(req, res)
+backofficeRouter.get('/plans', (request: Request, response: Response) =>
+  listPlanController.listPlan(response)
 );
 
-// Testar conexão com Efí Pay (todos podem testar)
-backofficeRouter.get('/-plans/test-efi-connection', (req, res) =>
-  plansController.testEfiConnection(req, res)
-);
+// // Buscar plano por ID (todos podem ver)
+// backofficeRouter.get('/-plans/:id', (req, res) =>
+//   plansController.get(req, res)
+// );
+
+// // Testar conexão com Efí Pay (todos podem testar)
+// backofficeRouter.get('/-plans/test-efi-connection', (req, res) =>
+//   plansController.testEfiConnection(req, res)
+// );
 
 // Criar novo plano (apenas manager e admin)
-backofficeRouter.post(
-  '/-plans',
-  BackofficeAuthMiddleware.requireManager(),
-  (req, res) => plansController.create(req, res)
-);
+// backofficeRouter.post(
+//   '/-plans',
+//   BackofficeAuthMiddleware.requireManager(),
+//   (req, res) => plansController.create(req, res)
+// );
 
 // Atualizar plano (apenas manager e admin)
-backofficeRouter.put(
-  '/-plans/:id',
-  BackofficeAuthMiddleware.requireManager(),
-  (req, res) => plansController.update(req, res)
-);
+// backofficeRouter.put(
+//   '/-plans/:id',
+//   BackofficeAuthMiddleware.requireManager(),
+//   (req, res) => plansController.update(req, res)
+// );
 
-// Desativar plano (apenas admin)
-backofficeRouter.delete(
-  '/-plans/:id',
-  BackofficeAuthMiddleware.requireAdmin(),
-  (req, res) => plansController.delete(req, res)
-);
+// // Desativar plano (apenas admin)
+// backofficeRouter.delete(
+//   '/-plans/:id',
+//   BackofficeAuthMiddleware.requireAdmin(),
+//   (req, res) => plansController.delete(req, res)
+// );
 
-// Sincronizar com Efí Pay (apenas manager e admin)
-backofficeRouter.post(
-  '/-plans/sync-efi',
-  BackofficeAuthMiddleware.requireManager(),
-  (req, res) => plansController.syncWithEfi(req, res)
-);
+// // Sincronizar com Efí Pay (apenas manager e admin)
+// backofficeRouter.post(
+//   '/-plans/sync-efi',
+//   BackofficeAuthMiddleware.requireManager(),
+//   (req, res) => plansController.syncWithEfi(req, res)
+// );
 
-// Criar plano na Efí Pay (apenas manager e admin)
-backofficeRouter.post(
-  '/-plans/:id/create-efi-plan',
-  BackofficeAuthMiddleware.requireManager(),
-  (req, res) => plansController.createEfiPlan(req, res)
-);
+// // Criar plano na Efí Pay (apenas manager e admin)
+// backofficeRouter.post(
+//   '/-plans/:id/create-efi-plan',
+//   BackofficeAuthMiddleware.requireManager(),
+//   (req, res) => plansController.createEfiPlan(req, res)
+// );
 
 // ====== ROTAS DE PAGAMENTOS ======
 

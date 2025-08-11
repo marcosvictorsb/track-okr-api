@@ -2,25 +2,27 @@ import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '../../../../infra/database/connection/mysql';
 
 export interface PlanAttributes {
-  id: number;
+  id?: number;
   name: string;
   description?: string;
-  interval: number;
-  repeats: number | null;
-  efi_plan_id?: string;
-  is_active: boolean;
-  created_at: Date;
-  updated_at: Date;
+  max_users: number;
+  max_planners: number;
+  max_teams: number;
+  max_objectives_per_quarter: number;
+  max_key_results_per_objective: number;
+  created_at?: Date;
+  updated_at?: Date | null;
   deleted_at?: Date | null;
 }
 
 export interface PlanCreationAttributes {
   name: string;
   description?: string;
-  interval: number;
-  repeats: number | null;
-  efi_plan_id?: string;
-  is_active: boolean;
+  max_users: number;
+  max_planners: number;
+  max_teams: number;
+  max_objectives_per_quarter: number;
+  max_key_results_per_objective: number;
 }
 
 export class PlanModel
@@ -30,10 +32,11 @@ export class PlanModel
   declare id: number;
   declare name: string;
   declare description?: string;
-  declare interval: number;
-  declare repeats: number | null;
-  declare efi_plan_id?: string;
-  declare is_active: boolean;
+  declare max_users: number;
+  declare max_planners: number;
+  declare max_teams: number;
+  declare max_objectives_per_quarter: number;
+  declare max_key_results_per_objective: number;
   declare created_at: Date;
   declare updated_at: Date;
   declare deleted_at?: Date | null;
@@ -54,23 +57,25 @@ PlanModel.init(
       type: DataTypes.TEXT,
       allowNull: true
     },
-    interval: {
+    max_users: {
       type: DataTypes.INTEGER,
       allowNull: false
     },
-    repeats: {
+    max_planners: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     },
-    efi_plan_id: {
-      type: DataTypes.STRING(100),
-      allowNull: true,
-      unique: true
+    max_teams: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
-    is_active: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
+    max_objectives_per_quarter: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    max_key_results_per_objective: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
     created_at: {
       type: DataTypes.DATE,

@@ -48,8 +48,8 @@ export class PlannerRepository implements IPlannerRepository {
   }
 
   public async create(criteria: CreatePlannerCriteria): Promise<PlannerEntity> {
-    const Planner = await this.model.create(criteria);
-    return new PlannerEntity(Planner.dataValues);
+    const planner = await this.model.create(criteria);
+    return new PlannerEntity(planner.dataValues);
   }
 
   public async find(
