@@ -3,22 +3,31 @@ import * as factories from '../factories';
 import { validateSchema } from '@middlewares/validate.schema';
 import {
   requestPasswordResetSchema,
-  confirmPasswordResetSchema
+  confirmPasswordResetSchema,
+  registerSchema
 } from '../schemas';
 
 const {
   authenticationController,
   makeRequestPasswordResetController,
-  makeConfirmPasswordResetController
+  makeConfirmPasswordResetController,
+  makeRegisterController
 } = factories;
 
 const requestPasswordResetController = makeRequestPasswordResetController();
 const confirmPasswordResetController = makeConfirmPasswordResetController();
+const registerController = makeRegisterController();
 
 const authRoutes = Router();
 
 authRoutes.post('/', (request, response) =>
   authenticationController.authentication(request, response)
+);
+
+authRoutes.post(
+  '/register',
+  validateSchema(registerSchema),
+  (request, response) => registerController.register(request, response)
 );
 
 authRoutes.post(
