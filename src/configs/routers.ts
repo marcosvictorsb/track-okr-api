@@ -1,5 +1,5 @@
 import { Request, Response, Router } from 'express';
-import routerMercadoPago from '@domains/webhooks/mercado-pago/routers';
+// import routerMercadoPago from '@domains/webhooks/mercado-pago/routers';
 // import efiWebhookRouter from '@domains/webhooks/efi-pay/routes/webhook.routes';
 import routerUser from '@domains/api/users/routers';
 import authRoutes from '@domains/api/authentication/routes';
@@ -21,7 +21,7 @@ routers.get('/health-check', (request: Request, response: Response) => {
   response.status(200).json({ message: 'API is running' });
 });
 routers.use('/api', healthRouter);
-routers.use('/webhook', routerMercadoPago);
+// routers.use('/webhook', routerMercadoPago);
 // routers.use('/webhook', efiWebhookRouter);
 routers.use('/users', routerUser);
 routers.use('/authenticate', authRoutes);
