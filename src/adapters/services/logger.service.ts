@@ -45,6 +45,7 @@ export type DataLogOutput = {
   // plan
   plan?: string;
   plan_id?: number;
+  plan_name?: string;
   trial_days?: number;
 
   // subscription

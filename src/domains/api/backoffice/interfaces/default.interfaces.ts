@@ -1,18 +1,11 @@
 import { ModelStatic } from 'sequelize';
 import { PlanModel } from '../models/plan.model';
 import { PlanEntity } from '../entities/plan.entity';
-import { logger } from '@configs/logger';
-import { IPresenter } from '@protocols/presenter';
-import {
-  CreateUserCriteria,
-  FindUserCriteria,
-  IUserRepository
-} from '@domains/api/users/interfaces';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
 
 export type FindPlansCriteria = {
   id?: number;
   name?: string;
+  isTrial?: boolean;
 };
 
 export type CreatePlanCriteria = {
@@ -37,21 +30,3 @@ export interface IPlanRepository {
   find(criteria: FindPlansCriteria): Promise<PlanEntity | undefined>;
   findAll(): Promise<PlanEntity[]>;
 }
-
-export interface ICreatePlanGateway {
-  findPlan(criteria: FindPlansCriteria): Promise<PlanEntity | undefined>;
-  createPlan(data: CreatePlanCriteria): Promise<PlanEntity>;
-  findUser(criteria: FindUserCriteria): Promise<UserEntity | undefined>;
-  createUser(data: CreateUserCriteria): Promise<UserEntity | undefined>;
-}
-
-export interface ICreatePlanGatewayDependencies {
-  planRepository: IPlanRepository;
-  userRepository: IUserRepository;
-  logging: typeof logger;
-}
-
-export type CreatePlanInteractorDependencies = {
-  logger: typeof logger;
-  presenter: IPresenter;
-};
