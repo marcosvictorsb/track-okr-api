@@ -35,7 +35,7 @@ export async function up(queryInterface, Sequelize) {
   // Adicionando índice único para CNPJ
   await queryInterface.addIndex('companies', ['cnpj'], {
     name: 'companies_cnpj_unique',
-    unique: true,
+    unique: false,
     where: {
       deleted_at: null
     }

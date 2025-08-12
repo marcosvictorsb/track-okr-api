@@ -10,6 +10,7 @@ export interface PlanAttributes {
   max_teams: number;
   max_objectives_per_quarter: number;
   max_key_results_per_objective: number;
+  isTrial?: boolean;
   created_at?: Date;
   updated_at?: Date | null;
   deleted_at?: Date | null;
@@ -23,6 +24,7 @@ export interface PlanCreationAttributes {
   max_teams: number;
   max_objectives_per_quarter: number;
   max_key_results_per_objective: number;
+  isTrial?: boolean;
 }
 
 export class PlanModel
@@ -37,6 +39,7 @@ export class PlanModel
   declare max_teams: number;
   declare max_objectives_per_quarter: number;
   declare max_key_results_per_objective: number;
+  declare isTrial: boolean;
   declare created_at: Date;
   declare updated_at: Date;
   declare deleted_at?: Date | null;
@@ -76,6 +79,12 @@ PlanModel.init(
     max_key_results_per_objective: {
       type: DataTypes.INTEGER,
       allowNull: false
+    },
+    isTrial: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+      field: 'isTrial'
     },
     created_at: {
       type: DataTypes.DATE,

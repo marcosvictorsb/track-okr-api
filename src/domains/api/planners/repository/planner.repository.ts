@@ -90,6 +90,7 @@ export class PlannerRepository implements IPlannerRepository {
         })
     );
   }
+  p;
 
   public async update(
     data: Partial<UpdatePlannerCriteria>,

@@ -26,6 +26,10 @@ export class PlanRepository implements IPlanRepository {
       whereConditions['name'] = criteria.name;
     }
 
+    if (criteria.isTrial) {
+      whereConditions['isTrial'] = criteria.isTrial;
+    }
+
     return whereConditions;
   }
 
