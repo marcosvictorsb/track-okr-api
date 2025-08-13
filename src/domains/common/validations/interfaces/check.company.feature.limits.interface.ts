@@ -2,6 +2,7 @@ import { DataLogOutput } from '@adapters/services';
 import { logger } from '@configs/logger';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
+import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import {
   FindPlannerCriteria,
   IPlannerRepository
@@ -24,13 +25,15 @@ export enum FeatureType {
 export interface CheckCompanyFeatureLimitsInput {
   id_company: number;
   feature: FeatureType;
-  year: number;
+  year?: number;
+  quarter?: number;
 }
 
 export type InputGetCurrentUsage = {
   id_company: number;
   feature: FeatureType;
-  year: number;
+  year?: number;
+  quarter?: number;
 };
 
 export interface ICheckCompanyFeatureLimitsGateway {
@@ -51,6 +54,7 @@ export type CheckCompanyFeatureLimitsGatewayDependencies = {
   subscriptionRepository: ISubscriptionRepository;
   planRepository: IPlanRepository;
   plannerRepository: IPlannerRepository;
+  objectiveRepository: IObjectiveRepository;
   logging: typeof logger;
 };
 

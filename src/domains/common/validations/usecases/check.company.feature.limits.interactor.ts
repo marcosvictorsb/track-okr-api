@@ -21,11 +21,10 @@ export class CheckCompanyFeatureLimitsInteractor
     currentUsage: number;
     isWithinLimit: boolean;
   }> {
-    const { id_company, feature, year } = input;
+    const { id_company, feature, year, quarter } = input;
 
     this.gateway.loggerInfo('Iniciando verificação de limites', {
-      id_company,
-      feature
+      input: JSON.stringify(input)
     });
 
     // 1. Buscar assinatura ativa da empresa
@@ -54,7 +53,8 @@ export class CheckCompanyFeatureLimitsInteractor
     const criteriaCurrenteUsage = {
       id_company,
       feature,
-      year
+      year: year as number,
+      quarter: quarter as number
     };
     const currentUsage = await this.gateway.getCurrentUsage(
       criteriaCurrenteUsage
@@ -63,7 +63,9 @@ export class CheckCompanyFeatureLimitsInteractor
     this.gateway.loggerInfo('Uso atual da feature obtido', {
       id_company,
       feature,
-      requestTxt: JSON.stringify(criteriaCurrenteUsage)
+      requestTxt: JSON.stringify(criteriaCurrenteUsage),
+      limit,
+      isWithinLimit: currentUsage < limit
     });
 
     return {

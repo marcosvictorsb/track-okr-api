@@ -7,14 +7,17 @@ import SubscriptionModel from '@domains/common/subscriptions/model/subscription.
 import { SubscriptionRepository } from '@domains/common/subscriptions/repository/subscription.repository';
 import { CheckCompanyFeatureLimitsGateway } from '../gateways/check.company.feature.limits.gateway';
 import { CheckCompanyFeatureLimitsInteractor } from '../usecases/check.company.feature.limits.interactor';
+import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 
-export const makeCheckCompanyFeatureLimits = () => {
+export const makeCheckCompanyFeatureLimitsInteractor = () => {
   const paramsGateway = {
     subscriptionRepository: new SubscriptionRepository({
       model: SubscriptionModel
     }),
     planRepository: new PlanRepository({ model: PlanModel }),
     plannerRepository: new PlannerRepository({ model: PlannerModel }),
+    objectiveRepository: new ObjectiveRepository({ model: ObjectiveModel }),
     logging: logger
   };
 

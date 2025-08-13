@@ -90,7 +90,8 @@ export class TeamRepository implements ITeamRepository {
           name: team.name,
           description: team.description,
           amount_users: team.amount_users,
-          id_company: team.id_company
+          id_company: team.id_company,
+          created_at: team.created_at
         })
     );
   }

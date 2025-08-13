@@ -1,6 +1,7 @@
 import { MixCheckCompanyFeatureLimits } from '@adapters/gateways/common/check.company.feature.limits.gateway';
 import {
   CheckCompanyFeatureLimitsGatewayDependencies,
+  FeatureType,
   ICheckCompanyFeatureLimitsGateway,
   InputGetCurrentUsage
 } from '../interfaces/check.company.feature.limits.interface';
@@ -13,6 +14,7 @@ import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscri
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
 import { IPlannerRepository } from '@domains/api/planners/interfaces';
+import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 
 export class CheckCompanyFeatureLimitsGateway
   extends MixCheckCompanyFeatureLimits
@@ -21,6 +23,7 @@ export class CheckCompanyFeatureLimitsGateway
   subscriptionRepository: ISubscriptionRepository;
   planRepository: IPlanRepository;
   plannerRepository: IPlannerRepository;
+  objectiveRepository: IObjectiveRepository;
   logging: typeof logger;
 
   constructor(params: CheckCompanyFeatureLimitsGatewayDependencies) {
@@ -28,6 +31,7 @@ export class CheckCompanyFeatureLimitsGateway
     this.subscriptionRepository = params.subscriptionRepository;
     this.planRepository = params.planRepository;
     this.plannerRepository = params.plannerRepository;
+    this.objectiveRepository = params.objectiveRepository;
     this.logging = params.logging;
   }
 
@@ -46,19 +50,41 @@ export class CheckCompanyFeatureLimitsGateway
   }
 
   async getCurrentUsage(criteria: InputGetCurrentUsage): Promise<number> {
-    const { id_company, feature, year } = criteria;
+    const { id_company, feature, year, quarter } = criteria;
     this.logging.info('Buscando uso atual da feature', {
       id_company,
       feature
     });
 
-    if (feature === 'max_planners') {
+    if (feature === FeatureType.MAX_PLANNERS) {
+      this.logging.info('Verificando o uso atual de planejamento anual');
       const currentUsage = await this.plannerRepository.count({
         id_company,
         year
       });
 
       this.logging.info('Uso atual de planner anual', {
+        id_company,
+        feature,
+        currentUsage
+      });
+      return currentUsage;
+    }
+
+    if (feature === FeatureType.MAX_OBJECTIVES_PER_QUARTER) {
+      this.logging.info('Verificando o uso atual de objetivos por trimestre', {
+        id_company,
+        year,
+        quarter
+      });
+      const currentUsage =
+        await this.objectiveRepository.countObjectivesByQuarter({
+          id_company,
+          year,
+          quarter
+        });
+
+      this.logging.info('Uso atual de Objetivo por trimestre', {
         id_company,
         feature,
         currentUsage

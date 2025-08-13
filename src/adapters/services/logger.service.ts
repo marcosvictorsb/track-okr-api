@@ -10,6 +10,8 @@ export type DataLogOutput = {
   requestTxt?: string;
   count?: number;
   feature?: string;
+  limit?: number;
+  isWithinLimit?: boolean;
 
   id_user?: number;
   id_expense?: number;

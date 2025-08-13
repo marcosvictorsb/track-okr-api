@@ -49,4 +49,5 @@ export interface IObjectiveRepository {
     data: UpdateObjectiveCriteria
   ): Promise<ObjectiveEntity | null>;
   delete(criteria: DeleteObjectiveCriteria): Promise<boolean>;
+  countObjectivesByQuarter(criteria: FindObjectiveCriteria): Promise<number>;
 }

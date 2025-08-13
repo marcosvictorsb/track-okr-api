@@ -7,6 +7,7 @@ import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
 import { DataLogOutput } from '@adapters/services';
+import { ICheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export interface ICreateObjectiveController {
   createObjective(request: UserPayload, response: Response): Promise<Response>;
@@ -39,6 +40,7 @@ export interface CreateObjectiveInteractorDependencies {
   gateway: ICreateObjectiveGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
+  checkCompanyFeatureLimitsInteractor: ICheckCompanyFeatureLimitsInteractor;
 }
 
 export interface CreateObjectiveControllerDependencies {

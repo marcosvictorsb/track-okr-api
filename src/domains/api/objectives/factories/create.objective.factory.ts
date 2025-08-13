@@ -8,6 +8,7 @@ import { userCompanyValidatiorInteractor } from '@domains/common/validations/fac
 import { logger } from '@configs/logger';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import TeamModel from '@domains/api/teams/model/team.model';
+import { makeCheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/factories/check.company.feature.limits.factories';
 
 export const makeCreateObjectiveController = () => {
   const objectiveRepository = new ObjectiveRepository({
@@ -29,7 +30,9 @@ export const makeCreateObjectiveController = () => {
   const interactor = new CreateObjectiveInteractor({
     gateway: objectiveGateway,
     presenter: new Presenter(),
-    userCompanyValidator: userCompanyValidatiorInteractor
+    userCompanyValidator: userCompanyValidatiorInteractor,
+    checkCompanyFeatureLimitsInteractor:
+      makeCheckCompanyFeatureLimitsInteractor()
   });
 
   return new CreateObjectiveController({

@@ -148,4 +148,12 @@ export class ObjectiveRepository implements IObjectiveRepository {
 
     return affectedRows > 0;
   }
+
+  public async countObjectivesByQuarter(
+    criteria: FindObjectiveCriteria
+  ): Promise<number> {
+    return this.model.count({
+      where: this.getConditions(criteria)
+    });
+  }
 }
