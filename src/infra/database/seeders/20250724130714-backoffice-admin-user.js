@@ -7,7 +7,7 @@ module.exports = {
   async up(queryInterface, Sequelize) {
     // Verificar se já existe usuário admin
     const existingAdmin = await queryInterface.sequelize.query(
-      "SELECT id FROM backoffice_users WHERE email = 'admin@trackokr.com' LIMIT 1",
+      "SELECT id FROM backoffice_users WHERE email = 'admin@gunno.io' LIMIT 1",
       { type: Sequelize.QueryTypes.SELECT }
     );
 
@@ -25,7 +25,7 @@ module.exports = {
       [
         {
           name: 'Administrador do Sistema',
-          email: 'admin@trackokr.com',
+          email: 'admin@gunno.io',
           password: hashedPassword,
           role: 'admin',
           permissions: JSON.stringify({
@@ -44,7 +44,7 @@ module.exports = {
     );
 
     console.log('Usuário admin criado com sucesso!');
-    console.log('Email: admin@trackokr.com');
+    console.log('Email: admin@gunno.io');
     console.log('Senha: admin123!@#');
     console.log('IMPORTANTE: Altere a senha após o primeiro login!');
   },
@@ -54,7 +54,7 @@ module.exports = {
     await queryInterface.bulkDelete(
       'backoffice_users',
       {
-        email: 'admin@trackokr.com'
+        email: 'admin@gunno.io'
       },
       {}
     );
