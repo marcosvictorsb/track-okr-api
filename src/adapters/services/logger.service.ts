@@ -9,6 +9,7 @@ export type DataLogOutput = {
   input?: string;
   requestTxt?: string;
   count?: number;
+  feature?: string;
 
   id_user?: number;
   id_expense?: number;

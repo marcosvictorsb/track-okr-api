@@ -20,6 +20,8 @@ export type FindPlannerCriteria = {
   id_company?: number;
   id_user?: number;
   limite?: number;
+  created_after?: Date;
+  created_before?: Date;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
@@ -46,6 +48,7 @@ export interface IPlannerRepository {
     data: Partial<PlannerEntity>
   ): Promise<boolean>;
   delete(criteria: DeletePlannerCriteria): Promise<boolean>;
+  count(criteria: FindPlannerCriteria): Promise<number>;
 }
 
 export type PlannerRepositoryDependencies = {

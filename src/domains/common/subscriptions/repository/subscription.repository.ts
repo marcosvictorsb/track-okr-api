@@ -54,7 +54,7 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     };
 
     const subscription = await this.model.create(subscriptionData);
-    return new SubscriptionEntity(subscription.dataValues);
+    return new SubscriptionEntity(subscription);
   }
 
   public async find(
@@ -66,7 +66,7 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     });
 
     if (!subscription) return undefined;
-    return new SubscriptionEntity(subscription.dataValues);
+    return new SubscriptionEntity(subscription);
   }
 
   public async findAll(
@@ -79,7 +79,7 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     });
 
     return subscriptions.map(
-      (subscription) => new SubscriptionEntity(subscription.dataValues)
+      (subscription) => new SubscriptionEntity(subscription)
     );
   }
 

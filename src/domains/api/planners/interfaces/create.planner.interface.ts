@@ -14,6 +14,7 @@ import {
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { logger } from '@configs/logger';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { ICheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export type InputCreatePlanner = {
   title: string;
@@ -27,6 +28,7 @@ export type CreatePlannerInteractorDependencies = {
   gateway: CreatePlannerGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
+  checkCompanyFeatureLimits: ICheckCompanyFeatureLimitsInteractor;
 };
 
 export type ICreatePlannerGatewayDependencies = {

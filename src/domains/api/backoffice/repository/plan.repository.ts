@@ -3,7 +3,7 @@ import {
   CreatePlanCriteria,
   FindPlansCriteria,
   IPlanRepository,
-  PlannerRepositoryDependencies
+  PlanRepositoryDependencies
 } from '../interfaces/default.interfaces';
 import { ModelStatic, Op } from 'sequelize';
 import { PlanEntity } from '../entities/plan.entity';
@@ -11,7 +11,7 @@ import { PlanEntity } from '../entities/plan.entity';
 export class PlanRepository implements IPlanRepository {
   protected model: ModelStatic<PlanModel>;
 
-  constructor(params: PlannerRepositoryDependencies) {
+  constructor(params: PlanRepositoryDependencies) {
     this.model = params.model;
   }
 

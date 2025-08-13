@@ -21,7 +21,7 @@ export type CreatePlanCriteria = {
   deleted_at?: Date;
 };
 
-export type PlannerRepositoryDependencies = {
+export type PlanRepositoryDependencies = {
   model: ModelStatic<PlanModel>;
 };
 

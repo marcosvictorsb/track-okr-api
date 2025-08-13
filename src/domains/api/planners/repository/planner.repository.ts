@@ -1,6 +1,6 @@
 import PlannerModel from '@domains/api/planners/model/planner.model';
 import { PlannerEntity } from '@domains/api/planners/entity/planner.entity';
-import { ModelStatic } from 'sequelize';
+import { ModelStatic, Op } from 'sequelize';
 import {
   CreatePlannerCriteria,
   DeletePlannerCriteria,
@@ -42,6 +42,19 @@ export class PlannerRepository implements IPlannerRepository {
 
     if (criteria.id_user) {
       whereConditions['id_user'] = criteria.id_user;
+    }
+
+    if (criteria.created_after || criteria.created_before) {
+      const dateConditions: Record<symbol, Date> = {};
+      if (criteria.created_after) {
+        dateConditions[Op.gte] = criteria.created_after;
+      }
+
+      if (criteria.created_before) {
+        dateConditions[Op.lte] = criteria.created_before;
+      }
+
+      whereConditions.created_at = dateConditions;
     }
 
     return whereConditions;
@@ -90,7 +103,6 @@ export class PlannerRepository implements IPlannerRepository {
         })
     );
   }
-  p;
 
   public async update(
     data: Partial<UpdatePlannerCriteria>,
@@ -108,5 +120,11 @@ export class PlannerRepository implements IPlannerRepository {
       where: { id: criteria.id }
     });
     return affectedRows > 0;
+  }
+
+  public async count(criteria: FindPlannerCriteria): Promise<number> {
+    return await this.model.count({
+      where: this.getConditions(criteria)
+    });
   }
 }
