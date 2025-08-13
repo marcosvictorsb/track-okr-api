@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import {
-  RegisterControllerDependencies,
-  InputRegister
-} from '../interfaces/register.interface';
-import { RegisterInteractor } from '../usecases';
+  RegisterFreeTrialControllerDependencies,
+  InputRegisterFreeTrial
+} from '../interfaces/register.free.trial.interface';
+import { RegisterFreeTrialInteractor } from '../usecases';
 
 export class RegisterController {
-  protected interactor: RegisterInteractor;
+  protected interactor: RegisterFreeTrialInteractor;
 
-  constructor(params: RegisterControllerDependencies) {
+  constructor(params: RegisterFreeTrialControllerDependencies) {
     this.interactor = params.interactor;
   }
 
@@ -16,7 +16,7 @@ export class RegisterController {
     request: Request,
     response: Response
   ): Promise<Response> {
-    const input: InputRegister = {
+    const input: InputRegisterFreeTrial = {
       name: request.body.name,
       email: request.body.email,
       password: request.body.password,

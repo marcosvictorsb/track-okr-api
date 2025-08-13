@@ -1,9 +1,9 @@
 import { DataLogOutput } from '@adapters/services';
 import {
-  IRegisterGateway,
-  IRegisterGatewayDependencies,
+  IRegisterFreeTrialGateway,
+  IRegisterFreeTrialGatewayDependencies,
   CreateCompanyData
-} from '../interfaces/register.interface';
+} from '../interfaces/register.free.trial.interface';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { ICompanyRepository } from '@domains/api/companies/interfaces';
@@ -16,14 +16,14 @@ import { logger } from '@configs/logger';
 import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 
-export class RegisterGateway implements IRegisterGateway {
+export class RegisterGateway implements IRegisterFreeTrialGateway {
   protected companyRepository: ICompanyRepository;
   protected userRepository: IUserRepository;
   protected planRepository: IPlanRepository;
   protected subscriptionRepository: ISubscriptionRepository;
   protected logging: typeof logger;
 
-  constructor(params: IRegisterGatewayDependencies) {
+  constructor(params: IRegisterFreeTrialGatewayDependencies) {
     this.companyRepository = params.companyRepository;
     this.userRepository = params.userRepository;
     this.planRepository = params.planRepository;

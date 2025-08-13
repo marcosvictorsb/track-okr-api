@@ -9,12 +9,12 @@ import {
 import { ISubscriptionRepository } from '@domains/common/subscriptions/interfaces';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { RegisterInteractor } from '../usecases';
+import { RegisterFreeTrialInteractor } from '../usecases';
 import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 import { CreateTrialSubscriptionInteractor } from '@domains/common/subscriptions/usecases/create.trial.subscription.interactor';
 
-export type InputRegister = {
+export type InputRegisterFreeTrial = {
   name: string;
   email: string;
   password: string;
@@ -52,13 +52,13 @@ export type CreateSubscriptionData = {
   updated_at?: Date;
 };
 
-export type RegisterInteractorDependencies = {
-  gateway: IRegisterGateway;
+export type RegisterFreeTrialInteractorDependencies = {
+  gateway: IRegisterFreeTrialGateway;
   presenter: IPresenter;
   interactorCreateTrialSubscription: CreateTrialSubscriptionInteractor;
 };
 
-export type IRegisterGatewayDependencies = {
+export type IRegisterFreeTrialGatewayDependencies = {
   companyRepository: ICompanyRepository;
   userRepository: IUserRepository;
   planRepository: IPlanRepository;
@@ -66,11 +66,11 @@ export type IRegisterGatewayDependencies = {
   logging: typeof logger;
 };
 
-export type RegisterControllerDependencies = {
-  interactor: RegisterInteractor;
+export type RegisterFreeTrialControllerDependencies = {
+  interactor: RegisterFreeTrialInteractor;
 };
 
-export interface IRegisterGateway {
+export interface IRegisterFreeTrialGateway {
   findUserByEmail(email: string): Promise<UserEntity | undefined>;
   findCompanyByName(name: string): Promise<CompanyEntity | undefined>;
   findPlanByName(name: string): Promise<PlanEntity | undefined>;

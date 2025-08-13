@@ -1,27 +1,27 @@
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import {
-  InputRegister,
-  IRegisterGateway,
-  RegisterInteractorDependencies
-} from '../interfaces/register.interface';
+  InputRegisterFreeTrial,
+  IRegisterFreeTrialGateway,
+  RegisterFreeTrialInteractorDependencies
+} from '../interfaces/register.free.trial.interface';
 import bcrypt from 'bcryptjs';
 import { CreateTrialSubscriptionInteractor } from '@domains/common/subscriptions/usecases/create.trial.subscription.interactor';
 import { CreateFreeSubscriptionInput } from '@domains/common/subscriptions/interfaces';
 
-export class RegisterInteractor {
-  protected gateway: IRegisterGateway;
+export class RegisterFreeTrialInteractor {
+  protected gateway: IRegisterFreeTrialGateway;
   protected presenter: IPresenter;
   protected interactorCreateTrialSubscription: CreateTrialSubscriptionInteractor;
 
-  constructor(params: RegisterInteractorDependencies) {
+  constructor(params: RegisterFreeTrialInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.interactorCreateTrialSubscription =
       params.interactorCreateTrialSubscription;
   }
 
-  async execute(input: InputRegister): Promise<HttpResponse> {
+  async execute(input: InputRegisterFreeTrial): Promise<HttpResponse> {
     try {
       const { name, email, password, company_name, plan } = input;
 

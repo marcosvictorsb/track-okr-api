@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const registerSchema = z.object({
+export const registerFreeTrialSchema = z.object({
   body: z.object({
     name: z
       .string({ required_error: 'Nome é obrigatório' })
@@ -30,4 +30,4 @@ export const registerSchema = z.object({
   })
 });
 
-export type RegisterInput = z.infer<typeof registerSchema>['body'];
+export type RegisterInput = z.infer<typeof registerFreeTrialSchema>['body'];

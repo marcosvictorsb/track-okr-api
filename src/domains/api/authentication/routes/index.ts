@@ -4,19 +4,19 @@ import { validateSchema } from '@middlewares/validate.schema';
 import {
   requestPasswordResetSchema,
   confirmPasswordResetSchema,
-  registerSchema
+  registerFreeTrialSchema
 } from '../schemas';
 
 const {
   authenticationController,
   makeRequestPasswordResetController,
   makeConfirmPasswordResetController,
-  makeRegisterController
+  makeRegisterFreeTrialController
 } = factories;
 
 const requestPasswordResetController = makeRequestPasswordResetController();
 const confirmPasswordResetController = makeConfirmPasswordResetController();
-const registerController = makeRegisterController();
+const registerController = makeRegisterFreeTrialController();
 
 const authRoutes = Router();
 
@@ -26,7 +26,7 @@ authRoutes.post('/', (request, response) =>
 
 authRoutes.post(
   '/register',
-  validateSchema(registerSchema),
+  validateSchema(registerFreeTrialSchema),
   (request, response) => registerController.register(request, response)
 );
 
