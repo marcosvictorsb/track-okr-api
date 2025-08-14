@@ -66,17 +66,20 @@ export class GetObjectiveGateway
   public async findByQuarter(
     quarter: number,
     year: number,
-    id_company: number
+    id_company: number,
+    status?: string
   ): Promise<ObjectiveEntity[]> {
     this.logging.info('Finding objectives by quarter and year', {
       quarter,
       year,
-      id_company
+      id_company,
+      status
     });
     return await this.objectiveRepository.findMany({
       quarter,
       year,
-      id_company
+      id_company,
+      status
     });
   }
 

@@ -14,7 +14,10 @@ import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscri
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
 import { IPlannerRepository } from '@domains/api/planners/interfaces';
-import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
+import {
+  IObjectiveRepository,
+  ObjectiveStatus
+} from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
 
 export class CheckCompanyFeatureLimitsGateway
@@ -84,7 +87,8 @@ export class CheckCompanyFeatureLimitsGateway
         await this.objectiveRepository.countObjectivesByQuarter({
           id_company,
           year,
-          quarter
+          quarter,
+          status: ObjectiveStatus.ACTIVE
         });
 
       this.logging.info('Uso atual de Objetivo por trimestre', {

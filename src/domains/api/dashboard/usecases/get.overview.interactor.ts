@@ -15,7 +15,10 @@ import {
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { logger } from '@configs/logger';
 import { FindTeamCriteria } from '@domains/api/teams/interfaces';
-import { FindObjectiveCriteria } from '@domains/api/objectives/interfaces';
+import {
+  FindObjectiveCriteria,
+  ObjectiveStatus
+} from '@domains/api/objectives/interfaces';
 
 export class GetOverviewInteractor {
   protected gateway: IGetOverviewGateway;
@@ -73,7 +76,7 @@ export class GetOverviewInteractor {
         quarter: targetQuarter,
         year: targetYear,
         id_team: teamId,
-        status
+        status: ObjectiveStatus.ACTIVE
       };
 
       const objectives = await this.gateway.findObjectives(objectiveCriteria);

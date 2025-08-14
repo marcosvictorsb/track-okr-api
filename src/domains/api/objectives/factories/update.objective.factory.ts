@@ -7,7 +7,10 @@ import { logger } from '@configs/logger';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import TeamModel from '@domains/api/teams/model/team.model';
 import { Presenter } from '@protocols/presenter';
-import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories';
+import {
+  makeCheckCompanyFeatureLimitsInteractor,
+  userCompanyValidatiorInteractor
+} from '@domains/common/validations/factories';
 
 export const makeUpdateObjectiveController = () => {
   const objectiveRepository = new ObjectiveRepository({
@@ -26,7 +29,9 @@ export const makeUpdateObjectiveController = () => {
   const updateObjectiveInteractor = new UpdateObjectiveInteractor({
     gateway: objectiveGateway,
     presenter: new Presenter(),
-    userCompanyValidator: userCompanyValidatiorInteractor
+    userCompanyValidator: userCompanyValidatiorInteractor,
+    checkCompanyFeatureLimitsInteractor:
+      makeCheckCompanyFeatureLimitsInteractor()
   });
   return new UpdateObjectiveController({
     interactor: updateObjectiveInteractor

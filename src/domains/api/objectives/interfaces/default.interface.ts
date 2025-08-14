@@ -2,6 +2,12 @@ import { ModelStatic } from 'sequelize';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 
+export enum ObjectiveStatus {
+  ACTIVE = 'active',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed'
+}
+
 export interface CreateObjectiveCriteria {
   title: string;
   description?: string;

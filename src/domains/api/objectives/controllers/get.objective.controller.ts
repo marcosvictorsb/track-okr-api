@@ -17,7 +17,7 @@ export class GetObjectiveController implements IGetObjectiveController {
     request: UserPayload,
     response: Response
   ): Promise<Response> {
-    const { id_team, quarter, year } = request.query;
+    const { id_team, quarter, year, status } = request.query;
     const { id } = request.params;
     const { id_company, id: id_user } = request.user;
 
@@ -28,7 +28,8 @@ export class GetObjectiveController implements IGetObjectiveController {
       year: year ? Number(year) : undefined,
       id_company,
       id_user,
-      limite: request.query.limite ? Number(request.query.limite) : 10
+      limite: request.query.limite ? Number(request.query.limite) : 10,
+      status: status ? String(status) : undefined
     };
 
     const httpResponse = await this.interactor.execute(input);

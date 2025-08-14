@@ -25,7 +25,7 @@ export class GetObjectiveInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      const { id, id_team, quarter, year, id_company, id_user } = input;
+      const { id, id_team, quarter, year, id_company, id_user, status } = input;
 
       // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
@@ -52,7 +52,8 @@ export class GetObjectiveInteractor {
         objectives = await this.gateway.findByQuarter(
           quarter,
           year,
-          id_company
+          id_company,
+          status
         );
       } else {
         // Se não há critérios específicos, retornar erro

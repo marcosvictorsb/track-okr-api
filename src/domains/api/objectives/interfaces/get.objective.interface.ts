@@ -45,6 +45,7 @@ export interface InputGetObjective {
   id_team?: number;
   quarter?: number;
   year?: number;
+  status?: string;
   id_company: number;
   id_user: number;
   limite?: number;
@@ -57,7 +58,8 @@ export interface IGetObjectiveGateway {
   findByQuarter(
     quarter: number,
     year: number,
-    id_company: number
+    id_company: number,
+    status?: string
   ): Promise<ObjectiveEntity[]>;
   findResultKeysByObjectiveIds(
     objectiveIds: number[]

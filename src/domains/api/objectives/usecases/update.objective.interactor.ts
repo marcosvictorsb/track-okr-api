@@ -2,20 +2,28 @@ import { HttpResponse } from '@protocols/http';
 import {
   UpdateObjectiveInteractorDependencies,
   InputUpdateObjective,
-  IUpdateObjectiveGateway
+  IUpdateObjectiveGateway,
+  ObjectiveStatus
 } from '@domains/api/objectives/interfaces';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import {
+  FeatureType,
+  ICheckCompanyFeatureLimitsInteractor
+} from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export class UpdateObjectiveInteractor {
   protected gateway: IUpdateObjectiveGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
+  protected checkCompanyFeatureLimitsInteractor: ICheckCompanyFeatureLimitsInteractor;
 
   constructor(params: UpdateObjectiveInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.userCompanyValidator = params.userCompanyValidator;
+    this.checkCompanyFeatureLimitsInteractor =
+      params.checkCompanyFeatureLimitsInteractor;
   }
 
   async execute(input: InputUpdateObjective): Promise<HttpResponse> {
@@ -59,6 +67,7 @@ export class UpdateObjectiveInteractor {
       const existingObjective = await this.gateway.findObjective({
         id
       });
+
       if (!existingObjective) {
         this.gateway.loggerInfo('Objetivo não encontrado', { id_company });
         return this.presenter.notFound('Objetivo não encontrado');
@@ -88,6 +97,35 @@ export class UpdateObjectiveInteractor {
       if (year !== undefined) updateData.year = year;
       if (id_team !== undefined) updateData.id_team = id_team;
       if (id_planner !== undefined) updateData.id_planner = id_planner;
+
+      if (status === ObjectiveStatus.ACTIVE) {
+        const currentUsage =
+          await this.checkCompanyFeatureLimitsInteractor.execute({
+            id_company,
+            feature: FeatureType.MAX_OBJECTIVES_PER_QUARTER,
+            year,
+            quarter
+          });
+
+        this.gateway.loggerInfo('Verificação de limites concluída', {
+          id_company,
+          feature: FeatureType.MAX_OBJECTIVES_PER_QUARTER
+        });
+
+        if (!currentUsage.isWithinLimit) {
+          this.gateway.loggerInfo(
+            'Limite de objetivos ativos por trimestre atingido',
+            {
+              id_company,
+              feature: FeatureType.MAX_OBJECTIVES_PER_QUARTER,
+              requestTxt: JSON.stringify(currentUsage)
+            }
+          );
+          return this.presenter.badRequest(
+            'Limite de objetivos ativos por trimestre atingido'
+          );
+        }
+      }
 
       const objective = await this.gateway.update(id, updateData);
 
