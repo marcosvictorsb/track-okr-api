@@ -10,6 +10,7 @@ import { logger } from '@configs/logger';
 import ResultKeyModel from '../model/result-key.model';
 import TeamModel from '@domains/api/teams/model/team.model';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { makeCheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/factories/check.company.feature.limits.factories';
 
 export const makeCreateResultKeyFactory = () => {
   // Repositories
@@ -39,7 +40,8 @@ export const makeCreateResultKeyFactory = () => {
   const interactor = new CreateResultKeyInteractor({
     gateway,
     presenter,
-    userCompanyValidator
+    userCompanyValidator,
+    checkCompanyFeatureLimits: makeCheckCompanyFeatureLimitsInteractor()
   });
 
   // Controller

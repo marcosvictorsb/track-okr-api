@@ -245,4 +245,14 @@ export class ResultKeyRepository implements IResultKeyRepository {
 
     return this.mapToEntity(resultKey);
   }
+
+  public async countKeyResultsByObjective(
+    criteria: FindResultKeyCriteria
+  ): Promise<number> {
+    const whereConditions = this.getConditions(criteria);
+
+    return this.model.count({
+      where: whereConditions
+    });
+  }
 }

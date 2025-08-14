@@ -15,6 +15,7 @@ import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
 import { IPlannerRepository } from '@domains/api/planners/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
+import { IResultKeyRepository } from '@domains/api/results-keys';
 
 export class CheckCompanyFeatureLimitsGateway
   extends MixCheckCompanyFeatureLimits
@@ -24,6 +25,7 @@ export class CheckCompanyFeatureLimitsGateway
   planRepository: IPlanRepository;
   plannerRepository: IPlannerRepository;
   objectiveRepository: IObjectiveRepository;
+  resultKeyRepository: IResultKeyRepository;
   logging: typeof logger;
 
   constructor(params: CheckCompanyFeatureLimitsGatewayDependencies) {
@@ -32,6 +34,7 @@ export class CheckCompanyFeatureLimitsGateway
     this.planRepository = params.planRepository;
     this.plannerRepository = params.plannerRepository;
     this.objectiveRepository = params.objectiveRepository;
+    this.resultKeyRepository = params.resultKeyRepository;
     this.logging = params.logging;
   }
 
@@ -50,7 +53,7 @@ export class CheckCompanyFeatureLimitsGateway
   }
 
   async getCurrentUsage(criteria: InputGetCurrentUsage): Promise<number> {
-    const { id_company, feature, year, quarter } = criteria;
+    const { id_company, feature, year, quarter, id_okr } = criteria;
     this.logging.info('Buscando uso atual da feature', {
       id_company,
       feature
@@ -89,6 +92,25 @@ export class CheckCompanyFeatureLimitsGateway
         feature,
         currentUsage
       });
+      return currentUsage;
+    }
+
+    if (feature === FeatureType.MAX_KEY_RESULTS_PER_OBJECTIVE) {
+      this.logging.info('Verificando o uso atual de resultado chaves', {
+        id_okr
+      });
+      const currentUsage =
+        await this.resultKeyRepository.countKeyResultsByObjective({
+          id_okr
+        });
+      this.logging.info(
+        `Uso atual de resultado chave para o objetivo ${id_okr}`,
+        {
+          id_company,
+          feature,
+          currentUsage
+        }
+      );
       return currentUsage;
     }
 

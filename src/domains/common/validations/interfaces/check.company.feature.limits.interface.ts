@@ -7,6 +7,7 @@ import {
   FindPlannerCriteria,
   IPlannerRepository
 } from '@domains/api/planners/interfaces';
+import { IResultKeyRepository } from '@domains/api/results-keys';
 import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
 import {
   FindSubscriptionsCriteria,
@@ -19,7 +20,7 @@ export enum FeatureType {
   MAX_PLANNERS = 'max_planners',
   MAX_TEAMS = 'max_teams',
   MAX_OBJECTIVES_PER_QUARTER = 'max_objectives_per_quarter',
-  max_key_results_per_objective = 'max_key_results_per_objective'
+  MAX_KEY_RESULTS_PER_OBJECTIVE = 'max_key_results_per_objective'
 }
 // Input esperado pelo interactor
 export interface CheckCompanyFeatureLimitsInput {
@@ -27,6 +28,7 @@ export interface CheckCompanyFeatureLimitsInput {
   feature: FeatureType;
   year?: number;
   quarter?: number;
+  id_okr?: number;
 }
 
 export type InputGetCurrentUsage = {
@@ -34,6 +36,7 @@ export type InputGetCurrentUsage = {
   feature: FeatureType;
   year?: number;
   quarter?: number;
+  id_okr?: number;
 };
 
 export interface ICheckCompanyFeatureLimitsGateway {
@@ -55,6 +58,7 @@ export type CheckCompanyFeatureLimitsGatewayDependencies = {
   planRepository: IPlanRepository;
   plannerRepository: IPlannerRepository;
   objectiveRepository: IObjectiveRepository;
+  resultKeyRepository: IResultKeyRepository;
   logging: typeof logger;
 };
 

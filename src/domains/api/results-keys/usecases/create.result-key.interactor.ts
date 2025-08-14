@@ -7,16 +7,22 @@ import {
   InputCreateResultKey
 } from '../interfaces/create.result-key.interface';
 import { ResultKeyStatus } from '../interfaces';
+import {
+  FeatureType,
+  ICheckCompanyFeatureLimitsInteractor
+} from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export class CreateResultKeyInteractor {
   protected gateway: ICreateResultKeyGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
+  protected checkCompanyFeatureLimits: ICheckCompanyFeatureLimitsInteractor;
 
   constructor(params: CreateResultKeyInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.userCompanyValidator = params.userCompanyValidator;
+    this.checkCompanyFeatureLimits = params.checkCompanyFeatureLimits;
   }
 
   public async execute(input: InputCreateResultKey): Promise<HttpResponse> {
@@ -50,6 +56,32 @@ export class CreateResultKeyInteractor {
           id_company
         });
         return this.presenter.badRequest('Usuário ou empresa inválidos');
+      }
+
+      const currentUsage = await this.checkCompanyFeatureLimits.execute({
+        id_company,
+        feature: FeatureType.MAX_KEY_RESULTS_PER_OBJECTIVE,
+        id_okr
+      });
+
+      this.gateway.loggerInfo('Verificação de limites concluída', {
+        id_company,
+        feature: FeatureType.MAX_KEY_RESULTS_PER_OBJECTIVE
+      });
+
+      if (!currentUsage.isWithinLimit) {
+        this.gateway.loggerInfo(
+          'Limite de resultado chave atingindo para a okr',
+          {
+            id_okr,
+            id_company,
+            feature: FeatureType.MAX_PLANNERS,
+            requestTxt: JSON.stringify(currentUsage)
+          }
+        );
+        return this.presenter.badRequest(
+          'Limite de resultado chave atingido para este objetivo'
+        );
       }
 
       // Criar o resultado-chave

@@ -9,6 +9,7 @@ import { ResultKeyEntity } from '../entity/result-key.entity';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { logger } from '@configs/logger';
+import { ICheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export interface InputCreateResultKey {
   name: string;
@@ -45,6 +46,7 @@ export interface CreateResultKeyInteractorDependencies {
   gateway: ICreateResultKeyGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
+  checkCompanyFeatureLimits: ICheckCompanyFeatureLimitsInteractor;
 }
 
 export interface CreateResultKeyControllerDependencies {

@@ -70,4 +70,5 @@ export interface IResultKeyRepository {
     id: number,
     currentValue: number
   ): Promise<ResultKeyEntity | null>;
+  countKeyResultsByObjective(criteria: FindResultKeyCriteria): Promise<number>;
 }

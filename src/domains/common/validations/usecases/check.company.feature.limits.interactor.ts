@@ -21,7 +21,7 @@ export class CheckCompanyFeatureLimitsInteractor
     currentUsage: number;
     isWithinLimit: boolean;
   }> {
-    const { id_company, feature, year, quarter } = input;
+    const { id_company, feature, year, quarter, id_okr } = input;
 
     this.gateway.loggerInfo('Iniciando verificação de limites', {
       input: JSON.stringify(input)
@@ -54,7 +54,8 @@ export class CheckCompanyFeatureLimitsInteractor
       id_company,
       feature,
       year: year as number,
-      quarter: quarter as number
+      quarter: quarter as number,
+      id_okr: id_okr as number
     };
     const currentUsage = await this.gateway.getCurrentUsage(
       criteriaCurrenteUsage

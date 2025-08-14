@@ -9,21 +9,26 @@ import { CheckCompanyFeatureLimitsGateway } from '../gateways/check.company.feat
 import { CheckCompanyFeatureLimitsInteractor } from '../usecases/check.company.feature.limits.interactor';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
+import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
+import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
+import { ICheckCompanyFeatureLimitsInteractor } from '../interfaces/check.company.feature.limits.interface';
 
-export const makeCheckCompanyFeatureLimitsInteractor = () => {
-  const paramsGateway = {
-    subscriptionRepository: new SubscriptionRepository({
-      model: SubscriptionModel
-    }),
-    planRepository: new PlanRepository({ model: PlanModel }),
-    plannerRepository: new PlannerRepository({ model: PlannerModel }),
-    objectiveRepository: new ObjectiveRepository({ model: ObjectiveModel }),
-    logging: logger
-  };
+export const makeCheckCompanyFeatureLimitsInteractor =
+  (): ICheckCompanyFeatureLimitsInteractor => {
+    const paramsGateway = {
+      subscriptionRepository: new SubscriptionRepository({
+        model: SubscriptionModel
+      }),
+      planRepository: new PlanRepository({ model: PlanModel }),
+      plannerRepository: new PlannerRepository({ model: PlannerModel }),
+      objectiveRepository: new ObjectiveRepository({ model: ObjectiveModel }),
+      resultKeyRepository: new ResultKeyRepository({ model: ResultKeyModel }),
+      logging: logger
+    };
 
-  const gateway = new CheckCompanyFeatureLimitsGateway(paramsGateway);
-  const paramsInteractor = {
-    gateway
+    const gateway = new CheckCompanyFeatureLimitsGateway(paramsGateway);
+    const paramsInteractor = {
+      gateway
+    };
+    return new CheckCompanyFeatureLimitsInteractor(paramsInteractor);
   };
-  return new CheckCompanyFeatureLimitsInteractor(paramsInteractor);
-};
