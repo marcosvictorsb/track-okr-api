@@ -10,6 +10,7 @@ import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { logger } from '@configs/logger';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { ICheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export type InputCreateTeam = {
   name: string;
@@ -22,6 +23,7 @@ export type CreateTeamInteractorDependencies = {
   gateway: ICreateTeamGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
+  checkCompanyFeatureLimits: ICheckCompanyFeatureLimitsInteractor;
 };
 
 export type ICreateTeamGatewayDependencies = {

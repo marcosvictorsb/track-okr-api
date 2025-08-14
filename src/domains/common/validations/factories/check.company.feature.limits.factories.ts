@@ -12,6 +12,8 @@ import { ObjectiveRepository } from '@domains/api/objectives/repository/objectiv
 import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
 import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
 import { ICheckCompanyFeatureLimitsInteractor } from '../interfaces/check.company.feature.limits.interface';
+import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import TeamModel from '@domains/api/teams/model/team.model';
 
 export const makeCheckCompanyFeatureLimitsInteractor =
   (): ICheckCompanyFeatureLimitsInteractor => {
@@ -23,6 +25,7 @@ export const makeCheckCompanyFeatureLimitsInteractor =
       plannerRepository: new PlannerRepository({ model: PlannerModel }),
       objectiveRepository: new ObjectiveRepository({ model: ObjectiveModel }),
       resultKeyRepository: new ResultKeyRepository({ model: ResultKeyModel }),
+      teamRepository: new TeamRepository({ model: TeamModel }),
       logging: logger
     };
 

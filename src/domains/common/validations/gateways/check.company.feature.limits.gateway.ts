@@ -19,6 +19,7 @@ import {
   ObjectiveStatus
 } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
 
 export class CheckCompanyFeatureLimitsGateway
   extends MixCheckCompanyFeatureLimits
@@ -29,6 +30,7 @@ export class CheckCompanyFeatureLimitsGateway
   plannerRepository: IPlannerRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
+  teamRepository: ITeamRepository;
   logging: typeof logger;
 
   constructor(params: CheckCompanyFeatureLimitsGatewayDependencies) {
@@ -38,6 +40,7 @@ export class CheckCompanyFeatureLimitsGateway
     this.plannerRepository = params.plannerRepository;
     this.objectiveRepository = params.objectiveRepository;
     this.resultKeyRepository = params.resultKeyRepository;
+    this.teamRepository = params.teamRepository;
     this.logging = params.logging;
   }
 
@@ -115,6 +118,21 @@ export class CheckCompanyFeatureLimitsGateway
           currentUsage
         }
       );
+      return currentUsage;
+    }
+
+    if (feature === FeatureType.MAX_TEAMS) {
+      this.logging.info('Verificando o uso atual de criação de times', {
+        id_company
+      });
+      const currentUsage = await this.teamRepository.countTeams({
+        id_company
+      });
+      this.logging.info(`Uso atual de times`, {
+        id_company,
+        feature,
+        currentUsage
+      });
       return currentUsage;
     }
 

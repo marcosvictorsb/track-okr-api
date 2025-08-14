@@ -113,4 +113,9 @@ export class TeamRepository implements ITeamRepository {
     });
     return affectedRows > 0;
   }
+
+  public async countTeams(criteria: FindTeamCriteria): Promise<number> {
+    const whereConditions = this.getConditions(criteria);
+    return this.model.count({ where: whereConditions });
+  }
 }

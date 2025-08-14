@@ -8,6 +8,7 @@ import {
   IPlannerRepository
 } from '@domains/api/planners/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
 import {
   FindSubscriptionsCriteria,
@@ -59,6 +60,7 @@ export type CheckCompanyFeatureLimitsGatewayDependencies = {
   plannerRepository: IPlannerRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
+  teamRepository: ITeamRepository;
   logging: typeof logger;
 };
 

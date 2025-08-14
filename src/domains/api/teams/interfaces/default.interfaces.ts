@@ -48,6 +48,7 @@ export interface ITeamRepository {
     criteria: UpdateTeamCriteria
   ): Promise<boolean>;
   delete(criteria: DeleteTeamCriteria): Promise<boolean>;
+  countTeams(criteria: FindTeamCriteria): Promise<number>;
 }
 
 export type TeamRepositoryDependencies = {

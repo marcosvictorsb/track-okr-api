@@ -7,16 +7,22 @@ import {
 } from '../interfaces';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import {
+  FeatureType,
+  ICheckCompanyFeatureLimitsInteractor
+} from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export class CreateTeamInteractor {
   protected gateway: ICreateTeamGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
+  protected checkCompanyFeatureLimits: ICheckCompanyFeatureLimitsInteractor;
 
   constructor(params: CreateTeamInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.userCompanyValidator = params.userCompanyValidator;
+    this.checkCompanyFeatureLimits = params.checkCompanyFeatureLimits;
   }
 
   async execute(input: InputCreateTeam): Promise<HttpResponse> {
@@ -42,6 +48,25 @@ export class CreateTeamInteractor {
           id_company
         });
         return this.presenter.badRequest('Usuário ou empresa inválidos');
+      }
+
+      const currentUsage = await this.checkCompanyFeatureLimits.execute({
+        id_company,
+        feature: FeatureType.MAX_TEAMS
+      });
+
+      this.gateway.loggerInfo('Verificação de limites concluída', {
+        id_company,
+        feature: FeatureType.MAX_TEAMS
+      });
+
+      if (!currentUsage.isWithinLimit) {
+        this.gateway.loggerInfo('Limite de times atingido', {
+          id_company,
+          feature: FeatureType.MAX_TEAMS,
+          requestTxt: JSON.stringify(currentUsage)
+        });
+        return this.presenter.badRequest('Limite de times atingido');
       }
 
       const criteria = {
