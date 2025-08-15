@@ -29,13 +29,13 @@ export interface CompanyInfo {
 }
 
 export interface CompanyPermissionsResponse {
-  company: CompanyInfo;
+  // company: CompanyInfo;
   permissions: {
     users: FeaturePermission;
-    planners: FeaturePermission;
-    teams: FeaturePermission;
-    objectives: FeaturePermission;
-    key_results: FeaturePermission;
+    // planners: FeaturePermission;
+    // teams: FeaturePermission;
+    // objectives: FeaturePermission;
+    // key_results: FeaturePermission;
   };
 }
 

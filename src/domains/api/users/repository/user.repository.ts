@@ -38,6 +38,10 @@ export class UserRepository implements IUserRepository {
       whereConditions['id_company'] = criteria.id_company;
     }
 
+    if (criteria.statuses && criteria.statuses.length > 0) {
+      whereConditions['status'] = { [Op.in]: criteria.statuses };
+    }
+
     return whereConditions;
   }
 
@@ -89,5 +93,12 @@ export class UserRepository implements IUserRepository {
       where: { id: criteria.id }
     });
     return affectedRows > 0;
+  }
+
+  public async countUsers(criteria: FindUserCriteria): Promise<number> {
+    const count = await this.model.count({
+      where: this.getConditions(criteria)
+    });
+    return count;
   }
 }

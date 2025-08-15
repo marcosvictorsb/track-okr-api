@@ -54,38 +54,37 @@ export class GetCompanyPermissionsInteractor {
         users: await this.checkFeaturePermission(
           id_company,
           FeatureType.MAX_USER
-        ),
-        planners: await this.checkFeaturePermission(
-          id_company,
-          FeatureType.MAX_PLANNERS
-        ),
-        teams: await this.checkFeaturePermission(
-          id_company,
-          FeatureType.MAX_TEAMS
-        ),
-        objectives: await this.checkFeaturePermission(
-          id_company,
-          FeatureType.MAX_OBJECTIVES_PER_QUARTER
-        ),
-        key_results: await this.checkFeaturePermission(
-          id_company,
-          FeatureType.MAX_KEY_RESULTS_PER_OBJECTIVE
         )
+        // planners: await this.checkFeaturePermission(
+        //   id_company,
+        //   FeatureType.MAX_PLANNERS
+        // ),
+        // teams: await this.checkFeaturePermission(
+        //   id_company,
+        //   FeatureType.MAX_TEAMS
+        // ),
+        // objectives: await this.checkFeaturePermission(
+        //   id_company,
+        //   FeatureType.MAX_OBJECTIVES_PER_QUARTER
+        // ),
+        // key_results: await this.checkFeaturePermission(
+        //   id_company,
+        //   FeatureType.MAX_KEY_RESULTS_PER_OBJECTIVE
+        // )
       };
 
       // TODO: Buscar informações da empresa e assinatura
-      const companyInfo = {
-        id: id_company,
-        name: 'Empresa Exemplo', // Será substituído pela busca real
-        subscription: {
-          plan_name: 'Pro',
-          status: 'active',
-          trial_end_date: null
-        }
-      };
+      // const companyInfo = {
+      //   id: id_company,
+      //   name: 'Empresa Exemplo', // Será substituído pela busca real
+      //   subscription: {
+      //     plan_name: 'Pro',
+      //     status: 'active',
+      //     trial_end_date: null
+      //   }
+      // };
 
       const response: CompanyPermissionsResponse = {
-        company: companyInfo,
         permissions
       };
 

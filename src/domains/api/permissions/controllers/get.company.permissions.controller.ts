@@ -1,7 +1,7 @@
 import { Response } from 'express';
-import { CustomRequest } from '@protocols/http';
 import { GetCompanyPermissionsControllerDependencies } from '../interfaces/get.company.permissions.interface';
 import { GetCompanyPermissionsInteractor } from '../usecases/get.company.permissions.interactor';
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class GetCompanyPermissionsController {
   protected interactor: GetCompanyPermissionsInteractor;
@@ -11,10 +11,10 @@ export class GetCompanyPermissionsController {
   }
 
   async getCompanyPermissions(
-    request: CustomRequest,
+    request: UserPayload,
     response: Response
   ): Promise<Response> {
-    const id_company = parseInt(request.params.id_company, 10);
+    const id_company = request.user.id_company;
     const id_user = request.user.id;
 
     const result = await this.interactor.execute({

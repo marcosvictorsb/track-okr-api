@@ -20,6 +20,7 @@ import {
 } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { IUserRepository, UserStatus } from '@domains/api/users/interfaces';
 
 export class CheckCompanyFeatureLimitsGateway
   extends MixCheckCompanyFeatureLimits
@@ -31,6 +32,7 @@ export class CheckCompanyFeatureLimitsGateway
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
   teamRepository: ITeamRepository;
+  userRepository: IUserRepository;
   logging: typeof logger;
 
   constructor(params: CheckCompanyFeatureLimitsGatewayDependencies) {
@@ -41,6 +43,7 @@ export class CheckCompanyFeatureLimitsGateway
     this.objectiveRepository = params.objectiveRepository;
     this.resultKeyRepository = params.resultKeyRepository;
     this.teamRepository = params.teamRepository;
+    this.userRepository = params.userRepository;
     this.logging = params.logging;
   }
 
@@ -129,6 +132,26 @@ export class CheckCompanyFeatureLimitsGateway
         id_company
       });
       this.logging.info(`Uso atual de times`, {
+        id_company,
+        feature,
+        currentUsage
+      });
+      return currentUsage;
+    }
+
+    if (feature === FeatureType.MAX_USER) {
+      this.logging.info('Verificando o uso atual de usuários', {
+        id_company
+      });
+      const currentUsage = await this.userRepository.countUsers({
+        id_company,
+        statuses: [
+          UserStatus.ACTIVE,
+          UserStatus.PENDING,
+          UserStatus.PENDING_ACTIVATION
+        ]
+      });
+      this.logging.info(`Uso atual de usuários`, {
         id_company,
         feature,
         currentUsage

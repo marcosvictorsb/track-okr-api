@@ -5,6 +5,7 @@ import UserModel from '@domains/api/users/model/user.model';
 export enum UserStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
+  PENDING = 'pending',
   PENDING_ACTIVATION = 'pending_activation'
 }
 
@@ -27,6 +28,7 @@ export type FindUserCriteria = {
   email?: string;
   role?: string;
   status?: string;
+  statuses?: string[];
   id_company?: number;
   created_at?: Date;
   updated_at?: Date;
@@ -56,6 +58,7 @@ export interface IUserRepository {
     criteria: UpdateUserCriteria
   ): Promise<boolean>;
   delete(criteria: DeleteUserCriteria): Promise<boolean>;
+  countUsers(criteria: FindUserCriteria): Promise<number>;
 }
 
 export type UserRepositoryDependencies = {

@@ -8,11 +8,8 @@ const getCompanyPermissionsController = makeGetCompanyPermissionsController();
 
 const router = Router();
 
-router.get(
-  '/company/:id_company',
-  authMiddleware,
-  (request: UserPayload, response: Response) =>
-    getCompanyPermissionsController.getCompanyPermissions(request, response)
+router.get('/', authMiddleware, (request: UserPayload, response: Response) =>
+  getCompanyPermissionsController.getCompanyPermissions(request, response)
 );
 
 export default router;
