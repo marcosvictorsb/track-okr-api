@@ -7,3 +7,4 @@ export * from './api/profile';
 export * from './api/settings';
 export * from './api/webhooks';
 export * from './common/subscription';
+export * from './api/permissions';

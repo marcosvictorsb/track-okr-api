@@ -14,6 +14,7 @@ import leadRouter from '@domains/api/landing-page-leads/routers';
 import { dashboardRouter } from '@domains/api/dashboard/routers';
 import settingRouter from '@domains/api/settings/routers';
 import { backofficeRouter } from '@domains/api/backoffice/routes/backoffice.routes';
+import permissionsRouter from '@domains/api/permissions/routers';
 
 const routers = Router();
 
@@ -34,6 +35,7 @@ routers.use('/profile', profileRouter);
 routers.use('/leads', leadRouter);
 routers.use('/dashboard', dashboardRouter);
 routers.use('/settings', settingRouter);
+routers.use('/permissions', permissionsRouter);
 routers.use('/backoffice', backofficeRouter);
 
 const notFound = (request: Request, response: Response) => {
