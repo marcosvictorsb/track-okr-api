@@ -1,4 +1,3 @@
-import { DataLogOutput } from '@adapters/services';
 import {
   IRegisterFreeTrialGateway,
   IRegisterFreeTrialGatewayDependencies,
@@ -15,15 +14,21 @@ import { ISubscriptionRepository } from '@domains/common/subscriptions/interface
 import { logger } from '@configs/logger';
 import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
+import { MixRegisterGateway } from '@adapters/gateways/api/authentication/register.free.trial.gateway';
+import crypto from 'crypto';
 
-export class RegisterGateway implements IRegisterFreeTrialGateway {
-  protected companyRepository: ICompanyRepository;
-  protected userRepository: IUserRepository;
-  protected planRepository: IPlanRepository;
-  protected subscriptionRepository: ISubscriptionRepository;
-  protected logging: typeof logger;
+export class RegisterGateway
+  extends MixRegisterGateway
+  implements IRegisterFreeTrialGateway
+{
+  companyRepository: ICompanyRepository;
+  userRepository: IUserRepository;
+  planRepository: IPlanRepository;
+  subscriptionRepository: ISubscriptionRepository;
+  logging: typeof logger;
 
   constructor(params: IRegisterFreeTrialGatewayDependencies) {
+    super(params);
     this.companyRepository = params.companyRepository;
     this.userRepository = params.userRepository;
     this.planRepository = params.planRepository;
@@ -67,11 +72,11 @@ export class RegisterGateway implements IRegisterFreeTrialGateway {
   //   return await this.subscriptionRepository.create(data);
   // }
 
-  loggerInfo(message: string, data?: DataLogOutput): void {
-    this.logging.info(message, data);
-  }
+  async generateActivationToken(userId: number): Promise<string> {
+    // Gerar um token seguro para ativação
+    const token = crypto.randomBytes(32).toString('hex');
+    this.logging.info('Token de ativação gerado', { userId, token });
 
-  loggerError(message: string, data?: DataLogOutput): void {
-    this.logging.error(message, data);
+    return token;
   }
 }

@@ -79,4 +79,7 @@ export interface IRegisterFreeTrialGateway {
   // createSubscription(data: CreateSubscriptionData): Promise<SubscriptionEntity>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
+  sendInviteEmail(email: string, activationLink: string): Promise<boolean>;
+  generateActivationToken(userId: number): Promise<string>;
+  signToken(user: Partial<UserEntity>): string;
 }

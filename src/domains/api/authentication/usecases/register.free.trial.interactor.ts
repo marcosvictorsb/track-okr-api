@@ -8,6 +8,7 @@ import {
 import bcrypt from 'bcryptjs';
 import { CreateTrialSubscriptionInteractor } from '@domains/common/subscriptions/usecases/create.trial.subscription.interactor';
 import { CreateFreeSubscriptionInput } from '@domains/common/subscriptions/interfaces';
+import { Utils } from '@shared/utils/utils';
 
 export class RegisterFreeTrialInteractor {
   protected gateway: IRegisterFreeTrialGateway;
@@ -117,6 +118,46 @@ export class RegisterFreeTrialInteractor {
         id_user: user.id,
         id_company: company.id,
         subscription_id: 1 // subscription.id
+      });
+
+      // Gerar token de ativação
+      const activationToken = await this.gateway.generateActivationToken(
+        user.id!
+      );
+
+      const templateName = 'activate-after-subscription.template.html';
+      const token = this.gateway.signToken({
+        email: user.email as string,
+        id: user.id as number,
+        id_company: company.id as number
+      });
+      const variables = {
+        userName: user.name,
+        baseUrl:
+          process.env.NODE_ENV === 'production'
+            ? (process.env.PRODUCTION_BASE_URL as string)
+            : (process.env.DEVELOPMENT_BASE_URL as string),
+        token,
+        planName: planFound.name,
+        maxUsers: String(planFound.max_users),
+        maxPlanners: String(planFound.max_planners),
+        maxTeams: String(planFound.max_teams),
+        maxObjectives: String(planFound.max_objectives_per_quarter),
+        maxKeyResults: String(planFound.max_key_results_per_objective),
+        currentYear: String(new Date().getFullYear())
+      };
+      const emailContent = Utils.loadEmailTemplate(templateName, variables);
+
+      const emailSent = await this.gateway.sendInviteEmail(email, emailContent);
+
+      if (!emailSent) {
+        this.gateway.loggerError('Erro ao enviar email de convite', { email });
+        return this.presenter.serverError('Erro ao enviar email de convite');
+      }
+
+      this.gateway.loggerInfo('Convite enviado com sucesso', {
+        email,
+        data: `userId: ${user.id}`
       });
 
       return this.presenter.created(response);
