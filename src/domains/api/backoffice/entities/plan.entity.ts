@@ -8,6 +8,7 @@ export class PlanEntity {
   public readonly max_objectives_per_quarter: number;
   public readonly max_key_results_per_objective: number;
   public readonly isTrial: boolean;
+  public readonly secret?: string;
   public readonly created_at?: Date;
   public readonly updated_at?: Date | null;
   public readonly deleted_at?: Date | null;
@@ -22,6 +23,7 @@ export class PlanEntity {
     max_objectives_per_quarter: number;
     max_key_results_per_objective: number;
     isTrial?: boolean;
+    secret?: string;
     created_at?: Date;
     updated_at?: Date | null;
     deleted_at?: Date | null;
@@ -35,6 +37,7 @@ export class PlanEntity {
     this.max_objectives_per_quarter = params.max_objectives_per_quarter;
     this.max_key_results_per_objective = params.max_key_results_per_objective;
     this.isTrial = params.isTrial ?? false;
+    this.secret = params.secret;
     this.created_at = params.created_at;
     this.updated_at = params.updated_at;
     this.deleted_at = params.deleted_at;

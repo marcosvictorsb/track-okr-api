@@ -11,6 +11,7 @@ export interface PlanAttributes {
   max_objectives_per_quarter: number;
   max_key_results_per_objective: number;
   isTrial?: boolean;
+  secret?: string;
   created_at?: Date;
   updated_at?: Date | null;
   deleted_at?: Date | null;
@@ -25,6 +26,7 @@ export interface PlanCreationAttributes {
   max_objectives_per_quarter: number;
   max_key_results_per_objective: number;
   isTrial?: boolean;
+  secret?: string;
 }
 
 export class PlanModel
@@ -40,6 +42,7 @@ export class PlanModel
   declare max_objectives_per_quarter: number;
   declare max_key_results_per_objective: number;
   declare isTrial: boolean;
+  declare secret?: string;
   declare created_at: Date;
   declare updated_at: Date;
   declare deleted_at?: Date | null;
@@ -85,6 +88,11 @@ PlanModel.init(
       allowNull: false,
       defaultValue: false,
       field: 'isTrial'
+    },
+    secret: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: 'Secret único para identificar o plano nos webhooks de pagamento'
     },
     created_at: {
       type: DataTypes.DATE,

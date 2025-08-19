@@ -6,6 +6,7 @@ export type FindPlansCriteria = {
   id?: number;
   name?: string;
   isTrial?: boolean;
+  secret?: string;
 };
 
 export type CreatePlanCriteria = {
@@ -16,6 +17,8 @@ export type CreatePlanCriteria = {
   max_teams: number;
   max_objectives_per_quarter: number;
   max_key_results_per_objective: number;
+  isTrial?: boolean;
+  secret?: string;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;

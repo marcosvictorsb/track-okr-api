@@ -152,7 +152,7 @@ export class RegisterFreeTrialInteractor {
 
       if (!emailSent) {
         this.gateway.loggerError('Erro ao enviar email de convite', { email });
-        return this.presenter.serverError('Erro ao enviar email de convite');
+        // return this.presenter.serverError('Erro ao enviar email de convite');
       }
 
       this.gateway.loggerInfo('Convite enviado com sucesso', {

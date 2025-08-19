@@ -12,6 +12,10 @@ export type DataLogOutput = {
   feature?: string;
   limit?: number;
   isWithinLimit?: boolean;
+  event?: string;
+  customer_email?: string;
+  offer_name?: string;
+  amount?: number;
 
   id_user?: number;
   id_expense?: number;
@@ -53,6 +57,9 @@ export type DataLogOutput = {
 
   // subscription
   subscription_id?: number;
+
+  secret?: string;
+  product_id?: string;
 };
 
 type LoggerServiceDependencies = {

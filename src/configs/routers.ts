@@ -1,6 +1,6 @@
 import { Request, Response, Router } from 'express';
 // import routerMercadoPago from '@domains/webhooks/mercado-pago/routers';
-// import efiWebhookRouter from '@domains/webhooks/efi-pay/routes/webhook.routes';
+import caktoWebhookRouter from '@domains/webhooks/cakto/routers';
 import routerUser from '@domains/api/users/routers';
 import authRoutes from '@domains/api/authentication/routes';
 import plannerRouter from '@domains/api/planners/routers';
@@ -22,7 +22,7 @@ routers.get('/health-check', (request: Request, response: Response) => {
   response.status(200).json({ message: 'API is running' });
 });
 routers.use('/api', healthRouter);
-// routers.use('/webhook', routerMercadoPago);
+routers.use('/webhook', caktoWebhookRouter);
 // routers.use('/webhook', efiWebhookRouter);
 routers.use('/users', routerUser);
 routers.use('/authenticate', authRoutes);
