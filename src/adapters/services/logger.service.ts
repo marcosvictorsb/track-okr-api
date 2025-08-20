@@ -60,6 +60,7 @@ export type DataLogOutput = {
 
   secret?: string;
   product_id?: string;
+  stack?: string;
 };
 
 type LoggerServiceDependencies = {

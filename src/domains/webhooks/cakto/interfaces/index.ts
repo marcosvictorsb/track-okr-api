@@ -1,1 +1,1 @@
-export * from './recurring.payment.interfaces';
+export * from './purchase.approved.interfaces';

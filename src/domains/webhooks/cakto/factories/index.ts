@@ -1,1 +1,1 @@
-export * from './recurring.payment.factory';
+export * from './purchase.approved.factory';

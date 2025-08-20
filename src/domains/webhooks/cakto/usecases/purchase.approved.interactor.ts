@@ -1,9 +1,9 @@
 import { HttpResponse } from '@protocols/http';
 import {
-  IRecurringPaymentGateway,
-  IRecurringPaymentInteractorDependencies,
+  IPurchaseApprovedGateway,
+  IPurchaseApprovedInteractorDependencies,
   CaktoWebhookPayload
-} from '../interfaces/recurring.payment.interfaces';
+} from '../interfaces/purchase.approved.interfaces';
 import { IPresenter } from '@protocols/presenter';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
@@ -11,11 +11,11 @@ import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 import { UserStatus } from '@domains/api/users/interfaces';
 import { Utils } from '@shared/utils/utils';
 
-export class RecurringPaymentInteractor {
-  protected gateway: IRecurringPaymentGateway;
+export class PurchaseApprovedInteractor {
+  protected gateway: IPurchaseApprovedGateway;
   protected presenter: IPresenter;
 
-  constructor(params: IRecurringPaymentInteractorDependencies) {
+  constructor(params: IPurchaseApprovedInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
   }
@@ -105,6 +105,9 @@ export class RecurringPaymentInteractor {
 
       if (existingSubscription) {
         // Atualizar subscription existente
+        const previousPlanId = existingSubscription.plan_id;
+        const previousStatus = existingSubscription.status;
+
         await this.gateway.updateSubscription(existingSubscription.id!, {
           plan_id: plan.id!,
           status: 'active',
@@ -114,6 +117,45 @@ export class RecurringPaymentInteractor {
           amount: parseFloat(payload.data.amount.toString()),
           updated_at: new Date()
         });
+
+        // Registrar no histórico da subscription
+        if (previousPlanId !== plan.id) {
+          // Mudança de plano
+          await this.gateway.createSubscriptionHistory({
+            subscription_id: existingSubscription.id!,
+            action: 'plan_changed',
+            previous_status: previousStatus,
+            new_status: 'active',
+            previous_plan_id: previousPlanId,
+            new_plan_id: plan.id!,
+            reason: 'Mudança de plano via webhook Cakto',
+            metadata: {
+              webhook_source: 'cakto',
+              payment_id: payload.data.id,
+              external_subscription_id: subscription.id,
+              amount: payload.data.amount
+            },
+            automated: true,
+            notes: `Plano alterado via webhook de pagamento recorrente`
+          });
+        } else {
+          // Renovação
+          await this.gateway.createSubscriptionHistory({
+            subscription_id: existingSubscription.id!,
+            action: 'renewed',
+            previous_status: previousStatus,
+            new_status: 'active',
+            reason: 'Renovação via webhook Cakto',
+            metadata: {
+              webhook_source: 'cakto',
+              payment_id: payload.data.id,
+              external_subscription_id: subscription.id,
+              amount: payload.data.amount
+            },
+            automated: true,
+            notes: `Subscription renovada via webhook de pagamento recorrente`
+          });
+        }
 
         this.gateway.loggerInfo('Subscription atualizada', {
           subscription_id: existingSubscription.id
@@ -135,6 +177,26 @@ export class RecurringPaymentInteractor {
 
         const newSubscription =
           await this.gateway.createSubscription(subscriptionData);
+
+        // Registrar criação no histórico
+        await this.gateway.createSubscriptionHistory({
+          subscription_id: newSubscription.id!,
+          action: 'created',
+          new_status: 'active',
+          new_plan_id: plan.id!,
+          reason: 'Subscription criada via webhook Cakto',
+          metadata: {
+            webhook_source: 'cakto',
+            payment_id: payload.data.id,
+            external_subscription_id: subscription.id,
+            amount: payload.data.amount,
+            customer_email: customer.email,
+            customer_name: customer.name
+          },
+          automated: true,
+          notes: `Subscription criada automaticamente via webhook de pagamento`
+        });
+
         this.gateway.loggerInfo('Subscription criada', {
           subscription_id: newSubscription.id
         });
@@ -143,6 +205,27 @@ export class RecurringPaymentInteractor {
       // 9. Enviar email de ativação se usuário ainda não está ativo
       if (user.status === 'pending_activation') {
         await this.sendActivationEmail(user, company, plan);
+
+        // Registrar ativação no histórico se uma subscription foi criada
+        const currentSubscription =
+          existingSubscription ||
+          (await this.gateway.findActiveSubscriptionByCompany(company.id!));
+
+        if (currentSubscription) {
+          await this.gateway.createSubscriptionHistory({
+            subscription_id: currentSubscription.id!,
+            action: 'activated',
+            new_status: 'active',
+            reason: 'Email de ativação enviado via webhook Cakto',
+            metadata: {
+              webhook_source: 'cakto',
+              user_email: user.email,
+              activation_trigger: 'payment_webhook'
+            },
+            automated: true,
+            notes: `Email de ativação enviado para usuário ${user.email}`
+          });
+        }
       }
 
       // 10. Registrar histórico de pagamento (opcional)
@@ -164,24 +247,12 @@ export class RecurringPaymentInteractor {
         company_id: company.id
       });
     } catch (error: unknown) {
-      this.logError('Erro ao processar webhook de pagamento', {
+      this.gateway.loggerError('Erro ao processar webhook de pagamento', {
         error: (error as Error).message,
         stack: (error as Error).stack
       });
       return this.presenter.serverError('Erro interno do servidor');
     }
-  }
-
-  private logInfo(message: string, data?: Record<string, unknown>): void {
-    console.log(`[INFO] ${message}`, data);
-  }
-
-  private logWarn(message: string, data?: Record<string, unknown>): void {
-    console.warn(`[WARN] ${message}`, data);
-  }
-
-  private logError(message: string, data?: Record<string, unknown>): void {
-    console.error(`[ERROR] ${message}`, data);
   }
 
   private generateRandomCNPJ(): string {
@@ -255,9 +326,9 @@ export class RecurringPaymentInteractor {
         email: user.email
       });
     } catch (error) {
-      this.logError('Erro ao enviar email de ativação', {
+      this.gateway.loggerError('Erro ao enviar email de ativação', {
         error: (error as Error).message,
-        user_id: user.id
+        id_user: user.id
       });
     }
   }

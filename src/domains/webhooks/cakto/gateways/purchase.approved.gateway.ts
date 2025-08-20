@@ -1,13 +1,13 @@
-import { MixRecurringPayment } from '@adapters/gateways/webhook/cakto';
+import { MixPurchaseApproved } from '@adapters/gateways/webhook/cakto';
 import {
-  IRecurringPaymentGateway,
-  RecurringPaymentGatewayDependencies,
+  IPurchaseApprovedGateway,
+  PurchaseApprovedGatewayDependencies,
   CreateUserData,
   CreateCompanyData,
   CreateSubscriptionData,
   UpdateSubscriptionData,
   CreatePaymentHistoryData
-} from '../interfaces/recurring.payment.interfaces';
+} from '../interfaces/purchase.approved.interfaces';
 import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
@@ -21,27 +21,29 @@ import {
 } from '@domains/api/backoffice/interfaces/default.interfaces';
 import {
   ISubscriptionRepository,
-  SubscriptionStatus
+  SubscriptionStatus,
+  ISubscriptionHistoryRepository
 } from '@domains/common/subscriptions/interfaces';
-import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
 
-export class RecurringPaymentGateway
-  extends MixRecurringPayment
-  implements IRecurringPaymentGateway
+export class PurchaseApprovedGateway
+  extends MixPurchaseApproved
+  implements IPurchaseApprovedGateway
 {
   logging: typeof logger;
   private userRepository: IUserRepository;
   private companyRepository: ICompanyRepository;
   private planRepository: IPlanRepository;
   private subscriptionRepository: ISubscriptionRepository;
+  private subscriptionHistoryRepository: ISubscriptionHistoryRepository;
 
   constructor(
-    params: RecurringPaymentGatewayDependencies & {
+    params: PurchaseApprovedGatewayDependencies & {
       userRepository: IUserRepository;
       companyRepository: ICompanyRepository;
       planRepository: IPlanRepository;
       subscriptionRepository: ISubscriptionRepository;
+      subscriptionHistoryRepository: ISubscriptionHistoryRepository;
     }
   ) {
     super(params);
@@ -50,6 +52,7 @@ export class RecurringPaymentGateway
     this.companyRepository = params.companyRepository;
     this.planRepository = params.planRepository;
     this.subscriptionRepository = params.subscriptionRepository;
+    this.subscriptionHistoryRepository = params.subscriptionHistoryRepository;
   }
 
   // User operations
@@ -205,11 +208,6 @@ export class RecurringPaymentGateway
     return token;
   }
 
-  signToken(data: { email: string; id: number; id_company: number }): string {
-    const secret = process.env.JWT_SECRET || 'default-secret';
-    return jwt.sign(data, secret, { expiresIn: '24h' });
-  }
-
   // Payment history
   async createPaymentHistory(
     data: CreatePaymentHistoryData
@@ -227,5 +225,54 @@ export class RecurringPaymentGateway
       ...data,
       created_at: new Date()
     };
+  }
+
+  // Subscription history
+  async createSubscriptionHistory(data: {
+    subscription_id: number;
+    action:
+      | 'created'
+      | 'activated'
+      | 'upgraded'
+      | 'downgraded'
+      | 'renewed'
+      | 'canceled'
+      | 'expired'
+      | 'suspended'
+      | 'reactivated'
+      | 'trial_started'
+      | 'trial_extended'
+      | 'trial_converted'
+      | 'plan_changed'
+      | 'limits_updated';
+    previous_status?: string;
+    new_status?: string;
+    previous_plan_id?: number;
+    new_plan_id?: number;
+    reason?: string;
+    metadata?: Record<string, unknown>;
+    created_by?: number;
+    automated?: boolean;
+    notes?: string;
+  }): Promise<void> {
+    this.logging.info('Criando histórico de subscription', {
+      subscription_id: data.subscription_id,
+      action: data.action,
+      reason: data.reason
+    });
+
+    await this.subscriptionHistoryRepository.logAction({
+      subscription_id: data.subscription_id,
+      action: data.action,
+      previous_status: data.previous_status,
+      new_status: data.new_status,
+      previous_plan_id: data.previous_plan_id,
+      new_plan_id: data.new_plan_id,
+      reason: data.reason,
+      metadata: data.metadata,
+      created_by: data.created_by,
+      automated: data.automated || true, // Default to automated for webhook actions
+      notes: data.notes
+    });
   }
 }

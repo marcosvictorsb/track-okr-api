@@ -1,4 +1,4 @@
-import { RecurringPaymentInteractor } from '../usecases/recurring.payment.interactor';
+import { PurchaseApprovedInteractor } from '../usecases/purchase.approved.interactor';
 import { IPresenter } from '@protocols/presenter';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
@@ -16,8 +16,8 @@ import {
 import { IUserRepository } from '@domains/api/users/interfaces';
 import { DataLogOutput } from '@adapters/services';
 
-export type IRecurringPaymentInteractorDependencies = {
-  gateway: IRecurringPaymentGateway;
+export type IPurchaseApprovedInteractorDependencies = {
+  gateway: IPurchaseApprovedGateway;
   presenter: IPresenter;
 };
 
@@ -187,7 +187,7 @@ export interface EmailVariables {
   currentYear: number;
 }
 
-export interface IRecurringPaymentGateway {
+export interface IPurchaseApprovedGateway {
   // User operations
   findUserByEmail(email: string): Promise<UserEntity | undefined>;
   createUser(data: CreateUserData): Promise<UserEntity>;
@@ -220,19 +220,49 @@ export interface IRecurringPaymentGateway {
     data: CreatePaymentHistoryData
   ): Promise<{ id: number; created_at: Date } & CreatePaymentHistoryData>;
 
+  // Subscription history
+  createSubscriptionHistory(data: {
+    subscription_id: number;
+    action:
+      | 'created'
+      | 'activated'
+      | 'upgraded'
+      | 'downgraded'
+      | 'renewed'
+      | 'canceled'
+      | 'expired'
+      | 'suspended'
+      | 'reactivated'
+      | 'trial_started'
+      | 'trial_extended'
+      | 'trial_converted'
+      | 'plan_changed'
+      | 'limits_updated';
+    previous_status?: string;
+    new_status?: string;
+    previous_plan_id?: number;
+    new_plan_id?: number;
+    reason?: string;
+    metadata?: Record<string, unknown>;
+    created_by?: number;
+    automated?: boolean;
+    notes?: string;
+  }): Promise<void>;
+
   // Logs methods
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }
 
-export type RecurringPaymentGatewayDependencies = {
+export type PurchaseApprovedGatewayDependencies = {
   logging: typeof import('@configs/logger').logger;
   userRepository: IUserRepository;
   companyRepository: ICompanyRepository;
   planRepository: IPlanRepository;
   subscriptionRepository: ISubscriptionRepository;
+  subscriptionHistoryRepository: import('@domains/common/subscriptions/interfaces').ISubscriptionHistoryRepository;
 };
 
-export type RecurringPaymentControllerDependencies = {
-  interactor: RecurringPaymentInteractor;
+export type PurchaseApprovedControllerDependencies = {
+  interactor: PurchaseApprovedInteractor;
 };

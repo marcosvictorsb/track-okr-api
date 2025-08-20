@@ -1,1 +1,1 @@
-export * from './recurring.payment.gateway';
+export * from './purchase.approved.gateway';

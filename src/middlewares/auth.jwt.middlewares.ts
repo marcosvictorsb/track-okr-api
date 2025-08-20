@@ -18,7 +18,8 @@ export const authMiddleware = (
   next: NextFunction
 ) => {
   try {
-    const authHeader = request.header('authorization');
+    const authHeader =
+      request.header('authorization') || request.header('Authorization');
     if (!authHeader)
       return response.status(401).json({ error: 'No token provided' });
 
@@ -29,12 +30,13 @@ export const authMiddleware = (
     const [scheme, token] = parts;
     if (!/^Bearer$/i.test(scheme))
       return response.status(401).json({ error: 'Token malformatted' });
-
     jwt.verify(
       token,
       process.env.JWT_SECRET_SIGN as string,
       (error, decoded) => {
-        if (error) return response.status(401).json({ error: 'Invalid token' });
+        if (error) {
+          return response.status(401).json({ error: 'Invalid token' });
+        }
 
         const payload = decoded as { id: number; id_company: number };
         request.user = { id: payload.id, id_company: payload.id_company };
