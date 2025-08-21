@@ -24,7 +24,11 @@ import {
   SubscriptionStatus,
   ISubscriptionHistoryRepository
 } from '@domains/common/subscriptions/interfaces';
+import { CreateSettingCriteria } from '@domains/common/settings';
+import { ISettingRepository } from '@domains/api/settings/interfaces/default.interfaces';
 import crypto from 'crypto';
+import { SettingEntity } from '@domains/api/settings';
+import { CreateWebhookCriteria, IWebhookRepository } from '@domains/common';
 
 export class PurchaseApprovedGateway
   extends MixPurchaseApproved
@@ -36,6 +40,8 @@ export class PurchaseApprovedGateway
   private planRepository: IPlanRepository;
   private subscriptionRepository: ISubscriptionRepository;
   private subscriptionHistoryRepository: ISubscriptionHistoryRepository;
+  private settingRepository: ISettingRepository;
+  private webhookRepository: IWebhookRepository;
 
   constructor(
     params: PurchaseApprovedGatewayDependencies & {
@@ -44,6 +50,8 @@ export class PurchaseApprovedGateway
       planRepository: IPlanRepository;
       subscriptionRepository: ISubscriptionRepository;
       subscriptionHistoryRepository: ISubscriptionHistoryRepository;
+      settingRepository: ISettingRepository;
+      webhookRepository: IWebhookRepository;
     }
   ) {
     super(params);
@@ -53,6 +61,8 @@ export class PurchaseApprovedGateway
     this.planRepository = params.planRepository;
     this.subscriptionRepository = params.subscriptionRepository;
     this.subscriptionHistoryRepository = params.subscriptionHistoryRepository;
+    this.settingRepository = params.settingRepository;
+    this.webhookRepository = params.webhookRepository;
   }
 
   // User operations
@@ -274,5 +284,26 @@ export class PurchaseApprovedGateway
       automated: data.automated || true, // Default to automated for webhook actions
       notes: data.notes
     });
+  }
+
+  // Settings operations
+  async createCompanySettings(
+    data: CreateSettingCriteria
+  ): Promise<SettingEntity> {
+    this.logging.info('Erro ao criar configurações da empresa', {
+      request: JSON.stringify(data)
+    });
+    return await this.settingRepository.create(data);
+  }
+
+  async saveWebhook(data: CreateWebhookCriteria): Promise<void> {
+    this.logging.info('Salvando webhook', {
+      source: data.source,
+      description: data.description,
+      status: data.status
+    });
+
+    // Aqui você pode usar o repositório de webhooks para salvar os dados
+    await this.webhookRepository.create(data);
   }
 }

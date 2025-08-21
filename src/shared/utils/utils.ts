@@ -1,7 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export function loadEmailTemplate(templateName: string, variables: Record<string, string>): string {
+export function loadEmailTemplate(
+  templateName: string,
+  variables: Record<string, string>
+): string {
   const templatePath = path.join(__dirname, '../../templates', templateName);
   let template = fs.readFileSync(templatePath, 'utf8');
 
@@ -15,7 +18,8 @@ export function loadEmailTemplate(templateName: string, variables: Record<string
 }
 
 export function generateRandomPassword(length = 12): string {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
   let password = '';
   for (let i = 0; i < length; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
@@ -23,8 +27,12 @@ export function generateRandomPassword(length = 12): string {
   return password;
 }
 
+export function truncateString(str: string, maxLength: number = 254): string {
+  return str.length > maxLength ? str.substring(0, maxLength) : str;
+}
 
 export const Utils = {
   loadEmailTemplate,
-  generateRandomPassword
+  generateRandomPassword,
+  truncateString
 };

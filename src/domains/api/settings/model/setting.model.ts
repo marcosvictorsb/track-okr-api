@@ -20,17 +20,17 @@ class SettingModel
   extends Model<SettingModelAttributes>
   implements SettingModelAttributes
 {
-  public id!: number;
-  public block_okr_creation!: boolean;
-  public block_key_result_creation!: boolean;
-  public block_okr_editing!: boolean;
-  public block_key_result_editing!: boolean;
-  public allowed_quarters!: number[];
-  public current_quarter_only!: boolean;
-  public id_company!: number;
-  public readonly created_at!: Date;
-  public readonly updated_at!: Date;
-  public readonly deleted_at!: Date;
+  declare id?: number;
+  declare block_okr_creation: boolean;
+  declare block_key_result_creation: boolean;
+  declare block_okr_editing: boolean;
+  declare block_key_result_editing: boolean;
+  declare allowed_quarters: number[];
+  declare current_quarter_only: boolean;
+  declare id_company: number;
+  declare created_at?: Date;
+  declare updated_at?: Date;
+  declare deleted_at?: Date;
 }
 
 SettingModel.init(

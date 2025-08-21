@@ -15,6 +15,13 @@ import {
 } from '@domains/api/backoffice/interfaces/default.interfaces';
 import { IUserRepository } from '@domains/api/users/interfaces';
 import { DataLogOutput } from '@adapters/services';
+import {
+  CreateSettingCriteria,
+  CreateWebhookCriteria,
+  IWebhookRepository
+} from '@domains/common';
+import { ISettingRepository, SettingEntity } from '@domains/api/settings';
+import { ISubscriptionHistoryRepository } from '@domains/common/subscriptions/interfaces';
 
 export type IPurchaseApprovedInteractorDependencies = {
   gateway: IPurchaseApprovedGateway;
@@ -212,7 +219,12 @@ export interface IPurchaseApprovedGateway {
 
   // Email operations
   generateActivationToken(userId: number): Promise<string>;
-  signToken(data: { email: string; id: number; id_company: number }): string;
+  signToken(data: {
+    name: string;
+    email: string;
+    id: number;
+    id_company: number;
+  }): string;
   sendInviteEmail(email: string, activationLink: string): Promise<boolean>;
 
   // Payment history
@@ -249,6 +261,14 @@ export interface IPurchaseApprovedGateway {
     notes?: string;
   }): Promise<void>;
 
+  // Settings operations
+  createCompanySettings(
+    criteria: CreateSettingCriteria
+  ): Promise<SettingEntity>;
+
+  // Webhook operations
+  saveWebhook(data: CreateWebhookCriteria): Promise<void>;
+
   // Logs methods
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
@@ -260,7 +280,9 @@ export type PurchaseApprovedGatewayDependencies = {
   companyRepository: ICompanyRepository;
   planRepository: IPlanRepository;
   subscriptionRepository: ISubscriptionRepository;
-  subscriptionHistoryRepository: import('@domains/common/subscriptions/interfaces').ISubscriptionHistoryRepository;
+  subscriptionHistoryRepository: ISubscriptionHistoryRepository;
+  settingRepository: ISettingRepository;
+  webhookRepository: IWebhookRepository;
 };
 
 export type PurchaseApprovedControllerDependencies = {

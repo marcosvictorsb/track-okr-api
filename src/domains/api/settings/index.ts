@@ -2,7 +2,6 @@ export * from './entity/setting.entity';
 export * from './interfaces';
 export * from './model';
 export * from './repository/setting.repository';
-export * from './controllers';
 export * from './usecases';
 export * from './gateways';
 export * from './factories';

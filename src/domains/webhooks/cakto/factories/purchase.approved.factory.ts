@@ -9,11 +9,15 @@ import { PurchaseApprovedInteractor } from '../usecases/purchase.approved.intera
 import { PlanRepository } from '@domains/api/backoffice/repository/plan.repository';
 import { PurchaseApprovedGateway } from '../gateways/purchase.approved.gateway';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
+import { SettingRepository } from '@domains/api/settings/repository/setting.repository';
 import { PlanModel } from '@domains/api/backoffice/models/plan.model';
 import Company from '@domains/api/companies/model/company.model';
 import UserModel from '@domains/api/users/model/user.model';
+import SettingModel from '@domains/api/settings/model/setting.model';
 import { Presenter } from '@protocols/presenter';
 import { logger } from '@configs/logger';
+import { WebhookRepository } from '@domains/common';
+import WebhookModel from '@domains/common/webhooks/model/webhook.model';
 
 export const makePurchaseApprovedController = () => {
   const gateway: PurchaseApprovedGatewayDependencies = {
@@ -26,7 +30,9 @@ export const makePurchaseApprovedController = () => {
     }),
     subscriptionHistoryRepository: new SubscriptionHistoryRepository({
       model: SubscriptionHistoryModel
-    })
+    }),
+    settingRepository: new SettingRepository({ model: SettingModel }),
+    webhookRepository: new WebhookRepository({ model: WebhookModel })
   };
 
   const purchaseApprovedGateway = new PurchaseApprovedGateway(gateway);

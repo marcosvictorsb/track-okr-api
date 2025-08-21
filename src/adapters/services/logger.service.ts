@@ -58,6 +58,9 @@ export type DataLogOutput = {
   // subscription
   subscription_id?: number;
 
+  // setting
+  setting_id?: number;
+
   secret?: string;
   product_id?: string;
   stack?: string;
@@ -72,7 +75,7 @@ export interface ILoggerMixin {
   loggerErro(message: string, data?: DataLogOutput): void;
 }
 
-export function LoggerMixin<T extends new (...args: any[]) => {}>(Base: T) {
+export function LoggerMixin<T extends new (...args: any[]) => object>(Base: T) {
   return class extends Base {
     public logging: typeof logger;
 
