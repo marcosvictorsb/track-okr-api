@@ -13,7 +13,8 @@ const {
   makeDeleteUserController,
   makeDeactivateUserController,
   makeActivateUserController,
-  makeUpdateUserController
+  makeUpdateUserController,
+  makeActivateUserPurchaseController
 } = factories;
 
 const getUserController = makeGetUserController();
@@ -21,6 +22,7 @@ const deleteUserController = makeDeleteUserController();
 const deactivateUserController = makeDeactivateUserController();
 const activateUserController = makeActivateUserController();
 const updateUserController = makeUpdateUserController();
+const activateUserPurchaseController = makeActivateUserPurchaseController();
 
 const router = Router();
 
@@ -37,6 +39,13 @@ router.post(
   authMiddleware,
   (request: UserPayload, response: Response) =>
     activeUserController.activeUser(request, response)
+);
+
+router.post(
+  '/activate-purchase',
+  authMiddleware,
+  (request: UserPayload, response: Response) =>
+    activateUserPurchaseController.activateUserPurchase(request, response)
 );
 
 router.post(
