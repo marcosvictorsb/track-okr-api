@@ -22,7 +22,7 @@ export class PurchaseApprovedInteractor {
 
   async execute(payload: CaktoWebhookPayload): Promise<HttpResponse> {
     try {
-      this.gateway.loggerInfo('Processando webhook de pagamento recorrente', {
+      this.gateway.loggerInfo('Processando webhook de compra aprovada', {
         event: payload.event,
         customer_email: payload.data.customer.email,
         offer_name: payload.data.offer.name,
@@ -130,10 +130,7 @@ export class PurchaseApprovedInteractor {
             new_plan_id: plan.id!,
             reason: 'Mudança de plano via webhook Cakto',
             metadata: {
-              webhook_source: 'cakto',
-              payment_id: payload.data.id,
-              external_subscription_id: subscription.id,
-              amount: payload.data.amount
+              payload
             },
             automated: true,
             notes: `Plano alterado via webhook de pagamento recorrente`
@@ -147,10 +144,7 @@ export class PurchaseApprovedInteractor {
             new_status: 'active',
             reason: 'Renovação via webhook Cakto',
             metadata: {
-              webhook_source: 'cakto',
-              payment_id: payload.data.id,
-              external_subscription_id: subscription.id,
-              amount: payload.data.amount
+              payload
             },
             automated: true,
             notes: `Subscription renovada via webhook de pagamento recorrente`
@@ -186,12 +180,7 @@ export class PurchaseApprovedInteractor {
           new_plan_id: plan.id!,
           reason: 'Subscription criada via webhook Cakto',
           metadata: {
-            webhook_source: 'cakto',
-            payment_id: payload.data.id,
-            external_subscription_id: subscription.id,
-            amount: payload.data.amount,
-            customer_email: customer.email,
-            customer_name: customer.name
+            payload
           },
           automated: true,
           notes: `Subscription criada automaticamente via webhook de pagamento`
@@ -218,9 +207,7 @@ export class PurchaseApprovedInteractor {
             new_status: 'active',
             reason: 'Email de ativação enviado via webhook Cakto',
             metadata: {
-              webhook_source: 'cakto',
-              user_email: user.email,
-              activation_trigger: 'payment_webhook'
+              payload
             },
             automated: true,
             notes: `Email de ativação enviado para usuário ${user.email}`

@@ -7,8 +7,10 @@ const purchaseApprovedController = makePurchaseApprovedController();
 
 const router = Router();
 
-router.post('/cakto', (request: Request, response: Response) =>
-  purchaseApprovedController.purchaseApproved(request, response)
+router.post(
+  '/cakto/purchase-approved',
+  (request: Request, response: Response) =>
+    purchaseApprovedController.purchaseApproved(request, response)
 );
 
 export default router;
