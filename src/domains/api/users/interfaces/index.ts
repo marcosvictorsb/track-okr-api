@@ -6,3 +6,5 @@ export * from './get.user.interface';
 export * from './delete.user.interface';
 export * from './deactivate.user.interface';
 export * from './update.user.interface';
+export * from './activate.user.purchase.interface';
+export * from './check.user.active.interface';

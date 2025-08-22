@@ -16,12 +16,15 @@ export type DataLogOutput = {
   customer_email?: string;
   offer_name?: string;
   amount?: number;
+  id_user_company?: number;
 
   id_user?: number;
   id_expense?: number;
   id_income?: number;
   email?: string;
   role?: string;
+  user_status?: string;
+  userActive?: boolean;
 
   // company
   id_company?: number;

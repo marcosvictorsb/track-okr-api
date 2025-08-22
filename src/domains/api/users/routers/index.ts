@@ -14,7 +14,8 @@ const {
   makeDeactivateUserController,
   makeActivateUserController,
   makeUpdateUserController,
-  makeActivateUserPurchaseController
+  makeActivateUserPurchaseController,
+  makeCheckUserActiveController
 } = factories;
 
 const getUserController = makeGetUserController();
@@ -23,6 +24,7 @@ const deactivateUserController = makeDeactivateUserController();
 const activateUserController = makeActivateUserController();
 const updateUserController = makeUpdateUserController();
 const activateUserPurchaseController = makeActivateUserPurchaseController();
+const checkUserActiveController = makeCheckUserActiveController();
 
 const router = Router();
 
@@ -85,6 +87,13 @@ router.put(
   authMiddleware,
   (request: UserPayload, response: Response) =>
     activateUserController.activateUser(request, response)
+);
+
+router.get(
+  '/check-active',
+  authMiddleware,
+  (request: UserPayload, response: Response) =>
+    checkUserActiveController.checkUserActive(request, response)
 );
 
 export default router;
