@@ -13,7 +13,6 @@ export interface SettingModelAttributes {
   id_company: number;
   created_at?: Date;
   updated_at?: Date;
-  deleted_at?: Date;
 }
 
 class SettingModel
@@ -30,7 +29,6 @@ class SettingModel
   declare id_company: number;
   declare created_at?: Date;
   declare updated_at?: Date;
-  declare deleted_at?: Date;
 }
 
 SettingModel.init(
@@ -84,10 +82,6 @@ SettingModel.init(
     updated_at: {
       allowNull: true,
       type: DataTypes.DATE
-    },
-    deleted_at: {
-      allowNull: true,
-      type: DataTypes.DATE
     }
   },
   {
@@ -95,7 +89,7 @@ SettingModel.init(
     tableName: 'settings',
     timestamps: true,
     underscored: true,
-    paranoid: true
+    paranoid: false
   }
 );
 

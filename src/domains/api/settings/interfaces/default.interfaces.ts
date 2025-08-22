@@ -12,7 +12,6 @@ export type CreateSettingCriteria = {
   id_company: number;
   created_at?: Date;
   updated_at?: Date;
-  deleted_at?: Date;
 };
 
 export type FindSettingCriteria = {
@@ -26,7 +25,6 @@ export type FindSettingCriteria = {
   id_company?: number;
   created_at?: Date;
   updated_at?: Date;
-  deleted_at?: Date;
 };
 
 export type DeleteSettingCriteria = {

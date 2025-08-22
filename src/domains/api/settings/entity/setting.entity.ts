@@ -9,7 +9,6 @@ export interface ISettingEntity {
   id_company: number;
   created_at?: Date;
   updated_at?: Date;
-  deleted_at?: Date;
 }
 
 export class SettingEntity implements ISettingEntity {
@@ -23,20 +22,18 @@ export class SettingEntity implements ISettingEntity {
   public readonly id_company: number;
   public readonly created_at?: Date;
   public readonly updated_at?: Date;
-  public readonly deleted_at?: Date;
 
   constructor(params: ISettingEntity) {
     this.id = params.id;
-    this.block_okr_creation = params.block_okr_creation;
-    this.block_key_result_creation = params.block_key_result_creation;
-    this.block_okr_editing = params.block_okr_editing;
-    this.block_key_result_editing = params.block_key_result_editing;
+    this.block_okr_creation = Boolean(params.block_okr_creation);
+    this.block_key_result_creation = Boolean(params.block_key_result_creation);
+    this.block_okr_editing = Boolean(params.block_okr_editing);
+    this.block_key_result_editing = Boolean(params.block_key_result_editing);
     this.allowed_quarters = params.allowed_quarters;
     this.current_quarter_only = params.current_quarter_only;
     this.id_company = params.id_company;
     this.created_at = params.created_at;
     this.updated_at = params.updated_at;
-    this.deleted_at = params.deleted_at;
   }
 
   // Métodos auxiliares
@@ -75,8 +72,7 @@ export class SettingEntity implements ISettingEntity {
       current_quarter_only: this.current_quarter_only,
       id_company: this.id_company,
       created_at: this.created_at,
-      updated_at: this.updated_at,
-      deleted_at: this.deleted_at
+      updated_at: this.updated_at
     };
   }
 }

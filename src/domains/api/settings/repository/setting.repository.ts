@@ -51,8 +51,7 @@ export class SettingRepository implements ISettingRepository {
       current_quarter_only: setting.current_quarter_only,
       id_company: setting.id_company,
       created_at: setting.created_at,
-      updated_at: setting.updated_at,
-      deleted_at: setting.deleted_at
+      updated_at: setting.updated_at
     });
   }
 
@@ -76,8 +75,7 @@ export class SettingRepository implements ISettingRepository {
       current_quarter_only: setting.current_quarter_only,
       id_company: setting.id_company,
       created_at: setting.created_at,
-      updated_at: setting.updated_at,
-      deleted_at: setting.deleted_at
+      updated_at: setting.updated_at
     });
   }
 
@@ -103,8 +101,7 @@ export class SettingRepository implements ISettingRepository {
           current_quarter_only: setting.current_quarter_only,
           id_company: setting.id_company,
           created_at: setting.created_at,
-          updated_at: setting.updated_at,
-          deleted_at: setting.deleted_at
+          updated_at: setting.updated_at
         })
     );
   }
