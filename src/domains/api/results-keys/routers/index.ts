@@ -20,4 +20,11 @@ router.post(
     createResultKeyController.createResultKey(request, response)
 );
 
+router.delete(
+  '/:id_result_key',
+  authMiddleware,
+  (request: UserPayload, response: Response) =>
+    deleteResultKeyController.deleteResultKey(request, response)
+);
+
 export default router;

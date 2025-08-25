@@ -7,7 +7,7 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { UpdatePlannerInteractor } from '../usecases';
 import { Presenter } from '@protocols/presenter';
 import { UpdatePlannerController } from '../controllers/';
-import { makeUserCompanyValidatiorInteractor } from '@domains/common/validations/factories';
+import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
 
 const plannerRepository = new PlannerRepository({
   model: PlannerModel
@@ -27,7 +27,7 @@ const updatePlannerGateway = new UpdatePlannerGateway(params);
 const interactor = new UpdatePlannerInteractor({
   gateway: updatePlannerGateway,
   presenter: new Presenter(),
-  userCompanyValidator: makeUserCompanyValidatiorInteractor()
+  userCompanyValidator: makeUserCompanyValidationInteractor()
 });
 
 export const updatePlannerController = new UpdatePlannerController({

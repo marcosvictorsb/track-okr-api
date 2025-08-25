@@ -7,7 +7,7 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { DeletePlannerInteractor } from '../usecases';
 import { Presenter } from '@protocols/presenter';
 import { DeletePlannerController } from '../controllers/';
-import { makeUserCompanyValidatiorInteractor } from '@domains/common/validations/factories';
+import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
 
 const plannerRepository = new PlannerRepository({
   model: PlannerModel
@@ -27,7 +27,7 @@ const deletePlannerGateway = new DeletePlannerGateway(params);
 const interactor = new DeletePlannerInteractor({
   gateway: deletePlannerGateway,
   presenter: new Presenter(),
-  userCompanyValidator: makeUserCompanyValidatiorInteractor()
+  userCompanyValidator: makeUserCompanyValidationInteractor()
 });
 
 export const deletePlannerController = new DeletePlannerController({

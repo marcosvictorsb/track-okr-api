@@ -5,7 +5,7 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import UserModel from '@domains/api/users/model/user.model';
 import { UserCompanyValidationGateway } from '../gateways/user.company.validation.gateway';
 
-export const makeUserCompanyValidatiorInteractor = () => {
+export const makeUserCompanyValidationInteractor = () => {
   const userRepository = new UserRepository({
     model: UserModel
   });

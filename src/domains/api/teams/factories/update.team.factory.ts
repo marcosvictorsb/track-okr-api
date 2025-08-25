@@ -7,7 +7,7 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { UpdateTeamInteractor } from '../usecases';
 import { Presenter } from '@protocols/presenter';
 import { UpdateTeamController } from '../controllers/update.team.controller';
-import { makeUserCompanyValidatiorInteractor } from '@domains/common/validations/factories';
+import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
 
 const teamRepository = new TeamRepository({
   model: TeamModel
@@ -27,7 +27,7 @@ const updateTeamGateway = new UpdateTeamGateway(params);
 const interactor = new UpdateTeamInteractor({
   gateway: updateTeamGateway,
   presenter: new Presenter(),
-  userCompanyValidator: makeUserCompanyValidatiorInteractor()
+  userCompanyValidator: makeUserCompanyValidationInteractor()
 });
 
 export const updateTeamController = new UpdateTeamController({

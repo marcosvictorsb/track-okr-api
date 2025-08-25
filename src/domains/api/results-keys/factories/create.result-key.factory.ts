@@ -4,7 +4,7 @@ import { CreateResultKeyGateway } from '../gateways/create.result-key.gateway';
 import { ResultKeyRepository } from '../repository/result-key.repository';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
-import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories/user.company.validation.factory';
+import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories/user.company.validation.factory';
 import { Presenter } from '@protocols/presenter';
 import { logger } from '@configs/logger';
 import ResultKeyModel from '../model/result-key.model';
@@ -30,9 +30,6 @@ export const makeCreateResultKeyFactory = () => {
     logging: logger
   });
 
-  // User company validator
-  const userCompanyValidator = userCompanyValidatiorInteractor;
-
   // Presenter
   const presenter = new Presenter();
 
@@ -40,7 +37,7 @@ export const makeCreateResultKeyFactory = () => {
   const interactor = new CreateResultKeyInteractor({
     gateway,
     presenter,
-    userCompanyValidator,
+    userCompanyValidator: makeUserCompanyValidationInteractor(),
     checkCompanyFeatureLimits: makeCheckCompanyFeatureLimitsInteractor()
   });
 

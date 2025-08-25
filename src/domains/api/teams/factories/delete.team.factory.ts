@@ -7,7 +7,7 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { DeleteTeamInteractor } from '../usecases';
 import { Presenter } from '@protocols/presenter';
 import { DeleteTeamController } from '../controllers/delete.team.controller';
-import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories';
+import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
 
 const teamRepository = new TeamRepository({
   model: TeamModel
@@ -27,7 +27,7 @@ const deleteTeamGateway = new DeleteTeamGateway(params);
 const interactor = new DeleteTeamInteractor({
   gateway: deleteTeamGateway,
   presenter: new Presenter(),
-  userCompanyValidator: userCompanyValidatiorInteractor
+  userCompanyValidator: makeUserCompanyValidationInteractor()
 });
 
 export const deleteTeamController = new DeleteTeamController({

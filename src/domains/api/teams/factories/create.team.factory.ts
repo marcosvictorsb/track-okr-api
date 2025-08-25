@@ -9,7 +9,7 @@ import { UserRepository } from '@domains/api/users/repository/user.repository';
 import UserModel from '@domains/api/users/model/user.model';
 import {
   makeCheckCompanyFeatureLimitsInteractor,
-  makeUserCompanyValidatiorInteractor
+  makeUserCompanyValidationInteractor
 } from '@domains/common/validations/factories';
 
 const teamRepository = new TeamRepository({
@@ -29,7 +29,7 @@ const createTeamGateway = new CreateTeamGateway(params);
 const interactor = new CreateTeamInteractor({
   gateway: createTeamGateway,
   presenter: new Presenter(),
-  userCompanyValidator: makeUserCompanyValidatiorInteractor(),
+  userCompanyValidator: makeUserCompanyValidationInteractor(),
   checkCompanyFeatureLimits: makeCheckCompanyFeatureLimitsInteractor()
 });
 
