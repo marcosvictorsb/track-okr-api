@@ -9,7 +9,7 @@ import TeamModel from '@domains/api/teams/model/team.model';
 import { Presenter } from '@protocols/presenter';
 import {
   makeCheckCompanyFeatureLimitsInteractor,
-  userCompanyValidatiorInteractor
+  makeUserCompanyValidatiorInteractor
 } from '@domains/common/validations/factories';
 
 export const makeUpdateObjectiveController = () => {
@@ -29,7 +29,7 @@ export const makeUpdateObjectiveController = () => {
   const updateObjectiveInteractor = new UpdateObjectiveInteractor({
     gateway: objectiveGateway,
     presenter: new Presenter(),
-    userCompanyValidator: userCompanyValidatiorInteractor,
+    userCompanyValidator: makeUserCompanyValidatiorInteractor(),
     checkCompanyFeatureLimitsInteractor:
       makeCheckCompanyFeatureLimitsInteractor()
   });

@@ -7,7 +7,7 @@ import { Presenter } from '@protocols/presenter';
 import { GetTeamController } from '../controllers/get.team.controller';
 import UserModel from '@domains/api/users/model/user.model';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
-import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories';
+import { makeUserCompanyValidatiorInteractor } from '@domains/common/validations/factories';
 
 const teamRepository = new TeamRepository({
   model: TeamModel
@@ -26,7 +26,7 @@ const getTeamGateway = new GetTeamGateway(params);
 const interactor = new GetTeamInteractor({
   gateway: getTeamGateway,
   presenter: new Presenter(),
-  userCompanyValidator: userCompanyValidatiorInteractor
+  userCompanyValidator: makeUserCompanyValidatiorInteractor()
 });
 
 export const getTeamController = new GetTeamController({ interactor });

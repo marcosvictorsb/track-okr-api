@@ -4,7 +4,7 @@ import { CreateObjectiveGateway } from '@domains/api/objectives/gateways';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import { Presenter } from '@protocols/presenter';
-import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories';
+import { makeUserCompanyValidatiorInteractor } from '@domains/common/validations/factories';
 import { logger } from '@configs/logger';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import TeamModel from '@domains/api/teams/model/team.model';
@@ -30,7 +30,7 @@ export const makeCreateObjectiveController = () => {
   const interactor = new CreateObjectiveInteractor({
     gateway: objectiveGateway,
     presenter: new Presenter(),
-    userCompanyValidator: userCompanyValidatiorInteractor,
+    userCompanyValidator: makeUserCompanyValidatiorInteractor(),
     checkCompanyFeatureLimitsInteractor:
       makeCheckCompanyFeatureLimitsInteractor()
   });

@@ -1,7 +1,7 @@
 import { GetCompanyPermissionsController } from '../controllers/get.company.permissions.controller';
 import { GetCompanyPermissionsInteractor } from '../usecases/get.company.permissions.interactor';
 import { GetCompanyPermissionsGateway } from '../gateways/get.company.permissions.gateway';
-import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories/user.company.validation.factory';
+import { makeUserCompanyValidatiorInteractor } from '@domains/common/validations/factories/user.company.validation.factory';
 import { makeCheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/factories/check.company.feature.limits.factories';
 import { Presenter } from '@protocols/presenter';
 import { logger } from '@configs/logger';
@@ -11,9 +11,6 @@ export const makeGetCompanyPermissionsController = () => {
   const gateway = new GetCompanyPermissionsGateway({
     logging: logger
   });
-
-  // User company validator
-  const userCompanyValidator = userCompanyValidatiorInteractor;
 
   // Check company feature limits
   const checkCompanyFeatureLimits = makeCheckCompanyFeatureLimitsInteractor();
@@ -25,7 +22,7 @@ export const makeGetCompanyPermissionsController = () => {
   const interactor = new GetCompanyPermissionsInteractor({
     gateway,
     presenter,
-    userCompanyValidator,
+    userCompanyValidator: makeUserCompanyValidatiorInteractor(),
     checkCompanyFeatureLimits
   });
 

@@ -7,7 +7,7 @@ import { Presenter } from '@protocols/presenter';
 import { CreatePlannerController } from '../controllers/';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
 import UserModel from '@domains/api/users/model/user.model';
-import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories';
+import { makeUserCompanyValidatiorInteractor } from '@domains/common/validations/factories';
 import { makeCheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/factories/check.company.feature.limits.factories';
 
 const plannerRepository = new PlannerRepository({
@@ -27,7 +27,7 @@ const createPlannerGateway = new CreatePlannerGateway(params);
 const interactor = new CreatePlannerInteractor({
   gateway: createPlannerGateway,
   presenter: new Presenter(),
-  userCompanyValidator: userCompanyValidatiorInteractor,
+  userCompanyValidator: makeUserCompanyValidatiorInteractor(),
   checkCompanyFeatureLimits: makeCheckCompanyFeatureLimitsInteractor()
 });
 

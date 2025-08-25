@@ -3,7 +3,7 @@ import { CreateCheckinsInteractor } from '../usecases/create.checkins.interactor
 import { CreateCheckinsGateway } from '../gateways/create.checkins.gateway';
 import { ResultKeyRepository } from '../../results-keys/repository/result-key.repository';
 import { CheckinsRepository } from '../repository/checkins.repository';
-import { userCompanyValidatiorInteractor } from '@domains/common/validations/factories/user.company.validation.factory';
+import { makeUserCompanyValidatiorInteractor } from '@domains/common/validations/factories/user.company.validation.factory';
 import { Presenter } from '@protocols/presenter';
 import { logger } from '@configs/logger';
 import ResultKeyModel from '../../results-keys/model/result-key.model';
@@ -33,7 +33,7 @@ export const makeCreateCheckinsFactory = () => {
   const interactor = new CreateCheckinsInteractor({
     gateway,
     presenter,
-    userCompanyValidator: userCompanyValidatiorInteractor
+    userCompanyValidator: makeUserCompanyValidatiorInteractor()
   });
 
   // Controller
