@@ -54,19 +54,19 @@ export class GetCompanyPermissionsInteractor {
         users: await this.checkFeaturePermission(
           id_company,
           FeatureType.MAX_USER
+        ),
+        planners: await this.checkFeaturePermission(
+          id_company,
+          FeatureType.MAX_PLANNERS
+        ),
+        teams: await this.checkFeaturePermission(
+          id_company,
+          FeatureType.MAX_TEAMS
+        ),
+        objectives: await this.checkFeaturePermission(
+          id_company,
+          FeatureType.MAX_OBJECTIVES_PER_QUARTER
         )
-        // planners: await this.checkFeaturePermission(
-        //   id_company,
-        //   FeatureType.MAX_PLANNERS
-        // ),
-        // teams: await this.checkFeaturePermission(
-        //   id_company,
-        //   FeatureType.MAX_TEAMS
-        // ),
-        // objectives: await this.checkFeaturePermission(
-        //   id_company,
-        //   FeatureType.MAX_OBJECTIVES_PER_QUARTER
-        // ),
         // key_results: await this.checkFeaturePermission(
         //   id_company,
         //   FeatureType.MAX_KEY_RESULTS_PER_OBJECTIVE
