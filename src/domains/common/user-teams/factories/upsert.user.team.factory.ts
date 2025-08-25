@@ -1,6 +1,6 @@
 import { Presenter } from '@protocols/presenter';
-import { CreateUserTeamGateway } from '../gateways/create.user-team.gateway';
-import { CreateUserTeamInteractor } from '../usecases/create.user-team.interactor';
+import { UpsertUserTeamGateway } from '../gateways/upsert.user.team.gateway';
+import { UpsertUserTeamInteractor } from '../usecases/upsert.user.team.interactor';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserCompanyValidationGateway } from '@domains/common/validations/gateways/user.company.validation.gateway';
 import { logger } from '@configs/logger';
@@ -11,13 +11,13 @@ import UserTeamModel from '../model/user-team.model';
 import UserModel from '@domains/api/users/model/user.model';
 import TeamModel from '@domains/api/teams/model/team.model';
 
-export const makeCreateUserTeamInteractor = (): CreateUserTeamInteractor => {
+export const makeUpsertUserTeamInteractor = (): UpsertUserTeamInteractor => {
   const userTeamRepository = new UserTeamRepository({ model: UserTeamModel });
   const userRepository = new UserRepository({ model: UserModel });
   const teamRepository = new TeamRepository({ model: TeamModel });
   const presenter = new Presenter();
 
-  const gateway = new CreateUserTeamGateway({
+  const gateway = new UpsertUserTeamGateway({
     userTeamRepository,
     userRepository,
     teamRepository,
@@ -33,7 +33,7 @@ export const makeCreateUserTeamInteractor = (): CreateUserTeamInteractor => {
     gateway: userCompanyValidationGateway
   });
 
-  return new CreateUserTeamInteractor({
+  return new UpsertUserTeamInteractor({
     gateway,
     presenter,
     userCompanyValidator

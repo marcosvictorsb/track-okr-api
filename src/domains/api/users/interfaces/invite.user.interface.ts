@@ -10,6 +10,7 @@ import { HttpResponse } from '@protocols/http';
 import { logger } from '@configs/logger';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UpsertUserTeamInteractor } from '@domains/common/user-teams/usecases';
 
 export type InputInviteUser = {
   email: string;
@@ -24,6 +25,7 @@ export type InviteUserInteractorDependencies = {
   gateway: IInviteUserGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
+  upsertUserTeamInteractor: UpsertUserTeamInteractor;
 };
 
 export type IInviteUserGatewayDependencies = {

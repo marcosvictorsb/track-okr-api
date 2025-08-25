@@ -9,16 +9,19 @@ import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserStatus } from '../interfaces/default.interfaces';
 import crypto from 'crypto';
 import { Utils } from '@shared/utils/utils';
+import { UpsertUserTeamInteractor } from '@domains/common/user-teams/usecases';
 
 export class InviteUserInteractor {
   protected gateway: IInviteUserGateway;
   protected presenter: IPresenter;
   protected userCompanyValidator: UserCompanyValidationInteractor;
+  protected upsertUserTeamInteractor: UpsertUserTeamInteractor;
 
   constructor(params: InviteUserInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.userCompanyValidator = params.userCompanyValidator;
+    this.upsertUserTeamInteractor = params.upsertUserTeamInteractor;
   }
 
   async execute(input: InputInviteUser): Promise<HttpResponse> {
@@ -73,19 +76,27 @@ export class InviteUserInteractor {
           teamId,
           true
         );
+
         if (!teamUpdated) {
           this.gateway.loggerError('Erro ao atualizar contagem do time', {
             data: `teamId: ${teamId}`
           });
-          // Não falhar o convite por causa disso, apenas logar
         }
+
+        await this.upsertUserTeamInteractor.execute({
+          id_team: teamId,
+          id_user: newUser.id as number
+        });
+
+        this.gateway.loggerInfo('Usuário adicionado ao time com sucesso', {
+          data: `userId: ${newUser.id}, teamId: ${teamId}`
+        });
       }
 
       // Gerar token de ativação
       const activationToken = await this.gateway.generateActivationToken(
         newUser.id!
       );
-
       const templateName = 'convite-user.template.html';
       const token = this.gateway.signToken({
         email: newUser.email as string,

@@ -10,11 +10,11 @@ import {
 } from '../interfaces';
 import { IUserRepository } from '@domains/api/users/interfaces';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
-import { MixCreateUserTeam } from '@adapters/gateways/api/user-teams';
+import { MixManageUserTeam } from '@adapters/gateways/api/user-teams';
 import { logger } from '@configs/logger';
 
 export class ManageUserTeamGateway
-  extends MixCreateUserTeam
+  extends MixManageUserTeam
   implements IManageUserTeamGateway
 {
   userTeamRepository: IUserTeamRepository;
