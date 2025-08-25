@@ -124,7 +124,7 @@ export class ResultKeyRepository implements IResultKeyRepository {
 
   public async findOne(
     criteria: FindResultKeyCriteria
-  ): Promise<ResultKeyEntity | null> {
+  ): Promise<ResultKeyEntity | undefined> {
     const whereConditions = this.getConditions(criteria);
 
     const resultKey = await this.model.findOne({
@@ -133,7 +133,7 @@ export class ResultKeyRepository implements IResultKeyRepository {
     });
 
     if (!resultKey) {
-      return null;
+      return undefined;
     }
 
     return this.mapToEntity(resultKey);

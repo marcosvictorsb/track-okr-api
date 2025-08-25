@@ -55,7 +55,9 @@ export interface ResultKeyRepositoryDependencies {
 
 export interface IResultKeyRepository {
   create(criteria: CreateResultKeyCriteria): Promise<ResultKeyEntity>;
-  findOne(criteria: FindResultKeyCriteria): Promise<ResultKeyEntity | null>;
+  findOne(
+    criteria: FindResultKeyCriteria
+  ): Promise<ResultKeyEntity | undefined>;
   findMany(criteria: FindResultKeyCriteria): Promise<ResultKeyEntity[]>;
   update(
     criteria: FindResultKeyCriteria,

@@ -33,7 +33,7 @@ export interface IGetCheckinsGatewayDependencies {
 export interface IGetCheckinsGateway {
   findResultKey(
     criteria: FindResultKeyCriteria
-  ): Promise<ResultKeyEntity | null>;
+  ): Promise<ResultKeyEntity | undefined>;
   findUpdatesByResultKey(
     criteria: FindCheckinsCriteria
   ): Promise<CheckinsEntity[]>;

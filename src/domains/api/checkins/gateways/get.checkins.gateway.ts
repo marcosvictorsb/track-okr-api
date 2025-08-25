@@ -32,7 +32,7 @@ export class GetCheckinsGateway
 
   public async findResultKey(
     criteria: FindResultKeyCriteria
-  ): Promise<ResultKeyEntity | null> {
+  ): Promise<ResultKeyEntity | undefined> {
     this.logging.info('Buscando resultado-chave por ID e empresa', {
       criteria: JSON.stringify(criteria)
     });

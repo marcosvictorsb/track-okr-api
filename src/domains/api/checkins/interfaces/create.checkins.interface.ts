@@ -47,7 +47,7 @@ export interface ICreateCheckinsController {
 export interface ICreateCheckinsGateway {
   findResultKey(
     criteria: FindResultKeyCriteria
-  ): Promise<ResultKeyEntity | null>;
+  ): Promise<ResultKeyEntity | undefined>;
   createUpdate(data: {
     id_result_key: number;
     previous_value?: number | null;

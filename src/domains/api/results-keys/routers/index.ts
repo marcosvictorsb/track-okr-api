@@ -5,9 +5,10 @@ import { validateSchema } from '@middlewares/validate.schema';
 import { keyResultCreationLimiter } from '@configs/rate-limit';
 import { createResultKeySchema } from '../schemas';
 
-const { makeCreateResultKeyFactory } = factories;
+const { makeCreateResultKeyFactory, makeDeleteResultKeyFactory } = factories;
 
 const createResultKeyController = makeCreateResultKeyFactory();
+const deleteResultKeyController = makeDeleteResultKeyFactory();
 
 const router = Router();
 
@@ -21,10 +22,10 @@ router.post(
 );
 
 router.delete(
-  '/:id_result_key',
+  '/:id',
   authMiddleware,
   (request: UserPayload, response: Response) =>
-    deleteResultKeyController.deleteResultKey(request, response)
+    deleteResultKeyController.handle(request, response)
 );
 
 export default router;

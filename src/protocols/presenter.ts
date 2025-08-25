@@ -1,5 +1,5 @@
 import { HttpResponse } from './http';
- 
+
 export interface IPresenter {
   ok(response?: unknown): HttpResponse;
   created(response?: unknown): HttpResponse;
@@ -17,21 +17,21 @@ export class Presenter implements IPresenter {
   ok(response?: unknown): HttpResponse {
     return {
       status: 200,
-      body: response ?? null
+      body: response ?? 'ok'
     };
   }
 
   created(response?: unknown): HttpResponse {
     return {
       status: 201,
-      body: response ?? null
+      body: response ?? 'created'
     };
   }
 
   noContent(message?: string): HttpResponse {
     return {
       status: 204,
-      body: message ? { message } : null
+      body: message ? { message } : 'no content'
     };
   }
 
