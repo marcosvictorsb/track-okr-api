@@ -24,6 +24,7 @@ export interface FindObjectiveCriteria {
   title?: string;
   id_team?: number;
   id_company?: number;
+  id_planner?: number;
   status?: string; //'active' | 'cancelled' | 'completed';
   quarter?: number;
   year?: number;

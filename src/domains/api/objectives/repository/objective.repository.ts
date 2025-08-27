@@ -38,6 +38,10 @@ export class ObjectiveRepository implements IObjectiveRepository {
       whereConditions['id_company'] = criteria.id_company;
     }
 
+    if (criteria.id_planner) {
+      whereConditions['id_planner'] = criteria.id_planner;
+    }
+
     if (criteria.status) {
       whereConditions['status'] = criteria.status;
     }

@@ -14,6 +14,7 @@ import { DataLogOutput } from '@adapters/services';
 import { HttpResponse } from '@protocols/http';
 import { logger } from '@configs/logger';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 
 export type InputDeletePlanner = {
   id: number;
@@ -37,6 +38,7 @@ export interface IDeletePlannerGateway {
   findPlanner(
     criteria: FindPlannerCriteria
   ): Promise<PlannerEntity | undefined>;
+  hasRelatedObjectives(plannerId: number): Promise<boolean>;
   deletePlanner(criteria: DeletePlannerCriteria): Promise<boolean>;
   findUser(criteria: FindUserCriteria): Promise<UserEntity | undefined>;
   loggerInfo(message: string, data?: DataLogOutput): void;
@@ -44,6 +46,7 @@ export interface IDeletePlannerGateway {
 }
 
 export interface IDeletePlannerGatewayDependencies {
+  objectiveRepository: IObjectiveRepository;
   plannerRepository: IPlannerRepository;
   userRepository: IUserRepository;
   logging: typeof logger;

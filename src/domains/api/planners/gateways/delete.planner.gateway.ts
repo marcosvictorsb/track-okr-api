@@ -15,11 +15,13 @@ import {
 } from '../interfaces/delete.planner.interface';
 import { MixDeletePlanner } from '@adapters/gateways/api/planners';
 import { logger } from '@configs/logger';
+import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 
 export class DeletePlannerGateway
   extends MixDeletePlanner
   implements IDeletePlannerGateway
 {
+  objectiveRepository: IObjectiveRepository;
   plannerRepository: IPlannerRepository;
   userRepository: IUserRepository;
   logging: typeof logger;
@@ -27,6 +29,7 @@ export class DeletePlannerGateway
   constructor(params: IDeletePlannerGatewayDependencies) {
     super(params);
     this.plannerRepository = params.plannerRepository;
+    this.objectiveRepository = params.objectiveRepository;
     this.userRepository = params.userRepository;
     this.logging = params.logging;
   }
@@ -48,5 +51,25 @@ export class DeletePlannerGateway
   async findUser(criteria: FindUserCriteria): Promise<UserEntity | undefined> {
     this.logging.info('Iniciando busca do usuário', { criteria });
     return await this.userRepository.find(criteria);
+  }
+
+  async hasRelatedObjectives(plannerId: number): Promise<boolean> {
+    this.logging.info(
+      'Verificando se o planejamento possui objetivos relacionados',
+      { plannerId }
+    );
+    const objective = await this.objectiveRepository.findOne({
+      id_planner: plannerId
+    });
+
+    if (objective) {
+      this.logging.info('Planejamento possui objetivos relacionados', {
+        objectiveId: objective.id
+      });
+      return true;
+    }
+
+    this.logging.info('Planejamento não possui objetivos relacionados');
+    return false;
   }
 }

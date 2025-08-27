@@ -1,26 +1,25 @@
-import { logger } from '@configs/logger';
-import { DeletePlannerGateway } from '../gateways/delete.planner.gateway';
-import PlannerModel from '../model/planner.model';
-import UserModel from '@domains/api/users/model/user.model';
-import { PlannerRepository } from '../repository/planner.repository';
-import { UserRepository } from '@domains/api/users/repository/user.repository';
-import { DeletePlannerInteractor } from '../usecases';
-import { Presenter } from '@protocols/presenter';
-import { DeletePlannerController } from '../controllers/';
+import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
-
-const plannerRepository = new PlannerRepository({
-  model: PlannerModel
-});
-
-const userRepository = new UserRepository({
-  model: UserModel
-});
+import { UserRepository } from '@domains/api/users/repository/user.repository';
+import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { DeletePlannerGateway } from '../gateways/delete.planner.gateway';
+import { PlannerRepository } from '../repository/planner.repository';
+import UserModel from '@domains/api/users/model/user.model';
+import { DeletePlannerController } from '../controllers/';
+import { DeletePlannerInteractor } from '../usecases';
+import PlannerModel from '../model/planner.model';
+import { Presenter } from '@protocols/presenter';
+import { logger } from '@configs/logger';
 
 const params = {
   logging: logger,
-  plannerRepository,
-  userRepository
+  plannerRepository: new PlannerRepository({
+    model: PlannerModel
+  }),
+  objectiveRepository: new ObjectiveRepository({ model: ObjectiveModel }),
+  userRepository: new UserRepository({
+    model: UserModel
+  })
 };
 
 const deletePlannerGateway = new DeletePlannerGateway(params);

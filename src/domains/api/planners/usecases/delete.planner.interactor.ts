@@ -27,24 +27,18 @@ export class DeletePlannerInteractor {
         id_user
       });
 
-      // 1. Buscar o usuário
-      const user = await this.gateway.findUser({ id: id_user });
-      if (!user) {
-        this.gateway.loggerInfo('Usuário não encontrado', { id_user });
-        return this.presenter.notFound('Usuário não encontrado');
-      }
+      // 1. Validar usuário e empresa
+      const validation = await this.userCompanyValidator.execute({
+        id_user,
+        id_company
+      });
 
-      // 2. Verificar se o usuário pertence à empresa
-      if (user.id_company !== id_company) {
-        this.gateway.loggerInfo(
-          'Usuário não possui permissão para deletar planner desta empresa',
-          {
-            id_company: user.id_company
-          }
-        );
-        return this.presenter.forbidden(
-          'Usuário não possui permissão para deletar planner desta empresa'
-        );
+      if (!validation.isValid) {
+        this.gateway.loggerError('O usuário ou empresa não é válido', {
+          id_company,
+          id_user
+        });
+        return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
       // 3. Verificar se o planner existe
@@ -55,6 +49,18 @@ export class DeletePlannerInteractor {
       if (!existingPlanner) {
         this.gateway.loggerInfo('Planner não encontrado', { id_company });
         return this.presenter.notFound('Planner não encontrado');
+      }
+
+      // verificar se o planner está relacionadom com algum objetivo. Caso estiver não pode deletar
+      const hasRelatedObjectives = await this.gateway.hasRelatedObjectives(id);
+      if (hasRelatedObjectives) {
+        this.gateway.loggerInfo(
+          'Não é possível deletar o planner pois está relacionado a objetivos',
+          { id_company }
+        );
+        return this.presenter.badRequest(
+          'Não é possível deletar o planner pois está relacionado a objetivos'
+        );
       }
 
       // 4. Deletar o planner logicamente
