@@ -36,6 +36,10 @@ export class UserTeamRepository implements IUserTeamRepository {
       whereConditions['id'] = { [Op.in]: criteria.idsUser };
     }
 
+    if (criteria.ids_users && criteria.ids_users.length > 0) {
+      whereConditions['id_user'] = { [Op.in]: criteria.ids_users };
+    }
+
     if (criteria.id_team) {
       whereConditions['id_team'] = criteria.id_team;
     }

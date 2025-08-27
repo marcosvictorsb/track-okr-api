@@ -10,6 +10,8 @@ import { UserTeamRepository } from '@domains/common/user-teams/repository/user-t
 import UserTeamModel from '@domains/common/user-teams/model/user-team.model';
 import { ProfileModel } from '@domains/api/profile/model';
 import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { UserCompanyValidationGateway } from '@domains/common/validations/gateways/user.company.validation.gateway';
 
 export const makeGetUserController = (): GetUserController => {
   const userRepository = new UserRepository({ model: UserModel });
@@ -29,10 +31,18 @@ export const makeGetUserController = (): GetUserController => {
     logging: logger
   });
 
+  const gatewayValidation = new UserCompanyValidationGateway({
+    userRepository,
+    logging: logger
+  });
+
   const interactor = new GetUserInteractor({
     gateway,
     presenter,
-    getUserTeamInteractor: makeGetUserTeamInteractor()
+    getUserTeamInteractor: makeGetUserTeamInteractor(),
+    userCompanyValidator: new UserCompanyValidationInteractor({
+      gateway: gatewayValidation
+    })
   });
 
   return new GetUserController({ interactor });

@@ -9,16 +9,19 @@ import { IPresenter } from '@protocols/presenter';
 import { GetUserGateway } from '../gateways/get.user.gateway';
 import { UserEntity } from '../entity/user.entity';
 import { GetUserTeamInteractor } from '@domains/common/user-teams/usecases';
+import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class GetUserInteractor {
   protected gateway: GetUserGateway;
   protected presenter: IPresenter;
   protected getUserTeamInteractor: GetUserTeamInteractor;
+  protected userCompanyValidator: UserCompanyValidationInteractor;
 
   constructor(params: GetUserInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.getUserTeamInteractor = params.getUserTeamInteractor;
+    this.userCompanyValidator = params.userCompanyValidator;
   }
 
   async execute(input: InputGetUser): Promise<HttpResponse> {
@@ -28,15 +31,18 @@ export class GetUserInteractor {
       });
       const { id_user, id_company } = input;
 
-      const user = await this.gateway.findUser({ id: id_user, id_company });
-      if (user && user.id_company !== id_company) {
-        this.gateway.loggerInfo('Usuário não pertence a empresa informada', {
-          id_user: id_user,
-          id_company: id_company
+      // 1. Validar usuário e empresa
+      const validation = await this.userCompanyValidator.execute({
+        id_user,
+        id_company
+      });
+
+      if (!validation.isValid) {
+        this.gateway.loggerError('O usuário ou empresa não é válido', {
+          id_company,
+          id_user
         });
-        return this.presenter.forbidden(
-          'Usuário não pertence a empresa informada'
-        );
+        return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
       const criteria: FindUserCriteria = {
@@ -71,15 +77,8 @@ export class GetUserInteractor {
         .map((user: UserEntity) => user.id)
         .filter((id): id is number => id !== undefined && id !== null);
 
-      if (idsUser.length === 0) {
-        this.gateway.loggerInfo('Nenhum usuário com ID válido encontrado');
-        return this.presenter.ok(
-          users.map((user) => ({ ...user, current_team_id: null }))
-        );
-      }
-
       const userTeams = await this.gateway.findUserTeams({
-        idsUser
+        ids_users: idsUser
       });
 
       // Criar um Map para lookup O(1) em vez de find O(n)

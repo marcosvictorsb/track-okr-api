@@ -8,6 +8,7 @@ import { GetUserTeamInteractor } from '@domains/common/user-teams/usecases';
 import { logger } from '@configs/logger';
 import { IUserTeamRepository } from '@domains/common/user-teams/interfaces/default.interfaces';
 import { IProfileRepository } from '@domains/api/profile/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
 
 export type InputGetUser = {
   id_company: number;
@@ -21,6 +22,7 @@ export type GetUserInteractorDependencies = {
   gateway: GetUserGateway;
   presenter: IPresenter;
   getUserTeamInteractor: GetUserTeamInteractor;
+  userCompanyValidator: UserCompanyValidationInteractor;
 };
 
 export type IGetUserGatewayDependencies = {
