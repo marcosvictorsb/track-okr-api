@@ -52,16 +52,11 @@ export class GetTemporalEvolutionGateway
       objectiveIds
     });
 
-    const resultKeys: ResultKeyEntity[] = [];
+    const keys = await this.resultKeyRepository.findMany({
+      ids_okr: objectiveIds
+    });
 
-    for (const objectiveId of objectiveIds) {
-      const keys = await this.resultKeyRepository.findMany({
-        id_okr: objectiveId
-      });
-      resultKeys.push(...keys);
-    }
-
-    return resultKeys;
+    return keys;
   }
 
   async findCheckinsByIds(
@@ -73,29 +68,25 @@ export class GetTemporalEvolutionGateway
       endDate: criteria.endDate
     });
 
-    const allUpdates: CheckinsEntity[] = [];
+    const { resultKeyIds } = criteria;
 
-    for (const resultKeyId of criteria.resultKeyIds) {
-      const updates = await this.checkinsRepository.findMany({
-        id_result_key: resultKeyId
+    const updates = await this.checkinsRepository.findMany({
+      ids_result_key: resultKeyIds
+    });
+
+    // Filtrar por período se especificado
+    let filteredUpdates = updates;
+    if (criteria.startDate && criteria.endDate) {
+      filteredUpdates = updates.filter((update) => {
+        if (!update.created_at) return false;
+        const updateDate = new Date(update.created_at);
+        return (
+          updateDate >= criteria.startDate! && updateDate <= criteria.endDate!
+        );
       });
-
-      // Filtrar por período se especificado
-      let filteredUpdates = updates;
-      if (criteria.startDate && criteria.endDate) {
-        filteredUpdates = updates.filter((update) => {
-          if (!update.created_at) return false;
-          const updateDate = new Date(update.created_at);
-          return (
-            updateDate >= criteria.startDate! && updateDate <= criteria.endDate!
-          );
-        });
-      }
-
-      allUpdates.push(...filteredUpdates);
     }
 
-    return allUpdates;
+    return filteredUpdates;
   }
 
   loggerInfo(message: string, data?: DataLogOutput): void {
