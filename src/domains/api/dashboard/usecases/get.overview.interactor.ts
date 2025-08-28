@@ -37,7 +37,14 @@ export class GetOverviewInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      const { quarter, year, team, status, id_company, id_user } = input;
+      const {
+        quarter,
+        year,
+        team,
+        status: _status,
+        id_company,
+        id_user
+      } = input;
 
       // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
@@ -163,10 +170,39 @@ export class GetOverviewInteractor {
       completedKeyResults += objectiveMetrics.completedKeys;
       totalProgress += objectiveMetrics.progress;
 
+      // Calcular datas de início e fim do quarter do objetivo
+      const { startDate, endDate } = this.getQuarterDates(
+        objective.quarter,
+        objective.year
+      );
+
+      const now = new Date();
+      const totalDays =
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+      const daysPassed = Math.max(
+        0,
+        (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+      );
+      const quarterProgress = Math.min((daysPassed / totalDays) * 100, 100); // % esperado baseado no tempo
+      const tolerance = 20; // margem de tolerância
+
+      // Debug log para acompanhar o cálculo
+      logger.info(
+        `Objetivo ${objective.id} - Quarter ${objective.quarter}/${objective.year}`,
+        {
+          startDate: startDate.toISOString().split('T')[0],
+          endDate: endDate.toISOString().split('T')[0],
+          totalDays: Math.round(totalDays),
+          daysPassed: Math.round(daysPassed),
+          quarterProgress: Math.round(quarterProgress),
+          objectiveProgress: Math.round(objectiveMetrics.progress)
+        }
+      );
+
       // Categorizar por status baseado no progresso
-      if (objectiveMetrics.progress >= 80) {
+      if (objectiveMetrics.progress >= quarterProgress) {
         onTrack++;
-      } else if (objectiveMetrics.progress >= 50) {
+      } else if (objectiveMetrics.progress >= quarterProgress - tolerance) {
         atRisk++;
       } else {
         delayed++;
@@ -185,6 +221,67 @@ export class GetOverviewInteractor {
       totalKeyResults,
       avgProgress
     };
+  }
+
+  private getQuarterDates(
+    quarter: number,
+    year: number
+  ): { startDate: Date; endDate: Date } {
+    let startMonth: number;
+    let endMonth: number;
+
+    // Definir meses de início e fim baseado no quarter
+    switch (quarter) {
+      case 1: // Q1: Janeiro - Março
+        startMonth = 0; // Janeiro (0-indexed)
+        endMonth = 2; // Março
+        break;
+      case 2: // Q2: Abril - Junho
+        startMonth = 3; // Abril
+        endMonth = 5; // Junho
+        break;
+      case 3: // Q3: Julho - Setembro
+        startMonth = 6; // Julho
+        endMonth = 8; // Setembro
+        break;
+      case 4: // Q4: Outubro - Dezembro
+        startMonth = 9; // Outubro
+        endMonth = 11; // Dezembro
+        break;
+      default:
+        throw new Error(`Quarter inválido: ${quarter}. Deve ser entre 1 e 4.`);
+    }
+
+    // Data de início: primeiro dia do primeiro mês do quarter
+    const startDate = new Date(year, startMonth, 1);
+
+    // Data de fim: último dia do último mês do quarter
+    const endDate = new Date(year, endMonth + 1, 0); // +1 no mês e dia 0 = último dia do mês anterior
+
+    return { startDate, endDate };
+  }
+
+  // Método auxiliar para testar o cálculo de datas do quarter
+  public testQuarterCalculation(quarter: number, year: number): void {
+    const { startDate, endDate } = this.getQuarterDates(quarter, year);
+    const now = new Date();
+    const totalDays =
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
+    const daysPassed = Math.max(
+      0,
+      (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    );
+    const quarterProgress = Math.min((daysPassed / totalDays) * 100, 100);
+
+    console.log(`=== Teste Quarter ${quarter}/${year} ===`);
+    console.log(`Data início: ${startDate.toLocaleDateString('pt-BR')}`);
+    console.log(`Data fim: ${endDate.toLocaleDateString('pt-BR')}`);
+    console.log(`Total de dias no quarter: ${Math.round(totalDays)}`);
+    console.log(`Dias passados: ${Math.round(daysPassed)}`);
+    console.log(
+      `Progresso esperado no quarter: ${Math.round(quarterProgress)}%`
+    );
+    console.log(`Data atual: ${now.toLocaleDateString('pt-BR')}`);
   }
 
   private calculateObjectiveProgress(objective: ObjectiveEntity) {
