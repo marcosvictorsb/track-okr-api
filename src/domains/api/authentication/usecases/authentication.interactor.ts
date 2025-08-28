@@ -1,5 +1,5 @@
 import { IPresenter } from '@protocols/presenter';
-import { IAuthenticationGateway } from '../interfaces';
+import { IAuthenticationGateway, InputAuthentication } from '../interfaces';
 import { HttpResponse } from '@protocols/http';
 
 export class AuthenticationInteractor {
@@ -11,8 +11,9 @@ export class AuthenticationInteractor {
     this.presenter = presenter;
   }
 
-  async execute(email: string, password: string): Promise<HttpResponse> {
+  async execute(input: InputAuthentication): Promise<HttpResponse> {
     try {
+      const { email, password, rememberMe } = input;
       this.gateway.loggerInfo(
         `Iniciando a busca pelo usuário com o email: ${email}`
       );
@@ -43,7 +44,8 @@ export class AuthenticationInteractor {
         name: user.name,
         email: user.email,
         id: user.id,
-        id_company: user.id_company
+        id_company: user.id_company,
+        rememberMe: rememberMe || false
       });
 
       const profile = await this.gateway.getProfile(user.id as number);

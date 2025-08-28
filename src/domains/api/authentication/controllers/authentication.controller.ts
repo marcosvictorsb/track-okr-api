@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
-import { AuthenticationDependencies } from '@domains/api/authentication/interfaces';
+import {
+  AuthenticationDependencies,
+  InputAuthentication
+} from '@domains/api/authentication/interfaces';
 import { AuthenticationInteractor } from '@domains/api/authentication/usecases/authentication.interactor';
 
 export class AuthenticationController {
@@ -13,8 +16,14 @@ export class AuthenticationController {
     request: Request,
     response: Response
   ): Promise<Response> {
-    const { email, password } = request.body;
-    const result = await this.interactor.execute(email, password);
+    const { email, password, rememberMe } = request.body;
+    const credential: InputAuthentication = {
+      email,
+      password,
+      rememberMe: rememberMe || false
+    };
+
+    const result = await this.interactor.execute(credential);
     return response.status(result.status).json(result.body);
   }
 }

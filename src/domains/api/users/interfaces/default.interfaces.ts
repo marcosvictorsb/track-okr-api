@@ -30,6 +30,7 @@ export type FindUserCriteria = {
   status?: string;
   statuses?: string[];
   id_company?: number;
+  rememberMe?: boolean;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
