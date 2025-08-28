@@ -74,6 +74,17 @@ export interface IGetTopContributorsGateway {
   findResultKeysByObjectiveIds(
     objectiveIds: number[]
   ): Promise<ResultKeyEntity[]>;
+  findCheckinsByResultKeyIds(resultKeyIds: number[]): Promise<
+    Array<{
+      id: number;
+      id_result_key: number;
+      previous_value: number;
+      new_value: number;
+      comment: string;
+      id_user: number;
+      created_at: string;
+    }>
+  >;
   findUserById(userId: number): Promise<UserEntity | undefined>;
   findTeamById(teamId: number): Promise<TeamEntity | undefined>;
   findUserProfileAvatar(userId: number): Promise<string | undefined>;
@@ -82,6 +93,14 @@ export interface IGetTopContributorsGateway {
     startDate: Date,
     endDate: Date
   ): Promise<Array<{ id_user: number; check_ins: number }>>;
+  findUsersProfileByIds(ids_users: number[]): Promise<
+    Array<{
+      id: number;
+      name: string;
+      email: string;
+      avatar_url: string | null;
+    }>
+  >;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

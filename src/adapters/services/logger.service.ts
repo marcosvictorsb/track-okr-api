@@ -26,6 +26,10 @@ export type DataLogOutput = {
   user_status?: string;
   userActive?: boolean;
 
+  // objective
+  id_objective?: number;
+  ids_objectives?: number[];
+
   // company
   id_company?: number;
   company_name?: string;

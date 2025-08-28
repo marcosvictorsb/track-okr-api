@@ -63,14 +63,9 @@ export class GetTopContributorsGateway
       objectiveIds
     });
 
-    const resultKeys: ResultKeyEntity[] = [];
-
-    for (const objectiveId of objectiveIds) {
-      const keys = await this.resultKeyRepository.findMany({
-        id_okr: objectiveId
-      });
-      resultKeys.push(...keys);
-    }
+    const resultKeys = await this.resultKeyRepository.findMany({
+      ids_okr: objectiveIds
+    });
 
     return resultKeys;
   }
@@ -110,6 +105,56 @@ export class GetTopContributorsGateway
       });
       return undefined;
     }
+  }
+
+  async findCheckinsByResultKeyIds(resultKeyIds: number[]): Promise<
+    Array<{
+      id: number;
+      id_result_key: number;
+      previous_value: number;
+      new_value: number;
+      comment: string;
+      id_user: number;
+      created_at: string;
+    }>
+  > {
+    this.logging.info('Buscando checkins por result key IDs', { resultKeyIds });
+
+    const allCheckins: Array<{
+      id: number;
+      id_result_key: number;
+      previous_value: number;
+      new_value: number;
+      comment: string;
+      id_user: number;
+      created_at: string;
+    }> = [];
+    const checkins = await this.checkinsRepository.findMany({
+      ids_result_key: resultKeyIds
+    });
+
+    for (const checkin of checkins) {
+      if (
+        checkin.id_user !== undefined &&
+        checkin.previous_value !== undefined &&
+        checkin.previous_value !== null
+      ) {
+        allCheckins.push({
+          id: checkin.id || 0,
+          id_result_key: checkin.id_result_key,
+          previous_value: checkin.previous_value,
+          new_value: checkin.new_value,
+          comment: checkin.comment || '',
+          id_user: checkin.id_user,
+          created_at: checkin.created_at
+            ? new Date(checkin.created_at).toISOString()
+            : ''
+        });
+      }
+    }
+
+    this.logging.info('Checkins encontrados', { total: allCheckins.length });
+    return allCheckins;
   }
 
   async countCheckInsByResultKeyIds(
@@ -156,6 +201,41 @@ export class GetTopContributorsGateway
       result
     });
 
+    return result;
+  }
+
+  async findUsersProfileByIds(ids_users: number[]): Promise<
+    Array<{
+      id: number;
+      name: string;
+      email: string;
+      avatar_url: string | null;
+    }>
+  > {
+    this.logging.info('Buscando perfis de usuários por IDs', { ids_users });
+
+    const users = await this.userRepository.findAll({ ids: ids_users });
+    const profiles = await this.profileRepository.findAll({
+      id_users: ids_users
+    });
+
+    const profileMap = new Map<number, string>();
+    for (const profile of profiles) {
+      if (profile.id_user && profile.photo_url) {
+        profileMap.set(profile.id_user, profile.photo_url);
+      }
+    }
+
+    const result = users.map((user) => ({
+      id: user.id || 0,
+      name: user.name,
+      email: user.email,
+      avatar_url: profileMap.get(user.id || 0) || null
+    }));
+
+    this.logging.info('Perfis de usuários encontrados', {
+      total: result.length
+    });
     return result;
   }
 }

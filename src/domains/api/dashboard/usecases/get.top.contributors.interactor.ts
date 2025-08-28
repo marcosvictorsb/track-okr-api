@@ -7,21 +7,26 @@ import {
 } from '../interfaces/get.top.contributors.interface';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import {
-  TopContributorsEntity,
-  ContributorItem,
-  PaginationInfo
-} from '../entity/top.contributors.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { OverviewEntity } from '../entity/overview.entity';
-import { logger } from '@configs/logger';
+import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
 
-interface UserContribution {
-  userId: number;
-  totalProgress: number;
-  keyResultsUpdated: number;
-  lastActivity: Date;
-  contributions: number;
+interface CheckinData {
+  id: number;
+  id_result_key: number;
+  previous_value: number | null;
+  new_value: number;
+  comment: string;
+  id_user: number;
+  created_at: string;
+}
+
+interface CheckinWithUserData extends CheckinData {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    avatar_url: string | null;
+  } | null;
 }
 
 export class GetTopContributorsInteractor {
@@ -41,102 +46,89 @@ export class GetTopContributorsInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      const {
-        id_company,
-        id_user,
-        quarter,
-        year,
-        limit = 10,
-        page = 1
-      } = input;
+      const { id_company, id_user, quarter, year } = input;
 
-      // Validar usuário e empresa
+      // 1. Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
         id_user,
         id_company
       );
       if (!isValidUser) {
-        return this.presenter.badRequest('Usuário ou empresa inválidos');
+        return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
-      // Buscar objetivos da empresa no período
+      // 2. Buscar objetivos da empresa
       const objectives = await this.getCompanyObjectives(
         id_company,
         quarter,
         year
       );
-
-      // Buscar e associar result keys aos objetivos
-      const objectivesWithResultKeys =
-        await this.associateResultKeysToObjectives(objectives);
-
-      // Calcular contribuições por usuário
-      const userContributions = this.calculateUserContributions(
-        objectivesWithResultKeys
-      );
-
-      // Enriquecer contribuições com contagem real de check-ins
-      const enrichedUserContributions =
-        await this.enrichUserContributionsWithCheckIns(
-          userContributions,
-          objectives
+      if (!objectives || objectives.length === 0) {
+        return this.getEmptyResponse(
+          'Nenhum objetivo encontrado para a empresa',
+          { id_company }
         );
+      }
 
-      // Ordenar e paginar contributors
-      const topContributors = await this.buildTopContributors(
-        enrichedUserContributions,
-        objectivesWithResultKeys,
-        limit,
-        page
+      // 3. Buscar result keys dos objetivos
+      const resultKeys = await this.getResultKeysFromObjectives(objectives);
+      if (!resultKeys || resultKeys.length === 0) {
+        return this.getEmptyResponse(
+          'Nenhuma result key encontrada para os objetivos da empresa',
+          {
+            id_company,
+            ids_objectives: objectives.map((obj) => obj.id)
+          }
+        );
+      }
+
+      // 4. Processar checkins e calcular estatísticas
+      const checkins = await this.getCheckinsFromResultKeys(resultKeys);
+      const checkinsWithUsers = await this.enrichCheckinsWithUserData(checkins);
+
+      console.log(
+        'Checkins with user data:',
+        JSON.stringify(checkinsWithUsers, null, 2)
       );
 
-      // Calcular informações de paginação
-      const pagination = this.buildPagination(
-        userContributions.length,
-        page,
-        limit
+      const contributorStats =
+        this.calculateContributorStats(checkinsWithUsers);
+
+      // 5. Gerar rankings
+      const rankings = this.generateRankings(
+        contributorStats,
+        checkinsWithUsers
       );
 
-      const contributorsData = new TopContributorsEntity({
-        contributors: topContributors,
-        pagination
+      this.gateway.loggerInfo('Top contributors calculados com sucesso', {
+        count: checkins.length,
+        data: `Company: ${input.id_company}, Contributors: ${rankings.topContributorsByCheckins.length}`
       });
 
-      this.gateway.loggerInfo('Top contributors retornado com sucesso', {
-        requestTxt: `Total contributors: ${topContributors.length}`
-      });
-
-      return this.presenter.ok(contributorsData);
+      return this.presenter.ok(rankings);
     } catch (error) {
-      this.gateway.loggerError('Erro ao buscar top contributors', {
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-        requestTxt: JSON.stringify(input)
-      });
-
-      return this.presenter.serverError(
-        'Erro interno do servidor ao buscar top contributors'
-      );
+      return this.handleError(error, input);
     }
   }
 
-  private async validateUserAndCompany(
-    id_user: number,
-    id_company: number
-  ): Promise<boolean> {
-    const validation = await this.userCompanyValidator.execute({
-      id_user,
-      id_company
-    });
+  private async enrichCheckinsWithUserData(
+    checkins: CheckinData[]
+  ): Promise<CheckinWithUserData[]> {
+    const id_users = checkins
+      .map((c) => c.id_user)
+      .filter((id): id is number => id !== undefined);
+    const unique_user_ids = Array.from(new Set(id_users));
 
-    if (!validation.isValid) {
-      this.gateway.loggerInfo('Usuário ou empresa inválidos', {
-        id_user,
-        id_company
-      });
-      return false;
-    }
+    const users = await this.gateway.findUsersProfileByIds(unique_user_ids);
 
-    return true;
+    // Criar um mapa para acesso rápido aos usuários
+    const userMap = new Map(users.map((user) => [user.id, user]));
+
+    // Enriquecer cada checkin com os dados do usuário
+    return checkins.map((checkin) => ({
+      ...checkin,
+      user: userMap.get(checkin.id_user) || null
+    }));
   }
 
   private async getCompanyObjectives(
@@ -153,278 +145,128 @@ export class GetTopContributorsInteractor {
     return await this.gateway.findObjectivesByCompany(criteria);
   }
 
-  private async associateResultKeysToObjectives(
-    objectives: ObjectiveEntity[]
-  ): Promise<ObjectiveEntity[]> {
+  private async validateUserAndCompany(
+    id_user: number,
+    id_company: number
+  ): Promise<boolean> {
+    const validation = await this.userCompanyValidator.execute({
+      id_user,
+      id_company
+    });
+
+    if (!validation.isValid) {
+      this.gateway.loggerError('O usuário ou empresa não é válido', {
+        id_company,
+        id_user
+      });
+      return false;
+    }
+
+    return true;
+  }
+
+  private getEmptyResponse(
+    message: string,
+    data: Record<string, unknown>
+  ): HttpResponse {
+    this.gateway.loggerInfo(message, data);
+    return this.presenter.ok({
+      topContributorsByCheckins: [],
+      topContributorsByValue: []
+    });
+  }
+
+  private async getResultKeysFromObjectives(objectives: ObjectiveEntity[]) {
     const objectiveIds = objectives
-      .map((objective: ObjectiveEntity) => objective.id)
+      .map((obj) => obj.id)
       .filter((id): id is number => id !== undefined);
 
-    if (objectiveIds.length > 0) {
-      const resultKeys =
-        await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
-
-      // Agrupar result-keys por objetivo
-      objectives.forEach((objective: ObjectiveEntity) => {
-        objective.result_keys = resultKeys.filter(
-          (resultKey) => resultKey.id_okr === objective.id
-        );
-      });
-    }
-
-    return objectives;
+    return await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
   }
 
-  private calculateUserContributions(
-    objectives: ObjectiveEntity[]
-  ): UserContribution[] {
-    const userContributionsMap = new Map<number, UserContribution>();
+  private async getCheckinsFromResultKeys(resultKeys: ResultKeyEntity[]) {
+    const resultKeyIds = resultKeys
+      .map((rk) => rk.id)
+      .filter((id): id is number => id !== undefined);
 
-    for (const objective of objectives) {
-      const resultKeys = objective.result_keys || [];
-
-      for (const resultKey of resultKeys) {
-        // Usar responsible_users array para determinar os usuários responsáveis
-        const responsibleUsers = resultKey.responsible_users || [];
-
-        if (responsibleUsers.length === 0) {
-          continue; // Pular result keys sem responsáveis
-        }
-        for (const userId of responsibleUsers) {
-          if (userId) {
-            // Obter contribuição existente ou criar nova
-            const contribution = userContributionsMap.get(userId) || {
-              userId,
-              totalProgress: 0,
-              keyResultsUpdated: 0,
-              lastActivity: new Date(0),
-              contributions: 0
-            };
-
-            // Calcular progresso do result key
-            const progress = OverviewEntity.calculateProgress(
-              resultKey.current_value,
-              resultKey.target_value
-            );
-
-            contribution.totalProgress += progress;
-            contribution.keyResultsUpdated += 1;
-
-            // Atualizar última atividade
-            if (resultKey.updated_at) {
-              const updateDate = new Date(resultKey.updated_at);
-              if (updateDate > contribution.lastActivity) {
-                contribution.lastActivity = updateDate;
-              }
-            }
-
-            userContributionsMap.set(userId, contribution);
-          }
-        }
-      }
-    }
-
-    return Array.from(userContributionsMap.values());
+    return await this.gateway.findCheckinsByResultKeyIds(resultKeyIds);
   }
 
-  private async buildTopContributors(
-    userContributions: UserContribution[],
-    objectivesWithResultKeys: ObjectiveEntity[],
-    limit: number,
-    page: number
-  ): Promise<ContributorItem[]> {
-    // Ordenar por contribuições (decrescente)
-    const sortedContributions = userContributions
-      .sort((a, b) => b.contributions - a.contributions)
-      .slice((page - 1) * limit, page * limit);
+  private calculateContributorStats(checkins: CheckinWithUserData[]) {
+    const contributorStats: Record<
+      number,
+      { totalCheckins: number; totalProgress: number }
+    > = {};
 
-    const contributors: ContributorItem[] = [];
+    for (const c of checkins) {
+      const userId = c.id_user;
+      if (!userId) continue;
 
-    for (const contribution of sortedContributions) {
-      const contributor = await this.buildSingleContributor(
-        contribution,
-        objectivesWithResultKeys
-      );
-      if (contributor) {
-        contributors.push(contributor);
+      if (!contributorStats[userId]) {
+        contributorStats[userId] = { totalCheckins: 0, totalProgress: 0 };
       }
+      contributorStats[userId].totalCheckins += 1;
+
+      const previousValue = c.previous_value ?? 0;
+      const newValue = c.new_value ?? 0;
+      contributorStats[userId].totalProgress += newValue - previousValue;
     }
 
-    return contributors;
+    return contributorStats;
   }
 
-  private async buildSingleContributor(
-    contribution: UserContribution,
-    objectivesWithResultKeys: ObjectiveEntity[]
-  ): Promise<ContributorItem | null> {
-    try {
-      // Buscar dados do usuário
-      const user = await this.gateway.findUserById(contribution.userId);
-      if (!user) {
-        return null;
+  private generateRankings(
+    contributorStats: Record<
+      number,
+      { totalCheckins: number; totalProgress: number }
+    >,
+    checkinsWithUsers: CheckinWithUserData[]
+  ) {
+    // Criar mapa de usuários para acesso rápido
+    const userMap = new Map();
+    checkinsWithUsers.forEach((checkin) => {
+      if (checkin.user) {
+        userMap.set(checkin.user.id, checkin.user);
       }
+    });
 
-      // Buscar dados do time
-      let team = { id: '0', name: 'Sem time' };
-      if (user.current_team_id) {
-        const teamEntity = await this.gateway.findTeamById(
-          user.current_team_id
-        );
-        if (teamEntity && teamEntity.id) {
-          team = {
-            id: teamEntity.id.toString(),
-            name: teamEntity.name
-          };
-        }
-      }
+    // Converter em array para ordenar
+    const contributorsArray = Object.entries(contributorStats).map(
+      ([userId, stats]) => ({
+        id_user: Number(userId),
+        user: userMap.get(Number(userId)) || null,
+        ...stats
+      })
+    );
 
-      // Buscar avatar
-      const avatar = await this.gateway.findUserProfileAvatar(
-        contribution.userId
-      );
+    // Top por quantidade de checkins
+    const topContributorsByCheckins = [...contributorsArray].sort(
+      (a, b) => b.totalCheckins - a.totalCheckins
+    );
 
-      // Calcular impact score
-      const impactScore = TopContributorsEntity.calculateImpactScore(
-        contribution.totalProgress,
-        contribution.keyResultsUpdated,
-        contribution.contributions
-      );
-
-      // Calcular check-ins da semana atual para este usuário específico
-      const checkInsThisWeek = await this.calculateUserCheckInsThisWeek(
-        contribution.userId,
-        objectivesWithResultKeys
-      );
-
-      return {
-        id: user.id || 0,
-        name: user.name,
-        email: user.email,
-        avatar: avatar || '',
-        team,
-        contributions: contribution.contributions,
-        impactScore,
-        lastActivity: contribution.lastActivity.toISOString(),
-        keyResultsUpdated: contribution.keyResultsUpdated,
-        checkInsThisWeek
-      };
-    } catch (error) {
-      logger.error('Erro ao construir contributor', {
-        userId: contribution.userId,
-        error: error instanceof Error ? error.message : 'Erro desconhecido'
-      });
-      return null;
-    }
-  }
-
-  private buildPagination(
-    total: number,
-    page: number,
-    limit: number
-  ): PaginationInfo {
-    const totalPages = Math.ceil(total / limit);
+    // Top por valor acumulado
+    const topContributorsByValue = [...contributorsArray].sort(
+      (a, b) => b.totalProgress - a.totalProgress
+    );
 
     return {
-      total,
-      page,
-      limit,
-      totalPages
+      topContributorsByCheckins,
+      topContributorsByValue
     };
   }
 
-  private async enrichUserContributionsWithCheckIns(
-    userContributions: UserContribution[],
-    objectives: ObjectiveEntity[]
-  ): Promise<UserContribution[]> {
-    // Coletar todos os IDs de result keys
-    const resultKeyIds: number[] = [];
-    for (const objective of objectives) {
-      const resultKeys = objective.result_keys || [];
-      for (const resultKey of resultKeys) {
-        if (resultKey.id) {
-          resultKeyIds.push(resultKey.id);
-        }
-      }
-    }
-
-    // Definir período da semana atual
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // Domingo
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sábado
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    // Buscar contagem de check-ins agrupados por usuário
-    const userCheckInData = await this.gateway.countCheckInsByResultKeyIds(
-      resultKeyIds,
-      startOfWeek,
-      endOfWeek
-    );
-
-    // Criar um mapa para facilitar a busca
-    const userCheckInMap = new Map<number, number>();
-    userCheckInData.forEach(({ id_user, check_ins }) => {
-      userCheckInMap.set(id_user, check_ins);
+  private handleError(
+    error: unknown,
+    input: InputGetTopContributors
+  ): HttpResponse {
+    console.log(error);
+    this.gateway.loggerError('Erro ao buscar top contributors', {
+      error: error instanceof Error ? error.message : 'Erro desconhecido',
+      requestTxt: JSON.stringify(input)
     });
 
-    // Atualizar contribuições dos usuários com contagem real de check-ins
-    userContributions.forEach((contribution) => {
-      const checkInsThisWeek = userCheckInMap.get(contribution.userId) || 0;
-
-      contribution.contributions = TopContributorsEntity.calculateContributions(
-        contribution.keyResultsUpdated,
-        checkInsThisWeek
-      );
-    });
-
-    return userContributions;
-  }
-
-  private async calculateUserCheckInsThisWeek(
-    userId: number,
-    objectives: ObjectiveEntity[]
-  ): Promise<number> {
-    // Coletar IDs dos result keys onde o usuário é responsável
-    const userResultKeyIds: number[] = [];
-
-    for (const objective of objectives) {
-      const resultKeys = objective.result_keys || [];
-      for (const resultKey of resultKeys) {
-        if (resultKey.id && resultKey.responsible_users?.includes(userId)) {
-          userResultKeyIds.push(resultKey.id);
-        }
-      }
-    }
-
-    if (userResultKeyIds.length === 0) {
-      return 0;
-    }
-
-    // Definir período da semana atual
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // Domingo
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sábado
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    // Buscar contagem de check-ins agrupados por usuário
-    const userCheckInData = await this.gateway.countCheckInsByResultKeyIds(
-      userResultKeyIds,
-      startOfWeek,
-      endOfWeek
+    return this.presenter.serverError(
+      'Erro interno do servidor ao buscar top contributors'
     );
-
-    // Encontrar check-ins do usuário específico
-    const userCheckIns = userCheckInData.find(
-      (data) => data.id_user === userId
-    );
-
-    return userCheckIns ? userCheckIns.check_ins : 0;
   }
 }
