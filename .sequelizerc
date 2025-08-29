@@ -3,7 +3,7 @@ require('dotenv').config();
 
 const isProduction = process.env.NODE_ENV === 'production';
 const baseDir = isProduction ? 'src' : 'src';
-const configFile = isProduction ? 'config.js' : 'config.ts';
+const configFile = isProduction ? 'config.ts' : 'config.ts';
 
 module.exports = {
   config: path.resolve(baseDir, 'infra', 'database', 'config', configFile),
