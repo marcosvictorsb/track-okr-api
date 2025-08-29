@@ -2,7 +2,7 @@ const path = require('path');
 require('dotenv').config();
 
 const isProduction = process.env.NODE_ENV === 'production';
-const baseDir = isProduction ? 'dist/src' : 'src';
+const baseDir = isProduction ? 'src' : 'src';
 const configFile = isProduction ? 'config.js' : 'config.ts';
 
 module.exports = {
