@@ -90,4 +90,5 @@ export interface ISubscriptionRepository {
     criteria: UpdateSubscriptionCriteria
   ): Promise<boolean>;
   delete(id: number): Promise<boolean>;
+  countActiveByPlanId(planId: number): Promise<number>;
 }

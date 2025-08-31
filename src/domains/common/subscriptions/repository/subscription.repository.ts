@@ -114,6 +114,15 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     return affectedRows > 0;
   }
 
+  public async countActiveByPlanId(planId: number): Promise<number> {
+    const count = await this.model.count({
+      where: {
+        plan_id: planId
+      }
+    });
+    return count;
+  }
+
   // Métodos específicos do domínio subscription
   // public async findByCompany(
   //   companyId: number

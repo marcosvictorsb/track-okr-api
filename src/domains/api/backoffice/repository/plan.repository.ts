@@ -5,7 +5,7 @@ import {
   IPlanRepository,
   PlanRepositoryDependencies
 } from '../interfaces/default.interfaces';
-import { ModelStatic, Op } from 'sequelize';
+import { ModelStatic } from 'sequelize';
 import { PlanEntity } from '../entities/plan.entity';
 
 export class PlanRepository implements IPlanRepository {
@@ -56,10 +56,7 @@ export class PlanRepository implements IPlanRepository {
   }
 
   public async findAll(): Promise<PlanEntity[]> {
-    const whereConditions: Record<string, any> = {};
-
-    const { count, rows } = await this.model.findAndCountAll({
-      where: whereConditions,
+    const { count: _count, rows } = await this.model.findAndCountAll({
       order: [['created_at', 'DESC']],
       raw: true
     });
@@ -67,5 +64,13 @@ export class PlanRepository implements IPlanRepository {
     const plans = rows.map((plan) => new PlanEntity(plan));
 
     return plans;
+  }
+
+  public async delete(id: number): Promise<boolean> {
+    const deletedRows = await this.model.destroy({
+      where: { id }
+    });
+
+    return deletedRows > 0;
   }
 }

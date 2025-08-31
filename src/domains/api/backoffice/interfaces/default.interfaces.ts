@@ -32,4 +32,5 @@ export interface IPlanRepository {
   create(data: CreatePlanCriteria): Promise<PlanEntity>;
   find(criteria: FindPlansCriteria): Promise<PlanEntity | undefined>;
   findAll(): Promise<PlanEntity[]>;
+  delete(id: number): Promise<boolean>;
 }

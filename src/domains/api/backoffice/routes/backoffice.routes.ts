@@ -8,7 +8,8 @@ import * as factories from '../factories/index';
 const backofficeRouter = Router();
 
 // ====== CONTROLLERS ======
-const { listPlanController, createPlanController } = factories;
+const { listPlanController, createPlanController, deletePlanController } =
+  factories;
 
 // const paymentsController = new BackofficePaymentsController();
 const authController = new BackofficeAuthController();
@@ -50,6 +51,13 @@ backofficeRouter.post(
   '/plans',
   BackofficeAuthMiddleware.requireManager(),
   (req, res) => createPlanController.create(req, res)
+);
+
+// Deletar plano (apenas admin)
+backofficeRouter.delete(
+  '/subscription-plans/:id',
+  BackofficeAuthMiddleware.requireAdmin(),
+  (req, res) => deletePlanController.delete(req, res)
 );
 
 // // Buscar plano por ID (todos podem ver)
