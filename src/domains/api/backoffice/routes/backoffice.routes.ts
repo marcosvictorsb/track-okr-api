@@ -8,8 +8,12 @@ import * as factories from '../factories/index';
 const backofficeRouter = Router();
 
 // ====== CONTROLLERS ======
-const { listPlanController, createPlanController, deletePlanController } =
-  factories;
+const {
+  listPlanController,
+  createPlanController,
+  deletePlanController,
+  getWebhookController
+} = factories;
 
 // const paymentsController = new BackofficePaymentsController();
 const authController = new BackofficeAuthController();
@@ -138,5 +142,12 @@ backofficeRouter.delete(
 //   BackofficeAuthMiddleware.requireAdmin(),
 //   (req, res) => paymentsController.syncAllPending(req, res)
 // );
+
+// ====== ROTAS DE WEBHOOKS ======
+
+// Listar webhooks (todos podem ver)
+backofficeRouter.get('/webhooks', (req, res) =>
+  getWebhookController.list(req, res)
+);
 
 export { backofficeRouter };

@@ -31,4 +31,12 @@ export interface IWebhookRepository {
   create(criteria: CreateWebhookCriteria): Promise<WebhookEntity>;
   find(criteria: FindWebhookCriteria): Promise<WebhookEntity | undefined>;
   findAll(criteria: FindWebhookCriteria): Promise<WebhookEntity[]>;
+  findAllWithPagination(
+    criteria: FindWebhookCriteria,
+    page: number,
+    limit: number
+  ): Promise<{
+    webhooks: WebhookEntity[];
+    total: number;
+  }>;
 }

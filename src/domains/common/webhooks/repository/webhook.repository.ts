@@ -61,4 +61,32 @@ export class WebhookRepository implements IWebhookRepository {
     });
     return webhooks.map((webhook) => new WebhookEntity(webhook.dataValues));
   }
+
+  async findAllWithPagination(
+    criteria: FindWebhookCriteria,
+    page: number,
+    limit: number
+  ): Promise<{
+    webhooks: WebhookEntity[];
+    total: number;
+  }> {
+    const conditions = this.getConditions(criteria);
+    const offset = (page - 1) * limit;
+
+    const { count, rows } = await this.model.findAndCountAll({
+      where: conditions,
+      order: [['created', 'DESC']],
+      limit,
+      offset
+    });
+
+    const webhooks = rows.map(
+      (webhook) => new WebhookEntity(webhook.dataValues)
+    );
+
+    return {
+      webhooks,
+      total: count
+    };
+  }
 }
