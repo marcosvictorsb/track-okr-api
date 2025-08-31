@@ -40,16 +40,11 @@ export class GetTemporalEvolutionInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      const currentDate = new Date();
-      const currentQuarter =
-        quarter || Math.ceil((currentDate.getMonth() + 1) / 3);
-      const currentYear = year || currentDate.getFullYear();
-
       // Buscar dados do trimestre atual
       const currentQuarterData = await this.getQuarterEvolutionData(
         id_company,
-        currentQuarter,
-        currentYear
+        quarter as number,
+        year as number
       );
 
       const temporalEvolutionData = {
@@ -57,7 +52,7 @@ export class GetTemporalEvolutionInteractor {
       };
 
       this.gateway.loggerInfo('Evolução temporal retornada com sucesso', {
-        requestTxt: `Period: ${period}, Quarter: Q${currentQuarter} ${currentYear}`
+        requestTxt: `Period: ${period}, Quarter: Q${quarter} ${year}`
       });
 
       return this.presenter.ok(temporalEvolutionData);
