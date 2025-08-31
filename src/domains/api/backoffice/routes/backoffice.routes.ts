@@ -13,7 +13,8 @@ const {
   createPlanController,
   deletePlanController,
   getWebhookController,
-  getLeadController
+  getLeadController,
+  getSubscriptionController
 } = factories; // const paymentsController = new BackofficePaymentsController();
 const authController = new BackofficeAuthController();
 
@@ -153,5 +154,12 @@ backofficeRouter.get('/webhooks', (req, res) =>
 
 // Listar leads da landing page (todos podem ver)
 backofficeRouter.get('/leads', (req, res) => getLeadController.list(req, res));
+
+// ====== ROTAS DE SUBSCRIPTIONS ======
+
+// Listar subscriptions com histórico (todos podem ver)
+backofficeRouter.get('/subscriptions', (req, res) =>
+  getSubscriptionController.handle(req, res)
+);
 
 export { backofficeRouter };
