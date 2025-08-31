@@ -23,6 +23,7 @@ export class CreatePlanController {
       max_teams: planData.max_planners,
       max_objectives_per_quarter: planData.max_planners,
       max_key_results_per_objective: planData.max_key_results_per_objective,
+      secret: planData.secret,
       name: planData.name
     };
 

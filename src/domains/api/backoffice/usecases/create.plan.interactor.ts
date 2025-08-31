@@ -33,7 +33,8 @@ export class CreatePlanInteractor {
       max_planners: input.max_planners,
       max_teams: input.max_teams,
       max_objectives_per_quarter: input.max_objectives_per_quarter,
-      max_key_results_per_objective: input.max_key_results_per_objective
+      max_key_results_per_objective: input.max_key_results_per_objective,
+      secret: input.secret
     };
 
     const planCreated = await this.gateway.createPlan(criteria);

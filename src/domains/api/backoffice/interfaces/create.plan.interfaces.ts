@@ -47,5 +47,6 @@ export type InputCreatePlan = {
   max_planners: number;
   max_teams: number;
   max_objectives_per_quarter: number;
+  secret: string;
   max_key_results_per_objective: number;
 };
