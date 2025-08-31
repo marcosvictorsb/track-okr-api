@@ -12,10 +12,9 @@ const {
   listPlanController,
   createPlanController,
   deletePlanController,
-  getWebhookController
-} = factories;
-
-// const paymentsController = new BackofficePaymentsController();
+  getWebhookController,
+  getLeadController
+} = factories; // const paymentsController = new BackofficePaymentsController();
 const authController = new BackofficeAuthController();
 
 // ====== ROTAS DE AUTENTICAÇÃO (SEM MIDDLEWARE) ======
@@ -149,5 +148,10 @@ backofficeRouter.delete(
 backofficeRouter.get('/webhooks', (req, res) =>
   getWebhookController.list(req, res)
 );
+
+// ====== ROTAS DE LEADS ======
+
+// Listar leads da landing page (todos podem ver)
+backofficeRouter.get('/leads', (req, res) => getLeadController.list(req, res));
 
 export { backofficeRouter };
