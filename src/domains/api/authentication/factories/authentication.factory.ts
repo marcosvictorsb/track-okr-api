@@ -8,10 +8,13 @@ import { AuthenticationController } from '@domains/api/authentication/controller
 import { logger } from '@configs/logger';
 import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
 import { ProfileModel } from '@domains/api/profile/model';
+import { UserTeamRepository } from '@domains/common/user-teams/repository/user-team.repository';
+import UserTeamModel from '@domains/common/user-teams/model/user-team.model';
 
 const params: IAuthenticationGatewayDependencies = {
   userRepository: new UserRepository({ model: UserModel }),
   profileRepository: new ProfileRepository({ model: ProfileModel }),
+  userTeamRepository: new UserTeamRepository({ model: UserTeamModel }),
   logging: logger
 };
 const presenter = new Presenter();

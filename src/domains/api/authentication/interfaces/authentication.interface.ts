@@ -8,6 +8,8 @@ import { DataLogOutput } from '@adapters/services';
 import { AuthenticationInteractor } from '@domains/api/authentication/usecases';
 import { ProfileEntity } from '@domains/api/profile/entity';
 import { IProfileRepository } from '@domains/api/profile/interfaces';
+import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
+import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
 
 export type InputAuthentication = {
   email: string;
@@ -18,6 +20,7 @@ export type InputAuthentication = {
 export type IAuthenticationGatewayDependencies = {
   userRepository: IUserRepository;
   profileRepository: IProfileRepository;
+  userTeamRepository: IUserTeamRepository;
   logging: typeof logger;
 };
 
@@ -32,4 +35,5 @@ export interface IAuthenticationGateway {
   loggerError(message: string, data?: DataLogOutput): void;
   signToken(user: Partial<FindUserCriteria>): string;
   comparePasswords(password: string, userPassword: string): boolean;
+  getUserTeam(userId: number): Promise<UserTeamEntity | undefined>;
 }

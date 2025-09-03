@@ -50,12 +50,15 @@ export class AuthenticationInteractor {
 
       const profile = await this.gateway.getProfile(user.id as number);
 
+      const userTeam = await this.gateway.getUserTeam(user.id as number);
+
       return this.presenter.ok({
         name: user.name,
         email: user.email,
         token: credential,
         role: user.role,
-        avatar: profile?.photo_url || ''
+        avatar: profile?.photo_url || '',
+        id_team: userTeam?.id_team || undefined
       });
     } catch (error) {
       this.gateway.loggerError('Error ao buscar o token', error);

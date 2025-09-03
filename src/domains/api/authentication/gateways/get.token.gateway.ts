@@ -10,6 +10,8 @@ import {
 } from '@domains/api/authentication/interfaces';
 import { IProfileRepository } from '@domains/api/profile/interfaces';
 import { ProfileEntity } from '@domains/api/profile/entity';
+import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
+import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
 
 export class AuthenticationGateway
   extends GetTokenMixed
@@ -17,11 +19,14 @@ export class AuthenticationGateway
 {
   userRepository: IUserRepository;
   profileRepository: IProfileRepository;
+  userTeamRepository: IUserTeamRepository;
 
   constructor(params: IAuthenticationGatewayDependencies) {
     super(params);
     this.userRepository = params.userRepository;
     this.profileRepository = params.profileRepository;
+    this.userTeamRepository = params.userTeamRepository;
+    this.logging = params.logging;
   }
 
   async findUser(criteria: FindUserCriteria): Promise<UserEntity | undefined> {
@@ -32,5 +37,10 @@ export class AuthenticationGateway
     return await this.profileRepository.find({
       id_user: userId
     });
+  }
+
+  async getUserTeam(userId: number): Promise<UserTeamEntity | undefined> {
+    this.logging.info(`Buscando time do usuário com ID: ${userId}`);
+    return this.userTeamRepository.find({ id_user: userId });
   }
 }
