@@ -20,12 +20,20 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
       to: string,
       emailContent: string
     ): Promise<void> {
-      await resend.emails.send({
-        from: 'contato@gunno.io',
-        to: isProduction ? to : 'contato@gunno.io',
-        subject,
-        html: emailContent
-      });
+      try {
+        await resend.emails.send({
+          from: 'contato@gunno.io',
+          to: isProduction ? to : 'contato@gunno.io',
+          subject,
+          html: emailContent
+        });
+        logging.info('Email enviado com sucesso', { to });
+      } catch (error) {
+        logging.error('Erro ao enviar email', {
+          to,
+          error: String(error)
+        });
+      }
     }
 
     async sendInviteEmail(
