@@ -20,8 +20,8 @@ export class CreatePlanController {
     const input: InputCreatePlan = {
       max_users: planData.max_users,
       max_planners: planData.max_planners,
-      max_teams: planData.max_planners,
-      max_objectives_per_quarter: planData.max_planners,
+      max_teams: planData.max_teams,
+      max_objectives_per_quarter: planData.max_objectives_per_quarter,
       max_key_results_per_objective: planData.max_key_results_per_objective,
       secret: planData.secret,
       name: planData.name
