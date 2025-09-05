@@ -151,7 +151,7 @@ export interface CreateSubscriptionData {
   plan_id: number;
   status: SubscriptionStatusType;
   started_at: Date;
-  expires_at: Date;
+  expires_at: Date | null;
   external_subscription_id: string;
   amount: number;
   auto_renew: boolean;

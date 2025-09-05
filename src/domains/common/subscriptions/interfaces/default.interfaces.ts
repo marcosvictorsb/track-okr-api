@@ -46,7 +46,7 @@ export interface CreateSubscriptionCriteria {
   trial_start_date?: Date;
   trial_end_date?: Date;
   started_at?: Date;
-  expires_at?: Date;
+  expires_at?: Date | null;
   auto_renew?: boolean;
   created_by?: number;
   notes?: string;

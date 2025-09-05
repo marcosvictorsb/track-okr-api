@@ -72,7 +72,10 @@ export class PurchaseApprovedInteractor {
 
       const companyData = {
         name: `${customer.name} - Empresa criada automaticamente`,
-        cnpj: Utils.truncateString(`${customer.name} / ${customer.docNumber}`),
+        cnpj: Utils.truncateString(
+          `${customer.name} / ${customer.docNumber} / ${new Date().getTime()}`,
+          100
+        ),
         description: `Empresa criada automaticamente para ${customer.name}`,
         segment: 'Geral'
       };
@@ -121,7 +124,7 @@ export class PurchaseApprovedInteractor {
         plan_id: plan.id as number,
         status: 'active' as const,
         started_at: new Date(payload.data.paidAt),
-        expires_at: new Date(subscription.next_payment_date),
+        expires_at: new Date(subscription?.next_payment_date),
         external_subscription_id: subscription.id,
         amount: parseFloat(payload.data.amount.toString()),
         auto_renew: true,

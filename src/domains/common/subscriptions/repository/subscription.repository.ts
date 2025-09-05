@@ -50,7 +50,8 @@ export class SubscriptionRepository implements ISubscriptionRepository {
       ...data,
       status: data.status || 'trial',
       started_at: data.started_at || new Date(),
-      auto_renew: data.auto_renew !== undefined ? data.auto_renew : true
+      auto_renew: data.auto_renew !== undefined ? data.auto_renew : true,
+      expires_at: data.expires_at === null ? undefined : data.expires_at
     };
 
     const subscription = await this.model.create(subscriptionData);
