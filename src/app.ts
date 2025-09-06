@@ -22,6 +22,9 @@ import uuid4 from 'uuid4';
 
 const app: Express = express();
 
+// Configurar trust proxy para funcionar atrás do Nginx
+app.set('trust proxy', true);
+
 // 1. Middleware de segurança - aplicados primeiro
 app.use(helmetConfig);
 // app.use(globalLimiter);
