@@ -1,5 +1,5 @@
 import { createLogger, format, transports, Logger } from 'winston';
-import { ElasticsearchTransport } from 'winston-elasticsearch';
+import { Client } from '@opensearch-project/opensearch';
 import { asyncLocalStorage } from './async.context';
 
 const logLevels: Record<string, number> = {
@@ -13,53 +13,85 @@ const logLevels: Record<string, number> = {
 
 const isProduction = process.env.NODE_ENV === 'production';
 
+// Classe personalizada para OpenSearch Transport
+class OpenSearchTransport extends transports.Stream {
+  private client: Client;
+  private index: string;
+
+  constructor(options: any) {
+    super({ stream: process.stdout, ...options });
+    
+    this.client = new Client({
+      node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
+      auth: {
+        username: process.env.OPENSEARCH_USERNAME || 'admin',
+        password: process.env.OPENSEARCH_PASSWORD || 'MyStrongPassword123!'
+      },
+      ssl: {
+        rejectUnauthorized: process.env.OPENSEARCH_SSL_VERIFY !== 'false'
+      }
+    });
+    
+    this.index = process.env.OPENSEARCH_INDEX || 'gunno-logs';
+  }
+
+  log(info: any, callback: () => void) {
+    setImmediate(() => this.emit('logged', info));
+
+    // Não bloquear o callback
+    callback();
+
+    // Processar o log de forma assíncrona
+    this.sendToOpenSearch(info).catch(error => {
+      console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+    });
+  }
+
+  private async sendToOpenSearch(info: any) {
+    try {
+      const store = asyncLocalStorage.getStore();
+      const requestId = store?.requestId || 'no-request-id';
+      
+      const document = {
+        '@timestamp': new Date().toISOString(),
+        timestamp: info.timestamp,
+        level: info.level,
+        message: info.message,
+        requestId,
+        environment: process.env.NODE_ENV,
+        service: 'track-okr-api',
+        ...info
+      };
+
+      await this.client.index({
+        index: this.index,
+        body: document
+      });
+
+      console.log(`✅ Log enviado para OpenSearch: ${info.level} - ${info.message}`);
+    } catch (error) {
+      console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+    }
+  }
+}
+
 // Configuração do transport do OpenSearch para produção
 const createOpenSearchTransport = () => {
   if (!isProduction) return null;
 
-  const opensearchConfig = {
-    level: 'info',
-    clientOpts: {
-      node: process.env.OPENSEARCH_URL || 'https://opensearch.gunno.io/api/',
-      // auth: {
-      //   username: process.env.OPENSEARCH_USERNAME || 'admin',
-      //   password: process.env.OPENSEARCH_PASSWORD || 'admin'
-      // },
-      ssl: {
-        rejectUnauthorized: process.env.OPENSEARCH_SSL_VERIFY !== 'false'
-      }
-    },
-    index: process.env.OPENSEARCH_INDEX || 'track-okr-logs',
-    typeName: '_doc',
-    transformer: (logData: {
-      level: string;
-      message: string;
-      meta?: Record<string, unknown>;
-    }) => {
-      const store = asyncLocalStorage.getStore();
-      const requestId = store?.requestId || 'no-request-id';
-
-      return {
-        '@timestamp': new Date().toISOString(),
-        level: logData.level,
-        message: logData.message,
-        requestId,
-        environment: process.env.NODE_ENV,
-        service: 'track-okr-api',
-        ...logData.meta
-      };
-    }
-  };
-
-  return new ElasticsearchTransport(opensearchConfig);
+  try {
+    return new OpenSearchTransport({
+      level: 'info'
+    });
+  } catch (error) {
+    console.error('❌ Erro ao configurar OpenSearch transport:', error);
+    return null;
+  }
 };
 
 // Criar array de transports
 const createTransports = () => {
-  const transportsList: (
-    | transports.ConsoleTransportInstance
-    | ElasticsearchTransport
-  )[] = [new transports.Console()];
+  const transportsList: any[] = [new transports.Console()];
 
   const opensearchTransport = createOpenSearchTransport();
   if (opensearchTransport) {
