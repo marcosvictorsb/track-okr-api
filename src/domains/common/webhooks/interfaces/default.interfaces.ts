@@ -13,7 +13,7 @@ export type CreateWebhookCriteria = {
   source: string;
   description: string;
   json: string;
-  status: WebhookStatus;
+  status: WebhookStatus | string;
   created: Date;
 };
 

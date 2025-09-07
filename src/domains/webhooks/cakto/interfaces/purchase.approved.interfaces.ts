@@ -130,11 +130,11 @@ export interface CaktoWebhookPayload {
 export interface CreateUserData {
   name: string;
   email: string;
-  phone: string;
-  cpf: string;
+  phone?: string;
+  cpf?: string;
   id_company: number;
   status: string;
-  user_type: string;
+  user_type?: string;
   password_hash?: string;
   role?: string;
 }
