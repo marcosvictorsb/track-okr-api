@@ -11,7 +11,10 @@ const dialect = process.env.DB_DIALECT as string;
 export const sequelize: Sequelize = new Sequelize(dbName, dbUser, dbPassword, {
   dialect: dialect as Dialect,
   host,
-  logging: (msg: unknown) => {
-    logger.info('Sequelize SQL Log', { query: msg });
-  }
+  logging:
+    process.env.NODE_ENV === 'production'
+      ? false
+      : (msg: unknown) => {
+          logger.info('Sequelize SQL Log', { query: msg });
+        }
 });
