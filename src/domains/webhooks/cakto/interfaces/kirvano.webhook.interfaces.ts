@@ -90,7 +90,7 @@ export interface KirvanoWebhookPayload {
     charge_frequency?: string;
     next_charge_date?: string;
   };
-  products?: Product[];
+  products: Product[];
   utm?: {
     src?: string;
     utm_source?: string;

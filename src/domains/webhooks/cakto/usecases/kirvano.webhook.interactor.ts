@@ -49,7 +49,7 @@ export class KirvanoWebhookInteractor {
 
       // 1. Verificar se o plano existe
       const plan = await this.gateway.findPlan({
-        name: payload.products?.[0]?.name as string
+        name: payload.products[0].offer_name as string
       });
 
       if (!plan) {
