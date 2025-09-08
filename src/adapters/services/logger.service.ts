@@ -64,6 +64,7 @@ export type DataLogOutput = {
 
   // subscription
   subscription_id?: number;
+  new_expires_at?: Date;
 
   // setting
   setting_id?: number;

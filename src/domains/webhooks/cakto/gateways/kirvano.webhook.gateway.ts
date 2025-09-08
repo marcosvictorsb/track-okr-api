@@ -33,8 +33,10 @@ import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscri
 import {
   CreateSubscriptionCriteria,
   CreateSubscriptionHistoryCriteria,
+  FindSubscriptionsCriteria,
   ISubscriptionHistoryRepository,
-  ISubscriptionRepository
+  ISubscriptionRepository,
+  UpdateSubscriptionCriteria
 } from '@domains/common/subscriptions/interfaces';
 import { MixKirvanoWebhookGateway } from '@adapters/gateways/webhook/cakto/kirvano.webhook.gateway';
 
@@ -155,42 +157,24 @@ export class KirvanoWebhookGateway
     return await this.subscriptionRepository.create(criteria);
   }
 
-  // async updateSubscription(
-  //   id: number,
-  //   data: UpdateSubscriptionData
-  // ): Promise<SubscriptionEntity> {
-  //   this.logging.info('Atualizando subscription', { id, ...data });
+  async findSubscription(
+    criteria: FindSubscriptionsCriteria
+  ): Promise<SubscriptionEntity | undefined> {
+    this.logging.info('Buscando subscription por: ', { criteria });
+    return await this.subscriptionRepository.find(criteria);
+  }
 
-  //   let status: SubscriptionStatus | undefined = undefined;
-  //   if (data.status === 'active') {
-  //     status = SubscriptionStatus.ACTIVE;
-  //   } else if (data.status === 'canceled') {
-  //     status = SubscriptionStatus.CANCELED;
-  //   } else if (data.status === 'suspended') {
-  //     status = SubscriptionStatus.SUSPENDED;
-  //   }
+  async updateSubscription(
+    updateData: Partial<UpdateSubscriptionCriteria>,
+    criteria: UpdateSubscriptionCriteria
+  ): Promise<boolean> {
+    this.logging.info('Atualizando subscription', {
+      criteriaUpdated: criteria,
+      updateData
+    });
 
-  //   const updateData = {
-  //     id,
-  //     plan_id: data.plan_id,
-  //     started_at: data.started_at,
-  //     expires_at: data.expires_at,
-  //     external_subscription_id: data.external_subscription_id,
-  //     amount: data.amount,
-  //     updated_at: data.updated_at,
-  //     status
-  //   };
-
-  //   await this.subscriptionRepository.update(updateData, updateData);
-
-  //   // Buscar e retornar a subscription atualizada
-  //   const updatedSubscription = await this.subscriptionRepository.find({ id });
-  //   if (!updatedSubscription) {
-  //     throw new Error('Subscription não encontrada após atualização');
-  //   }
-
-  //   return updatedSubscription;
-  // }
+    return await this.subscriptionRepository.update(updateData, criteria);
+  }
 
   // // Email operations
   async generateActivationToken(userId: number): Promise<string> {
@@ -233,7 +217,7 @@ export class KirvanoWebhookGateway
   async createCompanySettings(
     data: CreateSettingCriteria
   ): Promise<SettingEntity> {
-    this.logging.info('Erro ao criar configurações da empresa', {
+    this.logging.info('Criando configurações da empresa', {
       request: JSON.stringify(data)
     });
     return await this.settingRepository.create(data);

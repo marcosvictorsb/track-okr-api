@@ -29,13 +29,21 @@ import { ISettingRepository, SettingEntity } from '@domains/api/settings';
 import {
   CreateSubscriptionCriteria,
   CreateSubscriptionHistoryCriteria,
+  FindSubscriptionsCriteria,
   ISubscriptionHistoryRepository,
-  ISubscriptionRepository
+  ISubscriptionRepository,
+  UpdateSubscriptionCriteria
 } from '@domains/common/subscriptions/interfaces';
 import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
 
 export enum EventsKirvanoWebhook {
-  SALE_APPROVED = 'SALE_APPROVED'
+  SALE_APPROVED = 'SALE_APPROVED',
+  SALE_REFUSED = 'SALE_REFUSED',
+  SALE_REFUNDED = 'SALE_REFUNDED',
+  SUBSCRIPTION_RENEWED = 'SUBSCRIPTION_RENEWED',
+  SUBSCRIPTION_EXPIRED = 'SUBSCRIPTION_EXPIRED',
+  SUBSCRIPTION_CANCELED = 'SUBSCRIPTION_CANCELED',
+  ABANDONED_CART = 'ABANDONED_CART'
 }
 
 export enum KirvanoWebhookStatus {
@@ -113,12 +121,21 @@ export interface IKirvanoWebhookGateway {
   createCompanySettings(
     criteria: CreateSettingCriteria
   ): Promise<SettingEntity>;
+
+  // subscription
   createSubscription(
     criteria: CreateSubscriptionCriteria
   ): Promise<SubscriptionEntity>;
   createSubscriptionHistory(
     data: CreateSubscriptionHistoryCriteria
   ): Promise<void>;
+  findSubscription(
+    criteria: FindSubscriptionsCriteria
+  ): Promise<SubscriptionEntity | undefined>;
+  updateSubscription(
+    updateData: Partial<UpdateSubscriptionCriteria>,
+    criteria: UpdateSubscriptionCriteria
+  ): Promise<boolean>;
 
   // Email operations
   generateActivationToken(userId: number): Promise<string>;

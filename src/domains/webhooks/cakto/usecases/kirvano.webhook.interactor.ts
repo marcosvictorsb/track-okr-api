@@ -34,141 +34,22 @@ export class KirvanoWebhookInteractor {
         event: payload.event
       });
 
-      // 1. Processar apenas eventos de compra aprovada
-      if (payload.event !== EventsKirvanoWebhook.SALE_APPROVED) {
-        this.gateway.saveWebhook({
-          source: 'kirvano',
-          description: `Não é um evento do tipo ${EventsKirvanoWebhook.SALE_APPROVED}`,
-          json: JSON.stringify(payload),
-          status: KirvanoWebhookStatus.NOT_SALES_APPROVED as string,
-          created: new Date()
-        });
-        this.gateway.loggerInfo('Evento ignorado', { event: payload.event });
-        return this.presenter.ok('Evento ignorado');
+      switch (payload.event) {
+        case EventsKirvanoWebhook.SALE_APPROVED:
+          this.gateway.loggerInfo('Evento de venda aprovada recebido', {
+            event: payload.event
+          });
+          return await this.handleSaleApproved(payload);
+        case EventsKirvanoWebhook.SUBSCRIPTION_RENEWED:
+          this.gateway.loggerInfo('Evento para renovar assinatura', {
+            event: payload.event
+          });
+          return await this.subscriptionRenewed(payload);
+        default:
+          await this.handleUnknownEvent(payload);
+          this.gateway.loggerInfo('Evento ignorado', { event: payload.event });
+          return this.presenter.ok('Evento ignorado');
       }
-
-      // 1. Verificar se o plano existe
-      const plan = await this.gateway.findPlan({
-        name: payload.products[0].offer_name as string
-      });
-
-      if (!plan) {
-        this.gateway.loggerError(
-          `Plano não encontrado nome: ${payload.plan?.name}`
-        );
-        this.gateway.saveWebhook({
-          source: 'kirvano',
-          description: 'Plano não encontrado',
-          json: JSON.stringify(payload),
-          status: KirvanoWebhookStatus.NOT_FOUND_PLAN as string,
-          created: new Date()
-        });
-        this.gateway.loggerInfo('Evento ignorado', { event: payload.event });
-        return this.presenter.ok('Evento ignorado');
-      }
-
-      const company = await this.gateway.findCompany({
-        cnpj: payload.customer?.document
-      });
-
-      if (company) {
-        this.gateway.loggerInfo('Empresa existe, então vamos alterar o plano');
-      }
-
-      const companyData: CreateCompanyCriteria = {
-        name: payload.customer?.name || 'Empresa sem nome',
-        cnpj: payload.customer?.document || `${new Date().getTime()}`
-      };
-
-      const companyCreated = await this.gateway.createCompany(companyData);
-      this.gateway.loggerInfo('Empresa criada', {
-        id_company: companyCreated.id,
-        company_name: companyCreated.name
-      });
-
-      const customer = await this.gateway.findUser({
-        email: payload.customer?.email
-      });
-
-      if (customer) {
-        this.gateway.loggerError(
-          'Usuário existe, então não vamos criar outro usuário'
-        );
-      }
-
-      const userData: Partial<CreateUserCriteria> = {
-        name: payload.customer.name,
-        email: payload.customer.email,
-        id_company: companyCreated.id as number
-      };
-
-      const user = await this.gateway.createUser(userData);
-      this.gateway.loggerInfo('Usuário criado', {
-        id_user: user.id,
-        email: user.email
-      });
-
-      // Criar configurações padrão para a empresa
-      const dataSettings: CreateSettingCriteria = {
-        id_company: companyCreated.id as number,
-        block_okr_creation: true,
-        block_key_result_creation: true,
-        block_okr_editing: true,
-        block_key_result_editing: true,
-        allowed_quarters: [1, 2, 3, 4],
-        current_quarter_only: true
-      };
-      await this.gateway.createCompanySettings(dataSettings);
-
-      this.gateway.loggerInfo('Configurações padrão criadas para a empresa', {
-        id_company: companyCreated.id as number
-      });
-
-      const subscriptionData: CreateSubscriptionCriteria = {
-        company_id: companyCreated.id as number,
-        plan_id: plan.id as number,
-        status: SubscriptionStatus.ACTIVE,
-        started_at: new Date(payload.created_at as string),
-        expires_at: new Date(payload.plan?.next_charge_date as string),
-        auto_renew: true
-      };
-
-      const newSubscription =
-        await this.gateway.createSubscription(subscriptionData);
-
-      // Registrar criação no histórico
-      await this.gateway.createSubscriptionHistory({
-        subscription_id: newSubscription.id as number,
-        action: 'created',
-        new_status: 'active',
-        new_plan_id: plan.id as number,
-        reason: 'Subscription criada via webhook Kirvano',
-        metadata: {
-          payload
-        },
-        automated: true,
-        notes: `Subscription criada automaticamente via webhook de pagamento`
-      });
-
-      this.gateway.loggerInfo('Subscription criada', {
-        subscription_id: newSubscription.id
-      });
-
-      // 9. Enviar email de ativação se usuário ainda não está ativo
-      await this.sendActivationEmail(user, companyCreated, plan);
-
-      this.gateway.saveWebhook({
-        source: 'cakto',
-        description: 'Webhook de compra aprovada processado com sucesso',
-        json: JSON.stringify(payload),
-        status: KirvanoWebhookStatus.SUCCESS,
-        created: new Date()
-      });
-      this.gateway.loggerInfo('Webhook salvo', { event: payload.event });
-
-      return this.presenter.ok({
-        message: 'Pagamento processado com sucesso'
-      });
     } catch (error: unknown) {
       this.gateway.loggerError('Erro ao processar webhook de pagamento', {
         error: (error as Error).message,
@@ -231,5 +112,181 @@ export class KirvanoWebhookInteractor {
         id_user: user.id
       });
     }
+  }
+
+  private async handleSaleApproved(
+    payload: KirvanoWebhookPayload
+  ): Promise<HttpResponse> {
+    // 1. Verificar se o plano existe
+    const plan = await this.gateway.findPlan({
+      name: payload.products[0].offer_name as string
+    });
+
+    if (!plan) {
+      this.gateway.loggerError(
+        `Plano não encontrado nome: ${payload.plan?.name}`
+      );
+      this.gateway.saveWebhook({
+        source: 'kirvano',
+        description: 'Plano não encontrado',
+        json: JSON.stringify(payload),
+        status: KirvanoWebhookStatus.NOT_FOUND_PLAN as string,
+        created: new Date()
+      });
+      this.gateway.loggerInfo('Evento ignorado', { event: payload.event });
+      return this.presenter.ok('Evento ignorado');
+    }
+
+    const company = await this.gateway.findCompany({
+      cnpj: payload.customer?.document
+    });
+
+    if (company) {
+      this.gateway.loggerInfo('Empresa existe, então vamos alterar o plano');
+    }
+
+    const companyData: CreateCompanyCriteria = {
+      name: payload.customer?.name || 'Empresa sem nome',
+      cnpj: payload.customer?.document || `${new Date().getTime()}`
+    };
+
+    const companyCreated = await this.gateway.createCompany(companyData);
+    this.gateway.loggerInfo('Empresa criada', {
+      id_company: companyCreated.id,
+      company_name: companyCreated.name
+    });
+
+    const customer = await this.gateway.findUser({
+      email: payload.customer?.email
+    });
+    console.log('---------------------------------> customer');
+
+    console.log(customer);
+
+    if (customer) {
+      this.gateway.loggerError(
+        'Usuário existe, então não vamos criar outro usuário'
+      );
+    }
+
+    const userData: Partial<CreateUserCriteria> = {
+      name: payload.customer.name,
+      email: payload.customer.email,
+      id_company: companyCreated.id as number
+    };
+
+    const user = await this.gateway.createUser(userData);
+    this.gateway.loggerInfo('Usuário criado', {
+      id_user: user.id,
+      email: user.email
+    });
+
+    // Criar configurações padrão para a empresa
+    const dataSettings: CreateSettingCriteria = {
+      id_company: companyCreated.id as number,
+      block_okr_creation: true,
+      block_key_result_creation: true,
+      block_okr_editing: true,
+      block_key_result_editing: true,
+      allowed_quarters: [1, 2, 3, 4],
+      current_quarter_only: true
+    };
+    await this.gateway.createCompanySettings(dataSettings);
+
+    this.gateway.loggerInfo('Configurações padrão criadas para a empresa', {
+      id_company: companyCreated.id as number
+    });
+
+    const subscriptionData: CreateSubscriptionCriteria = {
+      company_id: companyCreated.id as number,
+      plan_id: plan.id as number,
+      status: SubscriptionStatus.ACTIVE,
+      started_at: new Date(payload.created_at as string),
+      expires_at: new Date(payload.plan?.next_charge_date as string),
+      auto_renew: true
+    };
+
+    const newSubscription =
+      await this.gateway.createSubscription(subscriptionData);
+
+    // Registrar criação no histórico
+    await this.gateway.createSubscriptionHistory({
+      subscription_id: newSubscription.id as number,
+      action: 'created',
+      new_status: 'active',
+      new_plan_id: plan.id as number,
+      reason: 'Subscription criada via webhook Kirvano',
+      metadata: {
+        payload
+      },
+      automated: true,
+      notes: `Subscription criada automaticamente via webhook de pagamento`
+    });
+
+    this.gateway.loggerInfo('Subscription criada', {
+      subscription_id: newSubscription.id
+    });
+
+    // 9. Enviar email de ativação se usuário ainda não está ativo
+    await this.sendActivationEmail(user, companyCreated, plan);
+
+    this.gateway.saveWebhook({
+      source: 'cakto',
+      description: 'Webhook de compra aprovada processado com sucesso',
+      json: JSON.stringify(payload),
+      status: KirvanoWebhookStatus.SUCCESS,
+      created: new Date()
+    });
+    this.gateway.loggerInfo('Webhook salvo', { event: payload.event });
+
+    return this.presenter.ok({
+      message: 'Pagamento processado com sucesso'
+    });
+  }
+
+  private async subscriptionRenewed(
+    payload: KirvanoWebhookPayload
+  ): Promise<HttpResponse> {
+    this.gateway.loggerInfo('Renovação de assinatura recebida', {
+      event: payload.event
+    });
+
+    const company = await this.gateway.findCompany({
+      cnpj: payload.customer?.document
+    });
+
+    const findSubscription = await this.gateway.findSubscription({
+      company_id: company?.id as number
+    });
+
+    const updateSubscription = {
+      status: SubscriptionStatus.ACTIVE,
+      expires_at: new Date(payload.plan?.next_charge_date as string)
+    };
+
+    await this.gateway.updateSubscription(updateSubscription, {
+      id: findSubscription?.id as number
+    });
+
+    this.gateway.loggerInfo('Subscription renovada', {
+      subscription_id: findSubscription?.id,
+      new_expires_at: updateSubscription.expires_at
+    });
+
+    return this.presenter.ok({
+      message: 'Renovação de assinatura processada com sucesso'
+    });
+  }
+
+  private async handleUnknownEvent(
+    payload: KirvanoWebhookPayload
+  ): Promise<void> {
+    this.gateway.saveWebhook({
+      source: 'kirvano',
+      description: `Não é um evento do tipo ${EventsKirvanoWebhook.SALE_APPROVED}`,
+      json: JSON.stringify(payload),
+      status: KirvanoWebhookStatus.NOT_SALES_APPROVED as string,
+      created: new Date()
+    });
   }
 }
