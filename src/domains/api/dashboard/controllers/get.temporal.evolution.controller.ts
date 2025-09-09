@@ -33,8 +33,8 @@ export class GetTemporalEvolutionController
     const input: InputGetTemporalEvolution = {
       id_company: request.user.id_company,
       id_user: request.user.id,
-      quarter: quarter ? parseInt(quarter as string) : undefined,
-      year: year ? parseInt(year as string) : undefined,
+      quarter: parseInt(quarter as string),
+      year: parseInt(year as string),
       period: period as 'monthly' | 'weekly' | undefined
     };
 

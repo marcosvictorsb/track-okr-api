@@ -17,6 +17,17 @@ export type DataLogOutput = {
   offer_name?: string;
   amount?: number;
   id_user_company?: number;
+  startDateWeek?: string;
+  endDateWeek?: string;
+  totalWeeklyProgress?: number;
+  resultKeysWithProgress?: number;
+  averageWeeklyProgress?: number;
+  minPreviousValue?: number;
+  maxNewValue?: number;
+  weeklyEvolution?: number;
+  targetValue?: number;
+  initialValue?: number;
+  weeklyProgressPercentage?: number;
 
   id_user?: number;
   id_expense?: number;

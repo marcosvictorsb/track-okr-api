@@ -15,8 +15,8 @@ import { DataLogOutput } from '@adapters/services';
 export type InputGetTemporalEvolution = {
   id_company: number;
   id_user: number;
-  quarter?: number;
-  year?: number;
+  quarter: number;
+  year: number;
   period?: 'monthly' | 'weekly';
 };
 
