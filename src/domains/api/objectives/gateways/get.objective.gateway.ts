@@ -4,7 +4,7 @@ import {
   IObjectiveRepository
 } from '@domains/api/objectives/interfaces/';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { MixCreateObjectives } from '@adapters/gateways/api/objectives';
+import { MixGetObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';
 import {
   FindTeamCriteria,
@@ -28,7 +28,7 @@ import {
 import { ProfileEntity } from '@domains/api/profile/entity';
 
 export class GetObjectiveGateway
-  extends MixCreateObjectives
+  extends MixGetObjectives
   implements IGetObjectiveGateway
 {
   objectiveRepository: IObjectiveRepository;

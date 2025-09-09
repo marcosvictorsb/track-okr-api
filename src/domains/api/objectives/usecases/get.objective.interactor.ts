@@ -49,6 +49,10 @@ export class GetObjectiveInteractor {
       } else if (id_team) {
         objectives = await this.gateway.findByTeam(id_team);
       } else if (quarter && year) {
+        this.gateway.loggerInfo('Buscando objetivos por trimestre e ano', {
+          quarter,
+          year
+        });
         objectives = await this.gateway.findByQuarter(
           quarter,
           year,
@@ -129,26 +133,29 @@ export class GetObjectiveInteractor {
         // Mapear os usuários responsáveis para cada result-key
         objectives.forEach((objective: ObjectiveEntity) => {
           objective.result_keys?.forEach((resultKey) => {
-            if (resultKey.responsible_users) {
-              resultKey.responsible_users_details =
-                resultKey.responsible_users.map((id: number) => {
-                  const user = responsibleUsers.find((u) => u.id === id);
-                  const profile = profileMap.get(id);
-                  return user
-                    ? {
-                        id: user.id,
-                        name: user.name,
-                        photo_url: profile?.photo_url || null,
-                        position: profile?.position || null
-                      }
-                    : {
-                        id,
-                        name: 'Unknown',
-                        photo_url: null,
-                        position: null
-                      };
-                });
-            }
+            const responsibleUsersArray = this.parseResponsibleUsers(
+              resultKey.responsible_users
+            );
+
+            resultKey.responsible_users_details = responsibleUsersArray.map(
+              (id: number) => {
+                const user = responsibleUsers.find((u) => u.id === id);
+                const profile = profileMap.get(id);
+                return user
+                  ? {
+                      id: user.id,
+                      name: user.name,
+                      photo_url: profile?.photo_url || null,
+                      position: profile?.position || null
+                    }
+                  : {
+                      id,
+                      name: 'Unknown',
+                      photo_url: null,
+                      position: null
+                    };
+              }
+            );
           });
         });
       }
@@ -156,8 +163,38 @@ export class GetObjectiveInteractor {
       this.gateway.loggerInfo('Objetivos encontrados com sucesso');
       return this.presenter.ok(objectives);
     } catch (error) {
-      this.gateway.loggerError('Erro ao buscar objetivos', { error });
+      this.gateway.loggerError('Erro ao buscar objetivos', {
+        error: (error as Error).message,
+        stack: (error as Error).stack,
+        id_company: input.id_company
+      });
       return this.presenter.serverError('Erro ao buscar objetivos');
     }
+  }
+
+  // Adicionar este método privado na classe
+  private parseResponsibleUsers(responsibleUsers: any): number[] {
+    if (!responsibleUsers) {
+      return [];
+    }
+
+    if (Array.isArray(responsibleUsers)) {
+      return responsibleUsers.filter(
+        (id) => typeof id === 'number' && !isNaN(id)
+      );
+    }
+
+    if (typeof responsibleUsers === 'string') {
+      try {
+        const parsed = JSON.parse(responsibleUsers);
+        return Array.isArray(parsed)
+          ? parsed.filter((id) => typeof id === 'number' && !isNaN(id))
+          : [];
+      } catch {
+        return [];
+      }
+    }
+
+    return [];
   }
 }

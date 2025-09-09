@@ -40,6 +40,7 @@ export type DataLogOutput = {
   // objective
   id_objective?: number;
   ids_objectives?: number[];
+  quarter?: number;
 
   // company
   id_company?: number;
@@ -91,7 +92,7 @@ type LoggerServiceDependencies = {
 
 export interface ILoggerMixin {
   loggerInfo(message: string, data?: DataLogOutput): void;
-  loggerErro(message: string, data?: DataLogOutput): void;
+  loggerError(message: string, data?: DataLogOutput): void;
 }
 
 export function LoggerMixin<T extends new (...args: any[]) => object>(Base: T) {
