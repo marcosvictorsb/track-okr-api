@@ -8,7 +8,6 @@ import {
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
 
 interface CheckinData {
   id: number;
@@ -27,6 +26,13 @@ interface CheckinWithUserData extends CheckinData {
     email: string;
     avatar_url: string | null;
   } | null;
+}
+
+interface SimpleUser {
+  id: number;
+  name: string;
+  email: string | null;
+  avatar_url: string | null;
 }
 
 export class GetTopContributorsInteractor {
@@ -82,30 +88,34 @@ export class GetTopContributorsInteractor {
         );
       }
 
-      // 4. Processar checkins e calcular estatísticas
-      const checkins = await this.getCheckinsFromResultKeys(resultKeys);
-      const checkinsWithUsers = await this.enrichCheckinsWithUserData(checkins);
-
-      console.log(
-        'Checkins with user data:',
-        JSON.stringify(checkinsWithUsers, null, 2)
-      );
-
-      const contributorStats =
-        this.calculateContributorStats(checkinsWithUsers);
-
-      // 5. Gerar rankings
-      const rankings = this.generateRankings(
-        contributorStats,
-        checkinsWithUsers
-      );
-
-      this.gateway.loggerInfo('Top contributors calculados com sucesso', {
-        count: checkins.length,
-        data: `Company: ${input.id_company}, Contributors: ${rankings.topContributorsByCheckins.length}`
+      // Agrupar result-keys por objetivo
+      objectives.forEach((objective: ObjectiveEntity) => {
+        objective.result_keys = resultKeys.filter(
+          (resultKey) => resultKey.id_okr === objective.id
+        );
       });
 
-      return this.presenter.ok(rankings);
+      // 4. Calcular quantos result keys cada usuário tem
+      const userResultKeysCount = this.calculateUserResultKeysCount(objectives);
+
+      // 5. Buscar informações dos usuários
+      const userIds = Array.from(userResultKeysCount.keys());
+      const users = await this.gateway.findUsersProfileByIds(userIds);
+
+      // 6. Calcular porcentagem de progresso de cada usuário
+      const userProgressPercentages = this.calculateUserProgressPercentages(
+        objectives,
+        Array.from(userResultKeysCount.keys())
+      );
+
+      // 7. Montar o ranking dos usuários com porcentagem e quantidade de result keys
+      const topUsersByResultKeys = this.buildUserResultKeysRanking(
+        userResultKeysCount,
+        userProgressPercentages,
+        users
+      );
+
+      return this.presenter.ok(topUsersByResultKeys);
     } catch (error) {
       return this.handleError(error, input);
     }
@@ -184,77 +194,6 @@ export class GetTopContributorsInteractor {
     return await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
   }
 
-  private async getCheckinsFromResultKeys(resultKeys: ResultKeyEntity[]) {
-    const resultKeyIds = resultKeys
-      .map((rk) => rk.id)
-      .filter((id): id is number => id !== undefined);
-
-    return await this.gateway.findCheckinsByResultKeyIds(resultKeyIds);
-  }
-
-  private calculateContributorStats(checkins: CheckinWithUserData[]) {
-    const contributorStats: Record<
-      number,
-      { totalCheckins: number; totalProgress: number }
-    > = {};
-
-    for (const c of checkins) {
-      const userId = c.id_user;
-      if (!userId) continue;
-
-      if (!contributorStats[userId]) {
-        contributorStats[userId] = { totalCheckins: 0, totalProgress: 0 };
-      }
-      contributorStats[userId].totalCheckins += 1;
-
-      const previousValue = c.previous_value ?? 0;
-      const newValue = c.new_value ?? 0;
-      contributorStats[userId].totalProgress += newValue - previousValue;
-    }
-
-    return contributorStats;
-  }
-
-  private generateRankings(
-    contributorStats: Record<
-      number,
-      { totalCheckins: number; totalProgress: number }
-    >,
-    checkinsWithUsers: CheckinWithUserData[]
-  ) {
-    // Criar mapa de usuários para acesso rápido
-    const userMap = new Map();
-    checkinsWithUsers.forEach((checkin) => {
-      if (checkin.user) {
-        userMap.set(checkin.user.id, checkin.user);
-      }
-    });
-
-    // Converter em array para ordenar
-    const contributorsArray = Object.entries(contributorStats).map(
-      ([userId, stats]) => ({
-        id_user: Number(userId),
-        user: userMap.get(Number(userId)) || null,
-        ...stats
-      })
-    );
-
-    // Top por quantidade de checkins
-    const topContributorsByCheckins = [...contributorsArray].sort(
-      (a, b) => b.totalCheckins - a.totalCheckins
-    );
-
-    // Top por valor acumulado
-    const topContributorsByValue = [...contributorsArray].sort(
-      (a, b) => b.totalProgress - a.totalProgress
-    );
-
-    return {
-      topContributorsByCheckins,
-      topContributorsByValue
-    };
-  }
-
   private handleError(
     error: unknown,
     input: InputGetTopContributors
@@ -268,5 +207,139 @@ export class GetTopContributorsInteractor {
     return this.presenter.serverError(
       'Erro interno do servidor ao buscar top contributors'
     );
+  }
+
+  // Método para calcular quantos result keys cada usuário tem
+  private calculateUserResultKeysCount(
+    objectives: ObjectiveEntity[]
+  ): Map<number, number> {
+    const userResultKeysCount = new Map<number, number>();
+
+    objectives.forEach((objective) => {
+      objective.result_keys?.forEach((resultKey) => {
+        if (resultKey.responsible_users) {
+          // Normalizar responsible_users para array
+          const responsibleUsersArray = this.parseResponsibleUsers(
+            resultKey.responsible_users
+          );
+
+          responsibleUsersArray.forEach((userId) => {
+            const currentCount = userResultKeysCount.get(userId) || 0;
+            userResultKeysCount.set(userId, currentCount + 1);
+          });
+        }
+      });
+    });
+
+    return userResultKeysCount;
+  }
+
+  // Método para calcular porcentagem de progresso de cada usuário
+  private calculateUserProgressPercentages(
+    objectives: ObjectiveEntity[],
+    userIds: number[]
+  ): Map<number, number> {
+    const userProgressMap = new Map<number, number>();
+
+    userIds.forEach((userId) => {
+      let totalProgress = 0;
+      let resultKeysCount = 0;
+
+      objectives.forEach((objective) => {
+        objective.result_keys?.forEach((resultKey) => {
+          const responsibleUsers = this.parseResponsibleUsers(
+            resultKey.responsible_users
+          );
+
+          if (responsibleUsers.includes(userId)) {
+            // Calcular progresso deste result key
+            const currentValue = parseFloat(
+              resultKey.current_value?.toString() || '0'
+            );
+            const targetValue = parseFloat(
+              resultKey.target_value?.toString() || '0'
+            );
+            const initialValue = parseFloat(
+              resultKey.initial_value?.toString() || '0'
+            );
+
+            if (targetValue > initialValue) {
+              const progress =
+                ((currentValue - initialValue) / (targetValue - initialValue)) *
+                100;
+              const clampedProgress = Math.min(Math.max(progress, 0), 100); // Entre 0 e 100%
+              totalProgress += clampedProgress;
+              resultKeysCount++;
+            }
+          }
+        });
+      });
+
+      // Calcular média de progresso do usuário
+      const averageProgress =
+        resultKeysCount > 0 ? totalProgress / resultKeysCount : 0;
+      userProgressMap.set(userId, Math.round(averageProgress));
+    });
+
+    return userProgressMap;
+  }
+
+  // Método para montar o ranking com informações dos usuários
+  private buildUserResultKeysRanking(
+    userResultKeysCount: Map<number, number>,
+    userProgressPercentages: Map<number, number>,
+    users: SimpleUser[]
+  ): Array<{
+    id_user: number;
+    user: SimpleUser;
+    resultKeysCount: number;
+    progressPercentage: number;
+  }> {
+    // Criar mapa dos usuários para acesso rápido
+    const userMap = new Map<number, SimpleUser>();
+    users.forEach((user) => {
+      userMap.set(user.id, user);
+    });
+
+    const ranking = Array.from(userResultKeysCount.entries())
+      .map(([userId, count]) => ({
+        id_user: userId,
+        user: userMap.get(userId) || {
+          id: userId,
+          name: 'Unknown',
+          email: null,
+          avatar_url: null
+        },
+        resultKeysCount: count,
+        progressPercentage: userProgressPercentages.get(userId) || 0
+      }))
+      .sort((a, b) => b.progressPercentage - a.progressPercentage); // Ordenar por progresso
+
+    return ranking;
+  }
+  // Método auxiliar para normalizar responsible_users
+  private parseResponsibleUsers(responsibleUsers: unknown): number[] {
+    if (!responsibleUsers) {
+      return [];
+    }
+
+    if (Array.isArray(responsibleUsers)) {
+      return responsibleUsers.filter(
+        (id) => typeof id === 'number' && !isNaN(id)
+      );
+    }
+
+    if (typeof responsibleUsers === 'string') {
+      try {
+        const parsed = JSON.parse(responsibleUsers);
+        return Array.isArray(parsed)
+          ? parsed.filter((id) => typeof id === 'number' && !isNaN(id))
+          : [];
+      } catch {
+        return [];
+      }
+    }
+
+    return [];
   }
 }
