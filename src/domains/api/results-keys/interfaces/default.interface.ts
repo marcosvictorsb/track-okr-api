@@ -62,7 +62,7 @@ export interface IResultKeyRepository {
   update(
     criteria: FindResultKeyCriteria,
     data: UpdateResultKeyCriteria
-  ): Promise<ResultKeyEntity | null>;
+  ): Promise<boolean>;
   delete(criteria: DeleteResultKeyCriteria): Promise<boolean>;
   findByObjectiveId(objectiveId: number): Promise<ResultKeyEntity[]>;
   findByObjectiveIds(objectiveIds: number[]): Promise<ResultKeyEntity[]>;

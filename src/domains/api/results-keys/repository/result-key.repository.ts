@@ -154,29 +154,16 @@ export class ResultKeyRepository implements IResultKeyRepository {
   }
 
   public async update(
-    criteria: FindResultKeyCriteria,
-    data: UpdateResultKeyCriteria
-  ): Promise<ResultKeyEntity | null> {
+    data: Partial<UpdateResultKeyCriteria>,
+    criteria: FindResultKeyCriteria
+  ): Promise<boolean> {
     const whereConditions = this.getConditions(criteria);
 
     const [affectedRows] = await this.model.update(data, {
       where: whereConditions
     });
-
-    if (affectedRows === 0) {
-      return null;
-    }
-
-    const updatedResultKey = await this.model.findOne({
-      where: whereConditions,
-      include: this.getIncludeOptions()
-    });
-
-    if (!updatedResultKey) {
-      return null;
-    }
-
-    return this.mapToEntity(updatedResultKey);
+    if (affectedRows === 0) return false;
+    return true;
   }
 
   public async delete(criteria: DeleteResultKeyCriteria): Promise<boolean> {
