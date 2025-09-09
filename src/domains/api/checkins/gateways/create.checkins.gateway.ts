@@ -61,8 +61,8 @@ export class CreateCheckinsGateway
     });
 
     const updated = await this.resultKeyRepository.update(
-      { id },
-      { current_value: new_value }
+      { current_value: new_value },
+      { id }
     );
 
     return updated !== null;

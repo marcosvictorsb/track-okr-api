@@ -4,13 +4,14 @@ import { getTeamPerformanceFactory } from '../factories/get.team.performance.fac
 import { getTopContributorsFactory } from '../factories/get.top.contributors.factory';
 import { getTemporalEvolutionFactory } from '../factories/get.temporal.evolution.factory';
 import { getRecentCheckInsFactory } from '../factories/get.recent-checkins.factory';
+import { getAnnualPlanningController } from '../factories/get.annual.planning.factory';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
 import { getTeamPerformanceSchema } from '../schemas/get.team.performance.schema';
 import { getTopContributorsSchema } from '../schemas/get.top.contributors.schema';
 import { getTemporalEvolutionSchema } from '../schemas/get.temporal.evolution.schema';
 import { getRecentCheckInsSchema } from '../schemas/get.recent-checkins.schema';
-import { getOverviewSchema } from '../schemas';
+import { getOverviewSchema, getAnnualPlanningSchema } from '../schemas';
 
 const router = Router();
 
@@ -67,6 +68,16 @@ router.get(
   validateSchema(getRecentCheckInsSchema),
   async (req: UserPayload, res) => {
     await getRecentCheckInsController.getRecentCheckIns(req, res);
+  }
+);
+
+// GET /api/dashboard/annual-planning - Planejamentos Anuais
+router.get(
+  '/annual-planning',
+  authMiddleware,
+  validateSchema(getAnnualPlanningSchema),
+  async (req: UserPayload, res) => {
+    await getAnnualPlanningController.getAnnualPlanning(req, res);
   }
 );
 

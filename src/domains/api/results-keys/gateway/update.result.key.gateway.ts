@@ -37,7 +37,7 @@ export class UpdateResultKeyGateway
 
   async updateResultKey(
     data: Partial<UpdateResultKeyCriteria>,
-    criteria: UpdateResultKeyCriteria
+    criteria: FindResultKeyCriteria
   ): Promise<boolean> {
     this.logging.info('Updating result key', { data, criteria });
     const updateData: Record<string, unknown> = {};

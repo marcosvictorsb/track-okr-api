@@ -2,12 +2,10 @@ import { HttpResponse } from '@protocols/http';
 import {
   GetTemporalEvolutionInteractorDependencies,
   InputGetTemporalEvolution,
-  IGetTemporalEvolutionGateway,
-  FindObjectivesByCompanyAndQuarterCriteria
+  IGetTemporalEvolutionGateway
 } from '../interfaces/get.temporal.evolution.interface';
 import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { QuarterData } from '../entity/temporal.evolution.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys';
 import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
@@ -31,7 +29,13 @@ export class GetTemporalEvolutionInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      const { id_company, id_user, quarter, year, period = 'monthly' } = input;
+      const {
+        id_company,
+        id_user,
+        quarter,
+        year,
+        period: _period = 'monthly'
+      } = input;
 
       // Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
@@ -147,7 +151,18 @@ export class GetTemporalEvolutionInteractor {
         )
       ];
 
-      return this.presenter.ok({ currentQuarter: percetualEvolutionWeekly });
+      // Calcular progresso acumulado baseado no progresso real das OKRs
+      const cumulativeQuarter = this.calculateCumulativeProgress(
+        resultKeys,
+        checkins,
+        year,
+        quarter
+      );
+
+      return this.presenter.ok({
+        currentQuarter: percetualEvolutionWeekly,
+        cumulativeQuarter: cumulativeQuarter
+      });
     } catch (error) {
       this.gateway.loggerError('Erro ao buscar evolução temporal', {
         error: error instanceof Error ? error.message : 'Erro desconhecido',
@@ -320,6 +335,112 @@ export class GetTemporalEvolutionInteractor {
       ((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
     );
     return weekNum;
+  }
+
+  private calculateCumulativeProgress(
+    resultKeys: ResultKeyEntity[],
+    checkins: CheckinsEntity[],
+    year: number,
+    quarter: number
+  ): number[] {
+    const months = this.getQuarterMonths(quarter);
+    const cumulativeProgress = new Array(12).fill(0);
+
+    // Agrupar result keys por objetivo
+    const resultKeysByObjective = new Map<number, ResultKeyEntity[]>();
+    resultKeys.forEach((rk) => {
+      if (rk.id_okr) {
+        if (!resultKeysByObjective.has(rk.id_okr)) {
+          resultKeysByObjective.set(rk.id_okr, []);
+        }
+        resultKeysByObjective.get(rk.id_okr)!.push(rk);
+      }
+    });
+
+    // Para cada semana, calcular o progresso acumulado real até aquela data
+    for (let monthIndex = 0; monthIndex < 3; monthIndex++) {
+      const month = months[monthIndex];
+
+      // Definir as 4 semanas do mês
+      const weeks = [
+        { start: new Date(year, month, 1), end: new Date(year, month, 7) },
+        { start: new Date(year, month, 8), end: new Date(year, month, 14) },
+        { start: new Date(year, month, 15), end: new Date(year, month, 21) },
+        {
+          start: new Date(year, month, 22),
+          end: this.getLastDayOfMonth(year, month)
+        }
+      ];
+
+      weeks.forEach((week, weekIndex) => {
+        const globalWeekIndex = monthIndex * 4 + weekIndex;
+
+        // Calcular progresso por objetivo até esta data
+        let totalObjectiveProgress = 0;
+        let objectiveCount = 0;
+
+        resultKeysByObjective.forEach((objectiveResultKeys) => {
+          let objectiveProgress = 0;
+          let validResultKeysCount = 0;
+
+          objectiveResultKeys.forEach((resultKey) => {
+            const targetValue = parseFloat(
+              resultKey.target_value?.toString() || '0'
+            );
+            const initialValue = parseFloat(
+              resultKey.initial_value?.toString() || '0'
+            );
+
+            if (targetValue > initialValue && resultKey.id) {
+              // Buscar o último checkin desta result key até a data final da semana
+              const relevantCheckins = checkins
+                .filter(
+                  (checkin) =>
+                    checkin.id_result_key === resultKey.id &&
+                    new Date(checkin.created_at as Date) <= week.end
+                )
+                .sort(
+                  (a, b) =>
+                    new Date(b.created_at as Date).getTime() -
+                    new Date(a.created_at as Date).getTime()
+                );
+
+              if (relevantCheckins.length > 0) {
+                // Pegar o valor mais recente até esta semana
+                const latestValue = parseFloat(
+                  relevantCheckins[0].new_value?.toString() || '0'
+                );
+                const progress =
+                  ((latestValue - initialValue) /
+                    (targetValue - initialValue)) *
+                  100;
+                const clampedProgress = Math.min(Math.max(progress, 0), 100);
+                objectiveProgress += clampedProgress;
+              } else {
+                // Se não tem checkin até esta data, progresso é 0
+                objectiveProgress += 0;
+              }
+              validResultKeysCount++;
+            }
+          });
+
+          // Calcular média do objetivo (soma dos progressos das RKs dividido pelo número de RKs)
+          if (validResultKeysCount > 0) {
+            const avgObjectiveProgress =
+              objectiveProgress / validResultKeysCount;
+            totalObjectiveProgress += avgObjectiveProgress;
+            objectiveCount++;
+          }
+        });
+
+        // Calcular média geral (média dos objetivos)
+        const averageProgress =
+          objectiveCount > 0 ? totalObjectiveProgress / objectiveCount : 0;
+        cumulativeProgress[globalWeekIndex] = Math.ceil(averageProgress);
+      });
+    }
+
+    return cumulativeProgress;
   }
 
   private getQuarterMonths(quarter: number): number[] {

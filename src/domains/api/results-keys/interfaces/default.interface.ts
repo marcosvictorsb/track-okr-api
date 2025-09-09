@@ -60,8 +60,8 @@ export interface IResultKeyRepository {
   ): Promise<ResultKeyEntity | undefined>;
   findMany(criteria: FindResultKeyCriteria): Promise<ResultKeyEntity[]>;
   update(
-    criteria: FindResultKeyCriteria,
-    data: UpdateResultKeyCriteria
+    data: Partial<UpdateResultKeyCriteria>,
+    criteria: FindResultKeyCriteria
   ): Promise<boolean>;
   delete(criteria: DeleteResultKeyCriteria): Promise<boolean>;
   findByObjectiveId(objectiveId: number): Promise<ResultKeyEntity[]>;
