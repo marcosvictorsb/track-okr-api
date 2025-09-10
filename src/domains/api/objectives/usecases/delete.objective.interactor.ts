@@ -1,31 +1,103 @@
 import {
   IDeleteObjectiveGateway,
   DeleteObjectiveRequest,
-  DeleteObjectiveResponse
+  DeleteObjectiveInteractorDependencies
 } from '@domains/api/objectives/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 
 export class DeleteObjectiveInteractor {
-  constructor(private readonly objectiveGateway: IDeleteObjectiveGateway) {}
+  protected gateway: IDeleteObjectiveGateway;
+  protected presenter: IPresenter;
+  protected userCompanyValidator: UserCompanyValidationInteractor;
 
-  public async execute(
-    request: DeleteObjectiveRequest
-  ): Promise<DeleteObjectiveResponse> {
-    const { id } = request;
+  constructor(params: DeleteObjectiveInteractorDependencies) {
+    this.gateway = params.gateway;
+    this.presenter = params.presenter;
+    this.userCompanyValidator = params.userCompanyValidator;
+  }
 
-    // Verificar se o objetivo existe
-    const existingObjective = await this.objectiveGateway.findById(id);
-    if (!existingObjective) {
-      throw new Error('Objective not found');
+  public async execute(request: DeleteObjectiveRequest): Promise<HttpResponse> {
+    try {
+      this.gateway.loggerInfo('Iniciou a requisição para deletar o objetivo', {
+        request
+      });
+      const { id, id_company, id_user } = request;
+
+      this.gateway.loggerInfo('Iniciando exclusão do planejamento anual', {
+        id_company,
+        id_user
+      });
+
+      // 1. Validar usuário e empresa
+      const validation = await this.userCompanyValidator.execute({
+        id_user,
+        id_company
+      });
+
+      if (!validation.isValid) {
+        this.gateway.loggerError('O usuário ou empresa não é válido', {
+          id_company,
+          id_user
+        });
+        return this.presenter.badRequest('O usuário ou empresa não é válido');
+      }
+
+      // Verificar se o objetivo existe
+      const existingObjective = await this.gateway.findObjetive({
+        id,
+        id_company
+      });
+      if (!existingObjective) {
+        this.gateway.loggerInfo('Objetivo não encontrado', { id_company, id });
+        return this.presenter.notFound('Objetivo não encontrado');
+      }
+
+      await this.gateway.delete(id);
+
+      const resultkeys = await this.gateway.findResultkeysByObjective({
+        id_okr: id
+      });
+
+      if (!resultkeys || resultkeys.length === 0) {
+        this.gateway.loggerInfo(
+          'Nenhum resultado-chave encontrado para o objetivo',
+          { id_company, id }
+        );
+        return this.presenter.badRequest(
+          'Nenhum resultado-chave encontrado para o objetivo'
+        );
+      }
+
+      const idsResultKeys = resultkeys
+        .map((rk) => rk.id)
+        .filter((ids) => ids !== undefined) as number[];
+      await this.gateway.deleteResultKeys({ ids: idsResultKeys });
+
+      const checkins = await this.gateway.findCheckins({
+        ids_result_key: idsResultKeys
+      });
+
+      if (!checkins || checkins.length === 0) {
+        this.gateway.loggerInfo(
+          'Nenhum check-in encontrado para os resultados-chave',
+          { id_company, id }
+        );
+        return this.presenter.noContent();
+      }
+      await this.gateway.deleteChekins({ ids_result_key: idsResultKeys });
+
+      this.gateway.loggerInfo(
+        'Foram deletados o objetivo, resultados-chave e check-ins relacionados'
+      );
+
+      return this.presenter.noContent();
+    } catch (error) {
+      this.gateway.loggerError('Erro ao deletar o objetivo', {
+        error: String(error)
+      });
+      return this.presenter.serverError();
     }
-
-    const success = await this.objectiveGateway.delete(id);
-
-    if (!success) {
-      throw new Error('Failed to delete objective');
-    }
-
-    return {
-      success: true
-    };
   }
 }

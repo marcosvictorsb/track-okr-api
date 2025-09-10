@@ -12,27 +12,14 @@ export class DeleteObjectiveController implements IDeleteObjectiveController {
     request: UserPayload,
     response: Response
   ): Promise<Response> {
-    try {
-      const { id } = request.params;
+    const { id } = request.params;
 
-      const result = await this.deleteObjectiveInteractor.execute({
-        id: Number(id)
-      });
+    const { status, body } = await this.deleteObjectiveInteractor.execute({
+      id: Number(id),
+      id_company: request.user.id_company,
+      id_user: request.user.id
+    });
 
-      return response.status(200).json({
-        success: true,
-        message: 'Objective deleted successfully',
-        data: { deleted: result.success }
-      });
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Internal server error';
-      const statusCode = errorMessage.includes('not found') ? 404 : 400;
-
-      return response.status(statusCode).json({
-        success: false,
-        message: errorMessage
-      });
-    }
+    return response.status(status).json(body);
   }
 }

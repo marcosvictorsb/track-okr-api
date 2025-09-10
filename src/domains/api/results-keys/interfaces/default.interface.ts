@@ -22,6 +22,7 @@ export interface CreateResultKeyCriteria {
 
 export interface FindResultKeyCriteria {
   id?: number;
+  ids?: number[];
   name?: string;
   responsible_team_id?: number;
   id_okr?: number;
@@ -46,7 +47,8 @@ export interface UpdateResultKeyCriteria {
 }
 
 export interface DeleteResultKeyCriteria {
-  id: number;
+  id?: number;
+  ids?: number[];
 }
 
 export interface ResultKeyRepositoryDependencies {

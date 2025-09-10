@@ -28,6 +28,12 @@ export class ResultKeyRepository implements IResultKeyRepository {
       whereConditions['id'] = criteria.id;
     }
 
+    if (criteria.ids && criteria.ids.length > 0) {
+      whereConditions['id'] = {
+        [Op.in]: criteria.ids
+      };
+    }
+
     if (criteria.name) {
       whereConditions['name'] = {
         [Op.iLike]: `%${criteria.name}%`
@@ -168,7 +174,7 @@ export class ResultKeyRepository implements IResultKeyRepository {
 
   public async delete(criteria: DeleteResultKeyCriteria): Promise<boolean> {
     const affectedRows = await this.model.destroy({
-      where: { id: criteria.id }
+      where: this.getConditions(criteria)
     });
 
     return affectedRows > 0;

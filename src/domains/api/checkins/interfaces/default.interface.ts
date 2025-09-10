@@ -25,6 +25,10 @@ export interface UpdateCheckinsCriteria {
   updated_at?: Date;
 }
 
+export interface DeleteCheckinsCriteria {
+  ids_result_key?: number[];
+}
+
 export interface ICheckinsRepository {
   create(criteria: CreateCheckinsCriteria): Promise<CheckinsEntity>;
   findOne(criteria: FindCheckinsCriteria): Promise<CheckinsEntity | null>;
