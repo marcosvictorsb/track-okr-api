@@ -142,7 +142,21 @@ export class KirvanoWebhookInteractor {
     });
 
     if (company) {
-      this.gateway.loggerInfo('Empresa existe, então vamos alterar o plano');
+      this.gateway.loggerInfo(
+        'Empresa existe, então vamos analisar manualmente essa ação',
+        { id_company: company.id, company_name: company.name }
+      );
+      this.gateway.saveWebhook({
+        source: 'kirvano',
+        description:
+          'Empresa existe, então vamos analisar manualmente essa ação',
+        json: JSON.stringify(payload),
+        status: KirvanoWebhookStatus.COMPANY_ALREADY_EXISTS,
+        created: new Date()
+      });
+      return this.presenter.ok(
+        'Empresa já possui cadastro e está tentando comprar novamente, analisar manualmente'
+      );
     }
 
     const companyData: CreateCompanyCriteria = {
@@ -159,9 +173,6 @@ export class KirvanoWebhookInteractor {
     const customer = await this.gateway.findUser({
       email: payload.customer?.email
     });
-    console.log('---------------------------------> customer');
-
-    console.log(customer);
 
     if (customer) {
       this.gateway.loggerError(

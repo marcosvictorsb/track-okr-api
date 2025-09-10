@@ -52,7 +52,8 @@ export enum KirvanoWebhookStatus {
   FAILED = 'failed',
   NOT_SALES_APPROVED = 'not_sales_approved',
   NOT_FOUND_PLAN = 'not_found_plan',
-  SUCCESS = 'success'
+  SUCCESS = 'success',
+  COMPANY_ALREADY_EXISTS = 'company_already_exists'
 }
 
 type Product = {
