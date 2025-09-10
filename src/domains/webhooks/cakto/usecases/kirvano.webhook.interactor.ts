@@ -18,6 +18,12 @@ import {
   CreateSubscriptionCriteria,
   SubscriptionStatus
 } from '@domains/common/subscriptions/interfaces';
+import * as dotenv from 'dotenv';
+import { Resend } from 'resend';
+
+dotenv.config();
+
+const resend = new Resend(process.env.API_KEY_RESEND);
 
 export class KirvanoWebhookInteractor {
   protected gateway: IKirvanoWebhookGateway;
@@ -36,6 +42,10 @@ export class KirvanoWebhookInteractor {
 
       switch (payload.event) {
         case EventsKirvanoWebhook.SALE_APPROVED:
+          this.gateway.loggerInfo('Webhook de venda aprovada recebido');
+          this.gateway.loggerInfo(
+            `RESEND - Enviando email de teste: ${process.env.API_KEY_RESEND}`
+          );
           this.gateway.loggerInfo('Evento de venda aprovada recebido', {
             event: payload.event
           });
