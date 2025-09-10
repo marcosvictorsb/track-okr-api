@@ -35,7 +35,7 @@ export class GetTeamPerformanceInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      const { id_company, id_user } = input;
+      const { id_company, id_user, year, quarter } = input;
 
       // Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
@@ -52,7 +52,9 @@ export class GetTeamPerformanceInteractor {
       // Calcular performance de cada time
       const teamsPerformance = await this.calculateTeamsPerformance(
         teams,
-        id_company
+        id_company,
+        year,
+        quarter
       );
 
       const performanceData = new TeamPerformanceEntity({
@@ -106,14 +108,18 @@ export class GetTeamPerformanceInteractor {
 
   private async calculateTeamsPerformance(
     teams: TeamEntity[],
-    id_company: number
+    id_company: number,
+    year: number,
+    quarter: number
   ): Promise<TeamPerformanceItem[]> {
     const teamsPerformance: TeamPerformanceItem[] = [];
 
     for (const team of teams) {
       const teamPerformance = await this.calculateSingleTeamPerformance(
         team,
-        id_company
+        id_company,
+        year,
+        quarter
       );
       teamsPerformance.push(teamPerformance);
     }
@@ -123,7 +129,9 @@ export class GetTeamPerformanceInteractor {
 
   private async calculateSingleTeamPerformance(
     team: TeamEntity,
-    id_company: number
+    id_company: number,
+    year: number,
+    quarter: number
   ): Promise<TeamPerformanceItem> {
     // Validar se o team tem ID válido
     if (!team.id) {
@@ -131,7 +139,12 @@ export class GetTeamPerformanceInteractor {
     }
 
     // Buscar objetivos do time
-    const objectives = await this.getTeamObjectives(team.id, id_company);
+    const objectives = await this.getTeamObjectives(
+      team.id,
+      id_company,
+      year,
+      quarter
+    );
     const objectiveIds = objectives
       .map((objective: ObjectiveEntity) => objective.id)
       .filter((id): id is number => id !== undefined);
@@ -171,11 +184,15 @@ export class GetTeamPerformanceInteractor {
 
   private async getTeamObjectives(
     teamId: number,
-    id_company: number
+    id_company: number,
+    year: number,
+    quarter: number
   ): Promise<ObjectiveEntity[]> {
     const criteria: FindTeamObjectivesCriteria = {
       id_company,
-      id_team: teamId
+      id_team: teamId,
+      year,
+      quarter
     };
 
     return await this.gateway.findTeamObjectives(criteria);

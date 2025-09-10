@@ -18,6 +18,8 @@ import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity
 export type InputGetTeamPerformance = {
   id_company: number;
   id_user: number;
+  quarter: number;
+  year: number;
 };
 
 // Gateway dependencies

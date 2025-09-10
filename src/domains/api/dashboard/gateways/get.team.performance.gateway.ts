@@ -46,11 +46,8 @@ export class GetTeamPerformanceGateway
     criteria: FindTeamObjectivesCriteria
   ): Promise<ObjectiveEntity[]> {
     this.logging.info('Buscando objetivos do time', { criteria });
-
-    const currentDate = new Date();
-    const quarter =
-      criteria.quarter || Math.ceil((currentDate.getMonth() + 1) / 3);
-    const year = criteria.year || currentDate.getFullYear();
+    const quarter = criteria.quarter;
+    const year = criteria.year;
 
     return await this.objectiveRepository.findMany({
       id_company: criteria.id_company,
