@@ -107,6 +107,7 @@ export class KirvanoWebhookInteractor {
         email: user.email
       });
     } catch (error) {
+      console.log(error);
       this.gateway.loggerError('Erro ao enviar email de ativação', {
         error: (error as Error).message,
         id_user: user.id
