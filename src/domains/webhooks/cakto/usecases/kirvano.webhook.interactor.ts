@@ -18,12 +18,6 @@ import {
   CreateSubscriptionCriteria,
   SubscriptionStatus
 } from '@domains/common/subscriptions/interfaces';
-import * as dotenv from 'dotenv';
-import { Resend } from 'resend';
-
-dotenv.config();
-
-const resend = new Resend(process.env.API_KEY_RESEND);
 
 export class KirvanoWebhookInteractor {
   protected gateway: IKirvanoWebhookGateway;

@@ -5,6 +5,7 @@ import { DataLogOutput } from '@adapters/services';
 import { HttpResponse } from '@protocols/http';
 import { logger } from '@configs/logger';
 import { IPasswordResetTokenRepository } from '../repository/password-reset-token.repository';
+import { Resend } from 'resend';
 
 export type InputRequestPasswordReset = {
   email: string;
@@ -44,4 +45,5 @@ export interface IRequestPasswordResetGatewayDependencies {
   userRepository: IUserRepository;
   passwordResetTokenRepository: IPasswordResetTokenRepository;
   logging: typeof logger;
+  resendService: Resend;
 }

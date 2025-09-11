@@ -35,6 +35,7 @@ import {
   UpdateSubscriptionCriteria
 } from '@domains/common/subscriptions/interfaces';
 import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
+import { Resend } from 'resend';
 
 export enum EventsKirvanoWebhook {
   SALE_APPROVED = 'SALE_APPROVED',
@@ -166,6 +167,7 @@ export type KirvanoWebhookGatewayDependencies = {
   subscriptionHistoryRepository: ISubscriptionHistoryRepository;
   settingRepository: ISettingRepository;
   webhookRepository: IWebhookRepository;
+  resendService: Resend;
 };
 
 export type KirvanoWebhookControllerDependencies = {

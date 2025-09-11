@@ -12,16 +12,28 @@ export interface IEmailService {
   sendEmail(subject: string, to: string, emailContent: string): void;
 }
 
+type EmailServiceDependencies = {
+  resendService: Resend;
+};
+
 export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
   return class extends Base {
+    public resendService: Resend;
+
+    constructor(...args: any[]) {
+      super(...args);
+      const params = args[0] as EmailServiceDependencies;
+      this.resendService = params.resendService;
+    }
+
     public async sendEmail(
       subject: string,
       to: string,
       emailContent: string
     ): Promise<void> {
       try {
-        const resend = new Resend(process.env.API_KEY_RESEND);
-        await resend.emails.send({
+        logging.info(`Enviando email: ${process.env.API_KEY_RESEND}`, { to });
+        await this.resendService.emails.send({
           from: 'contato@gunno.io',
           to: isProduction ? to : 'contato@gunno.io',
           subject,
@@ -42,8 +54,7 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
     ): Promise<boolean> {
       try {
         logging.info('Enviando email de convite', { email });
-        const resend = new Resend(process.env.API_KEY_RESEND);
-        const response = await resend.emails.send({
+        const response = await this.resendService.emails.send({
           from: 'contato@gunno.io',
           to: isProduction ? email : 'contato@gunno.io',
           subject: `Convite para Ativação de Conta`,

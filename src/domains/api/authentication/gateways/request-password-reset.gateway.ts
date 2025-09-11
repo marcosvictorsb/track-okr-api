@@ -7,13 +7,13 @@ import { IUserRepository } from '@domains/api/users/interfaces';
 import { logger } from '@configs/logger';
 import { IPasswordResetTokenRepository } from '../repository/password-reset-token.repository';
 import crypto from 'crypto';
-import { EmailService } from '@adapters/services/email.service';
 import { DataLogOutput } from '@adapters/services';
 import fs from 'fs';
 import path from 'path';
+import { MixRegisterPasswordResetGateway } from '@adapters/gateways/api/authentication/register.password.reset.gateway';
 
 export class RequestPasswordResetGateway
-  extends EmailService(class {})
+  extends MixRegisterPasswordResetGateway
   implements IRequestPasswordResetGateway
 {
   userRepository: IUserRepository;
@@ -21,7 +21,7 @@ export class RequestPasswordResetGateway
   logging: typeof logger;
 
   constructor(params: IRequestPasswordResetGatewayDependencies) {
-    super();
+    super(params);
     this.userRepository = params.userRepository;
     this.passwordResetTokenRepository = params.passwordResetTokenRepository;
     this.logging = params.logging;
@@ -102,13 +102,5 @@ export class RequestPasswordResetGateway
       });
       return false;
     }
-  }
-
-  loggerInfo(message: string, data?: DataLogOutput): void {
-    this.logging.info(message, data);
-  }
-
-  loggerError(message: string, data?: DataLogOutput): void {
-    this.logging.error(message, data);
   }
 }

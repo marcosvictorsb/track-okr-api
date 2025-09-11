@@ -18,6 +18,9 @@ import { SubscriptionRepository } from '@domains/common/subscriptions/repository
 import SubscriptionModel from '@domains/common/subscriptions/model/subscription.model';
 import { SubscriptionHistoryRepository } from '@domains/common/subscriptions/repository/subscription.history.repository';
 import SubscriptionHistoryModel from '@domains/common/subscriptions/model/subscription.history.model';
+import * as dotenv from 'dotenv';
+import { Resend } from 'resend';
+dotenv.config();
 
 export const makeKirvanoWebhookController = () => {
   const gateway: KirvanoWebhookGatewayDependencies = {
@@ -32,7 +35,8 @@ export const makeKirvanoWebhookController = () => {
       model: SubscriptionHistoryModel
     }),
     settingRepository: new SettingRepository({ model: SettingModel }),
-    webhookRepository: new WebhookRepository({ model: WebhookModel })
+    webhookRepository: new WebhookRepository({ model: WebhookModel }),
+    resendService: new Resend(process.env.API_KEY_RESEND as string)
   };
 
   const kirvanoWebhookGateway = new KirvanoWebhookGateway(gateway);

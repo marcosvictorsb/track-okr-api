@@ -7,6 +7,7 @@ import { RequestPasswordResetController } from '@domains/api/authentication/cont
 import { Presenter } from '@protocols/presenter';
 import { IRequestPasswordResetGatewayDependencies } from '@domains/api/authentication/interfaces/request-password-reset.interface';
 import { logger } from '@configs/logger';
+import { Resend } from 'resend';
 
 export const makeRequestPasswordResetController =
   (): RequestPasswordResetController => {
@@ -16,7 +17,8 @@ export const makeRequestPasswordResetController =
     const params: IRequestPasswordResetGatewayDependencies = {
       userRepository,
       passwordResetTokenRepository,
-      logging: logger
+      logging: logger,
+      resendService: new Resend(process.env.API_KEY_RESEND as string)
     };
 
     const presenter = new Presenter();
