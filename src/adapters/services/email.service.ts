@@ -4,7 +4,6 @@ import { logger } from '@configs/logger';
 
 dotenv.config();
 
-const resend = new Resend(process.env.API_KEY_RESEND);
 const logging = logger;
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -21,6 +20,7 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
       emailContent: string
     ): Promise<void> {
       try {
+        const resend = new Resend(process.env.API_KEY_RESEND);
         await resend.emails.send({
           from: 'contato@gunno.io',
           to: isProduction ? to : 'contato@gunno.io',
@@ -42,7 +42,7 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
     ): Promise<boolean> {
       try {
         logging.info('Enviando email de convite', { email });
-
+        const resend = new Resend(process.env.API_KEY_RESEND);
         const response = await resend.emails.send({
           from: 'contato@gunno.io',
           to: isProduction ? email : 'contato@gunno.io',
