@@ -36,7 +36,7 @@ export const makeKirvanoWebhookController = () => {
     }),
     settingRepository: new SettingRepository({ model: SettingModel }),
     webhookRepository: new WebhookRepository({ model: WebhookModel }),
-    resendService: new Resend('re_SJeYLKY5_NJXEDA8WPK76eqXT3Dnbyx8C')
+    resendService: new Resend(process.env.API_KEY_RESEND as string)
   };
 
   const kirvanoWebhookGateway = new KirvanoWebhookGateway(gateway);
