@@ -1,14 +1,14 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  GetTemporalEvolutionInteractorDependencies,
-  InputGetTemporalEvolution,
-  IGetTemporalEvolutionGateway
-} from '../interfaces/get.temporal.evolution.interface';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys';
-import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  GetTemporalEvolutionInteractorDependencies,
+  IGetTemporalEvolutionGateway,
+  InputGetTemporalEvolution
+} from '../interfaces/get.temporal.evolution.interface';
 
 export class GetTemporalEvolutionInteractor {
   protected gateway: IGetTemporalEvolutionGateway;
@@ -152,11 +152,12 @@ export class GetTemporalEvolutionInteractor {
       ];
 
       // Calcular progresso acumulado baseado no progresso real das OKRs
-      const cumulativeQuarter = this.calculateCumulativeProgress(
+      const cumulativeQuarter = await this.calculateCumulativeProgress(
         resultKeys,
         checkins,
         year,
-        quarter
+        quarter,
+        id_company
       );
 
       return this.presenter.ok({
@@ -337,22 +338,36 @@ export class GetTemporalEvolutionInteractor {
     return weekNum;
   }
 
-  private calculateCumulativeProgress(
+  private async calculateCumulativeProgress(
     resultKeys: ResultKeyEntity[],
     checkins: CheckinsEntity[],
     year: number,
-    quarter: number
-  ): number[] {
+    quarter: number,
+    id_company: number
+  ): Promise<number[]> {
     const months = this.getQuarterMonths(quarter);
     const cumulativeProgress = new Array(12).fill(0);
 
+    // Buscar TODOS os objetivos do quarter (incluindo os sem result keys)
+    const allObjectives = await this.gateway.findObjectivesByCompanyAndQuarter({
+      id_company,
+      quarter,
+      year
+    });
+
     // Agrupar result keys por objetivo
     const resultKeysByObjective = new Map<number, ResultKeyEntity[]>();
+
+    // Primeiro, inicializar TODOS os objetivos com array vazio
+    allObjectives.forEach((objective) => {
+      if (objective.id) {
+        resultKeysByObjective.set(objective.id, []);
+      }
+    });
+
+    // Depois, adicionar as result keys aos objetivos correspondentes
     resultKeys.forEach((rk) => {
-      if (rk.id_okr) {
-        if (!resultKeysByObjective.has(rk.id_okr)) {
-          resultKeysByObjective.set(rk.id_okr, []);
-        }
+      if (rk.id_okr && resultKeysByObjective.has(rk.id_okr)) {
         resultKeysByObjective.get(rk.id_okr)!.push(rk);
       }
     });
@@ -374,15 +389,20 @@ export class GetTemporalEvolutionInteractor {
 
       weeks.forEach((week, weekIndex) => {
         const globalWeekIndex = monthIndex * 4 + weekIndex;
+        const currentDate = new Date();
 
-        // Calcular progresso por objetivo até esta data
-        let totalObjectiveProgress = 0;
-        let objectiveCount = 0;
+        // Se a semana é no futuro, usar o progresso atual das result keys
+        const isCurrentOrFutureWeek = week.end >= currentDate;
 
-        resultKeysByObjective.forEach((objectiveResultKeys) => {
-          let objectiveProgress = 0;
+        // Calcular progresso por objetivo
+        let totalObjectivesProgress = 0;
+        let validObjectivesCount = 0;
+
+        resultKeysByObjective.forEach((objectiveResultKeys, objectiveId) => {
+          let totalResultKeyProgress = 0;
           let validResultKeysCount = 0;
 
+          // Para cada result key do objetivo
           objectiveResultKeys.forEach((resultKey) => {
             const targetValue = parseFloat(
               resultKey.target_value?.toString() || '0'
@@ -391,52 +411,88 @@ export class GetTemporalEvolutionInteractor {
               resultKey.initial_value?.toString() || '0'
             );
 
+            // Incluir TODAS as result keys válidas (com target > initial)
             if (targetValue > initialValue && resultKey.id) {
-              // Buscar o último checkin desta result key até a data final da semana
-              const relevantCheckins = checkins
-                .filter(
-                  (checkin) =>
-                    checkin.id_result_key === resultKey.id &&
-                    new Date(checkin.created_at as Date) <= week.end
-                )
-                .sort(
-                  (a, b) =>
-                    new Date(b.created_at as Date).getTime() -
-                    new Date(a.created_at as Date).getTime()
-                );
+              let currentValue = initialValue;
 
-              if (relevantCheckins.length > 0) {
-                // Pegar o valor mais recente até esta semana
-                const latestValue = parseFloat(
-                  relevantCheckins[0].new_value?.toString() || '0'
+              if (isCurrentOrFutureWeek) {
+                // Para semanas atuais/futuras, usar o current_value da result key
+                currentValue = parseFloat(
+                  resultKey.current_value?.toString() || initialValue.toString()
                 );
-                const progress =
-                  ((latestValue - initialValue) /
-                    (targetValue - initialValue)) *
-                  100;
-                const clampedProgress = Math.min(Math.max(progress, 0), 100);
-                objectiveProgress += clampedProgress;
               } else {
-                // Se não tem checkin até esta data, progresso é 0
-                objectiveProgress += 0;
+                // Para semanas passadas, buscar o último checkin até aquela data
+                const relevantCheckins = checkins
+                  .filter(
+                    (checkin) =>
+                      checkin.id_result_key === resultKey.id &&
+                      new Date(checkin.created_at as Date) <= week.end
+                  )
+                  .sort(
+                    (a, b) =>
+                      new Date(a.created_at as Date).getTime() -
+                      new Date(b.created_at as Date).getTime()
+                  );
+
+                if (relevantCheckins.length > 0) {
+                  const latestCheckin =
+                    relevantCheckins[relevantCheckins.length - 1];
+                  currentValue = parseFloat(
+                    latestCheckin.new_value?.toString() ||
+                      initialValue.toString()
+                  );
+                }
+                // Se não tem checkins, currentValue fica como initialValue (0% de progresso)
               }
+
+              // Calcular progresso percentual desta result key até esta semana
+              const progress =
+                ((currentValue - initialValue) / (targetValue - initialValue)) *
+                100;
+              const clampedProgress = Math.min(Math.max(progress, 0), 100);
+
+              totalResultKeyProgress += clampedProgress;
               validResultKeysCount++;
+
+              this.gateway.loggerInfo('Progresso acumulado da result key', {
+                data: `Semana ${globalWeekIndex} - RK ${resultKey.id}: ${initialValue} -> ${currentValue}/${targetValue} = ${clampedProgress.toFixed(1)}% (Objetivo ${objectiveId})`
+              });
             }
           });
 
-          // Calcular média do objetivo (soma dos progressos das RKs dividido pelo número de RKs)
+          // Calcular média do objetivo (SEMPRE incluir o objetivo, mesmo sem RKs)
           if (validResultKeysCount > 0) {
-            const avgObjectiveProgress =
-              objectiveProgress / validResultKeysCount;
-            totalObjectiveProgress += avgObjectiveProgress;
-            objectiveCount++;
+            const objectiveAverage =
+              totalResultKeyProgress / validResultKeysCount;
+            totalObjectivesProgress += objectiveAverage;
+
+            this.gateway.loggerInfo('Progresso do objetivo', {
+              data: `Semana ${globalWeekIndex} - Objetivo ${objectiveId}: ${objectiveAverage.toFixed(1)}% (${validResultKeysCount} RKs)`
+            });
+          } else {
+            // Objetivo sem result keys válidas = 0%
+            totalObjectivesProgress += 0;
+
+            this.gateway.loggerInfo('Objetivo sem result keys válidas', {
+              data: `Semana ${globalWeekIndex} - Objetivo ${objectiveId}: 0% (sem RKs válidas)`
+            });
           }
+
+          // SEMPRE contar o objetivo, mesmo sem RKs
+          validObjectivesCount++;
         });
 
-        // Calcular média geral (média dos objetivos)
+        // Calcular média geral dos objetivos
         const averageProgress =
-          objectiveCount > 0 ? totalObjectiveProgress / objectiveCount : 0;
+          validObjectivesCount > 0
+            ? totalObjectivesProgress / validObjectivesCount
+            : 0;
+
         cumulativeProgress[globalWeekIndex] = Math.ceil(averageProgress);
+
+        this.gateway.loggerInfo('Progresso acumulado da semana', {
+          data: `Semana ${globalWeekIndex} (${week.end.toISOString().substring(0, 10)}): ${Math.ceil(averageProgress)}% - Total objetivos: ${totalObjectivesProgress.toFixed(1)} / ${validObjectivesCount} objetivos`
+        });
       });
     }
 

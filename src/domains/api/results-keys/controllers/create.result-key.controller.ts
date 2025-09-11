@@ -1,6 +1,9 @@
-import { Response } from 'express';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { CreateResultKeyControllerDependencies } from '../interfaces/create.result-key.interface';
+import { Response } from 'express';
+import {
+  CreateResultKeyControllerDependencies,
+  InputCreateResultKey
+} from '../interfaces/create.result-key.interface';
 
 export class CreateResultKeyController {
   protected interactor: CreateResultKeyControllerDependencies['interactor'];
@@ -25,12 +28,12 @@ export class CreateResultKeyController {
     } = request.body;
 
     const { id_company, id: id_user } = request.user;
-    const input = {
+    const input: InputCreateResultKey = {
       name,
       initial_value,
       target_value,
       current_value,
-      unit,
+      unit: String(unit).length ? unit : '',
       responsible_team_id,
       responsible_users,
       id_okr,

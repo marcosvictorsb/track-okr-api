@@ -7,7 +7,7 @@ export const createResultKeySchema = z.object({
       initial_value: z.number().min(0, 'Initial value must be non-negative'),
       target_value: z.number().min(0, 'Target value must be non-negative'),
       current_value: z.number().min(0, 'Current value must be non-negative'),
-      unit: z.string().min(1, 'Unit is required').max(100, 'Unit too long'),
+      unit: z.string().max(30).optional(),
       responsible_team_id: z.number().int().positive().nullable().optional(),
       responsible_users: z.array(z.number().int().positive()).default([]),
       id_okr: z
