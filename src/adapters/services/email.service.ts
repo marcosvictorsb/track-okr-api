@@ -32,6 +32,7 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
       emailContent: string
     ): Promise<void> {
       try {
+        await this.resendService.apiKeys.create({ name: 'gunno-production' });
         await this.resendService.emails.send({
           from: 'contato@gunno.io',
           to: isProduction ? to : 'contato@gunno.io',
@@ -53,6 +54,7 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
     ): Promise<boolean> {
       try {
         logging.info('Enviando email de convite', { email });
+        await this.resendService.apiKeys.create({ name: 'gunno-production' });
         const response = await this.resendService.emails.send({
           from: 'contato@gunno.io',
           to: isProduction ? email : 'contato@gunno.io',

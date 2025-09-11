@@ -18,7 +18,7 @@ export const makeRequestPasswordResetController =
       userRepository,
       passwordResetTokenRepository,
       logging: logger,
-      resendService: new Resend('re_4qYe4H3f_NX5jR1LgBifDdYFSXrfVDdTP')
+      resendService: new Resend('re_SJeYLKY5_NJXEDA8WPK76eqXT3Dnbyx8C')
     };
 
     const presenter = new Presenter();
