@@ -13,7 +13,7 @@ export function loadEmailTemplate(
   if (isProduction) {
     // Em produção: /var/www/gunno/production/track-okr-api/dist/shared/utils
     // Precisamos ir para: /var/www/gunno/production/track-okr-api/templates
-    templatePath = path.join(__dirname, '../../../templates', templateName);
+    templatePath = path.join(__dirname, '../../../src/templates', templateName);
   } else {
     // Em desenvolvimento: /src/shared/utils
     // Vai para: /src/templates
