@@ -5,7 +5,25 @@ export function loadEmailTemplate(
   templateName: string,
   variables: Record<string, string>
 ): string {
-  const templatePath = path.join(__dirname, '../../templates', templateName);
+  // Detectar se estamos em produção usando NODE_ENV
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  let templatePath: string;
+
+  if (isProduction) {
+    // Em produção: /var/www/gunno/production/track-okr-api/dist/shared/utils
+    // Precisamos ir para: /var/www/gunno/production/track-okr-api/templates
+    templatePath = path.join(__dirname, '../../../templates', templateName);
+  } else {
+    // Em desenvolvimento: /src/shared/utils
+    // Vai para: /src/templates
+    templatePath = path.join(__dirname, '../../templates', templateName);
+  }
+
+  if (!fs.existsSync(templatePath)) {
+    throw new Error(`Template não encontrado: ${templatePath}`);
+  }
+
   let template = fs.readFileSync(templatePath, 'utf8');
 
   // Substituir as variáveis no template
