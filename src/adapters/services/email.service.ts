@@ -32,7 +32,6 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
       emailContent: string
     ): Promise<void> {
       try {
-        logging.info(`Enviando email: ${process.env.API_KEY_RESEND}`, { to });
         await this.resendService.emails.send({
           from: 'contato@gunno.io',
           to: isProduction ? to : 'contato@gunno.io',
