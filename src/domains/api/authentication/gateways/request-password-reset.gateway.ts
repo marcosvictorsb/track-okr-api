@@ -1,16 +1,14 @@
+import { MixRegisterPasswordResetGateway } from '@adapters/gateways/api/authentication/register.password.reset.gateway';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { Utils } from '@shared/utils/utils';
+import crypto from 'crypto';
 import {
   IRequestPasswordResetGateway,
   IRequestPasswordResetGatewayDependencies
 } from '../interfaces/request-password-reset.interface';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { logger } from '@configs/logger';
 import { IPasswordResetTokenRepository } from '../repository/password-reset-token.repository';
-import crypto from 'crypto';
-import { DataLogOutput } from '@adapters/services';
-import fs from 'fs';
-import path from 'path';
-import { MixRegisterPasswordResetGateway } from '@adapters/gateways/api/authentication/register.password.reset.gateway';
 
 export class RequestPasswordResetGateway
   extends MixRegisterPasswordResetGateway
@@ -77,17 +75,15 @@ export class RequestPasswordResetGateway
     try {
       this.logging.info('Enviando email de reset de senha', { email });
 
-      const templatePath = path.join(
-        __dirname,
-        '../../../../templates/password-reset.template.html'
+      // Usar a função loadEmailTemplate do Utils que detecta automaticamente produção
+      const emailTemplate = Utils.loadEmailTemplate(
+        'password-reset.template.html',
+        {
+          userName,
+          resetLink,
+          expiryDate
+        }
       );
-      let emailTemplate = fs.readFileSync(templatePath, 'utf8');
-
-      // Substituir placeholders no template
-      emailTemplate = emailTemplate
-        .replace(/{{userName}}/g, userName)
-        .replace(/{{resetLink}}/g, resetLink)
-        .replace(/{{expiryDate}}/g, expiryDate);
 
       await this.sendEmail('Redefinir Senha - Gunno', email, emailTemplate);
 

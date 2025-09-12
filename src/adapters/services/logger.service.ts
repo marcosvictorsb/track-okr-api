@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { logger } from '@configs/logger';
 import { asyncLocalStorage } from '@configs/async.context';
+import { logger } from '@configs/logger';
 
 export type DataLogOutput = {
   data?: string;
@@ -67,6 +67,7 @@ export type DataLogOutput = {
 
   // password reset
   token?: string;
+  expires_at_token?: Date;
 
   // plan
   plan?: string;

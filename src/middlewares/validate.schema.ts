@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
 import { logger } from '@configs/logger';
+import { NextFunction, Request, Response } from 'express';
 import { AnyZodObject, ZodError } from 'zod';
 
 export const validateSchema =

@@ -6,7 +6,7 @@ export interface IPasswordResetTokenRepository {
   create(
     data: Omit<PasswordResetTokenAttributes, 'id'>
   ): Promise<PasswordResetTokenAttributes>;
-  findByToken(token: string): Promise<PasswordResetTokenAttributes | null>;
+  findByToken(token: string): Promise<PasswordResetTokenAttributes | undefined>;
   findByEmail(email: string): Promise<PasswordResetTokenAttributes[]>;
   markAsUsed(token: string): Promise<boolean>;
   deleteByEmail(email: string): Promise<void>;
@@ -30,11 +30,11 @@ export class PasswordResetTokenRepository
 
   async findByToken(
     token: string
-  ): Promise<PasswordResetTokenAttributes | null> {
+  ): Promise<PasswordResetTokenAttributes | undefined> {
     const result = await this.model.findOne({
       where: { token }
     });
-    return result ? result.toJSON() : null;
+    return result ? result.toJSON() : undefined;
   }
 
   async findByEmail(email: string): Promise<PasswordResetTokenAttributes[]> {

@@ -1,22 +1,28 @@
+import { validateSchema } from '@middlewares/validate.schema';
 import { Router } from 'express';
 import * as factories from '../factories';
-import { validateSchema } from '@middlewares/validate.schema';
 import {
-  requestPasswordResetSchema,
   confirmPasswordResetSchema,
-  registerFreeTrialSchema
+  forgotPasswordSchema,
+  registerFreeTrialSchema,
+  requestPasswordResetSchema
 } from '../schemas';
+import { changePasswordSchema } from '../schemas/change.password.schema';
 
 const {
   authenticationController,
   makeRequestPasswordResetController,
   makeConfirmPasswordResetController,
-  makeRegisterFreeTrialController
+  makeRegisterFreeTrialController,
+  makeForgotPasswordController,
+  makeChangePasswordController
 } = factories;
 
 const requestPasswordResetController = makeRequestPasswordResetController();
 const confirmPasswordResetController = makeConfirmPasswordResetController();
 const registerController = makeRegisterFreeTrialController();
+const forgotPasswordController = makeForgotPasswordController();
+const changePasswordController = makeChangePasswordController();
 
 const authRoutes = Router();
 
@@ -28,6 +34,20 @@ authRoutes.post(
   '/register',
   validateSchema(registerFreeTrialSchema),
   (request, response) => registerController.register(request, response)
+);
+
+authRoutes.post(
+  '/forgot-password',
+  validateSchema(forgotPasswordSchema),
+  (request, response) =>
+    forgotPasswordController.forgotPassword(request, response)
+);
+
+authRoutes.post(
+  '/change-password',
+  validateSchema(changePasswordSchema),
+  (request, response) =>
+    changePasswordController.changePassword(request, response)
 );
 
 authRoutes.post(
