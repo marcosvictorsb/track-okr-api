@@ -1,20 +1,21 @@
 import { Request, Response, Router } from 'express';
 // import routerMercadoPago from '@domains/webhooks/mercado-pago/routers';
-import caktoWebhookRouter from '@domains/webhooks/cakto/routers';
-import routerUser from '@domains/api/users/routers';
 import authRoutes from '@domains/api/authentication/routes';
-import plannerRouter from '@domains/api/planners/routers';
-import teamRouter from '@domains/api/teams/routers';
-import objectiveRouter from '@domains/api/objectives/routers';
-import resultKeyRoutes from '@domains/api/results-keys/routers';
+import { backofficeRouter } from '@domains/api/backoffice/routes/backoffice.routes';
 import checkInsRouters from '@domains/api/checkins/routers';
-import profileRouter from '@domains/api/profile/routers';
+import { dashboardRouter } from '@domains/api/dashboard/routers';
 import healthRouter from '@domains/api/health/routers';
 import leadRouter from '@domains/api/landing-page-leads/routers';
-import { dashboardRouter } from '@domains/api/dashboard/routers';
-import settingRouter from '@domains/api/settings/routers';
-import { backofficeRouter } from '@domains/api/backoffice/routes/backoffice.routes';
+import objectiveRouter from '@domains/api/objectives/routers';
 import permissionsRouter from '@domains/api/permissions/routers';
+import plannerRouter from '@domains/api/planners/routers';
+import profileRouter from '@domains/api/profile/routers';
+import resultKeyRoutes from '@domains/api/results-keys/routers';
+import settingRouter from '@domains/api/settings/routers';
+import { subscriptionRoutes } from '@domains/api/subscription/routes';
+import teamRouter from '@domains/api/teams/routers';
+import routerUser from '@domains/api/users/routers';
+import caktoWebhookRouter from '@domains/webhooks/cakto/routers';
 
 const routers = Router();
 
@@ -36,6 +37,7 @@ routers.use('/leads', leadRouter);
 routers.use('/dashboard', dashboardRouter);
 routers.use('/settings', settingRouter);
 routers.use('/permissions', permissionsRouter);
+routers.use('/subscription', subscriptionRoutes);
 routers.use('/backoffice', backofficeRouter);
 
 const notFound = (request: Request, response: Response) => {
