@@ -1,10 +1,10 @@
 import { HttpResponse } from '@protocols/http';
-import {
-  RequestPasswordResetInteractorDependencies,
-  InputRequestPasswordReset,
-  IRequestPasswordResetGateway
-} from '../interfaces/request-password-reset.interface';
 import { IPresenter } from '@protocols/presenter';
+import {
+  InputRequestPasswordReset,
+  IRequestPasswordResetGateway,
+  RequestPasswordResetInteractorDependencies
+} from '../interfaces/request-password-reset.interface';
 
 export class RequestPasswordResetInteractor {
   protected gateway: IRequestPasswordResetGateway;
@@ -59,7 +59,10 @@ export class RequestPasswordResetInteractor {
       }
 
       // Criar link de reset
-      const baseUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const isProduction = process.env.NODE_ENV === 'production';
+      const baseUrl = isProduction
+        ? process.env.PRODUCTION_BASE_URL
+        : 'http://localhost:5173';
       const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}`;
 
       // Formatar data de expiração para exibição
