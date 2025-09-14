@@ -1,14 +1,15 @@
 import { logger } from '@configs/logger';
+import TeamModel from '@domains/api/teams/model/team.model';
+import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import { makeUpsertUserTeamInteractor } from '@domains/common/user-teams/factories';
+import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
+import { Presenter } from '@protocols/presenter';
+import { Resend } from 'resend';
+import { InviteUserController } from '../controllers/invite.user.controller';
 import { InviteUserGateway } from '../gateways/invite.user.gateway';
 import UserModel from '../model/user.model';
 import { UserRepository } from '../repository/user.repository';
 import { InviteUserInteractor } from '../usecases';
-import { Presenter } from '@protocols/presenter';
-import { InviteUserController } from '../controllers/invite.user.controller';
-import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
-import { TeamRepository } from '@domains/api/teams/repository/team.repository';
-import TeamModel from '@domains/api/teams/model/team.model';
-import { makeUpsertUserTeamInteractor } from '@domains/common/user-teams/factories';
 
 const userRepository = new UserRepository({
   model: UserModel
@@ -21,7 +22,8 @@ const teamRepository = new TeamRepository({
 const params = {
   logging: logger,
   userRepository,
-  teamRepository
+  teamRepository,
+  resendService: new Resend(process.env.API_KEY_RESEND as string)
 };
 
 const inviteUserGateway = new InviteUserGateway(params);

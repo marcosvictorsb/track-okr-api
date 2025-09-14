@@ -1,15 +1,15 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  InviteUserInteractorDependencies,
-  InputInviteUser,
-  IInviteUserGateway
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { UserStatus } from '../interfaces/default.interfaces';
-import crypto from 'crypto';
-import { Utils } from '@shared/utils/utils';
 import { UpsertUserTeamInteractor } from '@domains/common/user-teams/usecases';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { Utils } from '@shared/utils/utils';
+import crypto from 'crypto';
+import {
+  IInviteUserGateway,
+  InputInviteUser,
+  InviteUserInteractorDependencies
+} from '../interfaces';
+import { UserStatus } from '../interfaces/default.interfaces';
 
 export class InviteUserInteractor {
   protected gateway: IInviteUserGateway;
@@ -117,7 +117,7 @@ export class InviteUserInteractor {
 
       if (!emailSent) {
         this.gateway.loggerError('Erro ao enviar email de convite', { email });
-        return this.presenter.serverError('Erro ao enviar email de convite');
+        return this.presenter.badRequest('Erro ao enviar email de convite');
       }
 
       this.gateway.loggerInfo('Convite enviado com sucesso', {
@@ -137,7 +137,9 @@ export class InviteUserInteractor {
       });
     } catch (error) {
       this.gateway.loggerError('Erro ao processar convite de usuário', {
-        error: String(error)
+        error: (error as Error).message,
+        stack: (error as Error).stack,
+        id_company: input.id_company
       });
       return this.presenter.serverError('Erro interno do servidor');
     }

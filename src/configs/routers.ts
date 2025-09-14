@@ -13,6 +13,7 @@ import profileRouter from '@domains/api/profile/routers';
 import resultKeyRoutes from '@domains/api/results-keys/routers';
 import settingRouter from '@domains/api/settings/routers';
 import { subscriptionRoutes } from '@domains/api/subscription/routes';
+import supportContactRoutes from '@domains/api/support-contact/routes';
 import teamRouter from '@domains/api/teams/routers';
 import routerUser from '@domains/api/users/routers';
 import caktoWebhookRouter from '@domains/webhooks/cakto/routers';
@@ -38,6 +39,7 @@ routers.use('/dashboard', dashboardRouter);
 routers.use('/settings', settingRouter);
 routers.use('/permissions', permissionsRouter);
 routers.use('/subscription', subscriptionRoutes);
+routers.use('/support-contact', supportContactRoutes);
 routers.use('/backoffice', backofficeRouter);
 
 const notFound = (request: Request, response: Response) => {

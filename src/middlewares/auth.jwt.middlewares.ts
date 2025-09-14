@@ -1,7 +1,7 @@
+import { logger } from '@configs/logger';
+import dotenv from 'dotenv';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import { logger } from '@configs/logger';
 
 dotenv.config();
 
@@ -9,6 +9,7 @@ export interface UserPayload extends Request {
   user: {
     id: number;
     id_company: number;
+    name?: string;
   };
 }
 
@@ -38,8 +39,16 @@ export const authMiddleware = (
           return response.status(401).json({ error: 'Invalid token' });
         }
 
-        const payload = decoded as { id: number; id_company: number };
-        request.user = { id: payload.id, id_company: payload.id_company };
+        const payload = decoded as {
+          id: number;
+          id_company: number;
+          name?: string;
+        };
+        request.user = {
+          id: payload.id,
+          id_company: payload.id_company,
+          name: payload.name
+        };
 
         return next();
       }
