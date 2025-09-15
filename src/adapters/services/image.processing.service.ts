@@ -45,9 +45,10 @@ export class ImageProcessingService {
       throw new Error('Arquivo não é uma imagem válida.');
     }
 
-    // Gerar nome único para o arquivo
+    // Gerar nome único para o arquivo com timestamp
     const uniqueId = uuidv4();
-    const fileName = `avatar_${userId}_${uniqueId}${fileExtension}`;
+    const timestamp = Date.now();
+    const fileName = `avatar_${userId}_${timestamp}_${uniqueId}${fileExtension}`;
     const filePath = path.join(this.uploadsDir, fileName);
 
     try {

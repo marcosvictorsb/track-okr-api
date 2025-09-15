@@ -74,10 +74,26 @@ export class CreateProfileGateway
     const existingProfile = await this.findUserProfile(data.id_user);
 
     if (existingProfile) {
-      // Atualizar perfil existente
+      // Atualizar perfil existente - preparar apenas campos não undefined
       const updateData: { photo_url?: string; position?: string } = {};
-      if (data.photo_url !== undefined) updateData.photo_url = data.photo_url;
-      if (data.position !== undefined) updateData.position = data.position;
+
+      if (data.photo_url !== undefined) {
+        updateData.photo_url = data.photo_url;
+        this.logging.info('Atualizando photo_url do perfil', {
+          userId: data.id_user,
+          oldPhotoUrl: existingProfile.photo_url,
+          newPhotoUrl: data.photo_url
+        });
+      }
+
+      if (data.position !== undefined) {
+        updateData.position = data.position;
+        this.logging.info('Atualizando position do perfil', {
+          userId: data.id_user,
+          oldPosition: existingProfile.position,
+          newPosition: data.position
+        });
+      }
 
       const success = await this.profileRepository.update(
         { id_user: data.id_user },
@@ -85,15 +101,46 @@ export class CreateProfileGateway
       );
 
       if (!success) {
+        this.logging.error('Falha ao atualizar perfil existente', {
+          userId: data.id_user,
+          updateData
+        });
         throw new Error('Falha ao atualizar perfil');
       }
 
-      return (await this.profileRepository.findByUserId(
+      // Buscar o perfil atualizado com dados do usuário
+      const updatedProfile = await this.profileRepository.findByUserId(
         data.id_user
-      )) as ProfileEntity;
+      );
+      if (!updatedProfile) {
+        throw new Error('Erro ao recuperar perfil atualizado');
+      }
+
+      this.logging.info('Perfil atualizado com sucesso', {
+        userId: data.id_user,
+        profileId: updatedProfile.id,
+        photoUrl: updatedProfile.photo_url,
+        position: updatedProfile.position
+      });
+
+      return updatedProfile;
     } else {
       // Criar novo perfil
-      return await this.profileRepository.create(data);
+      this.logging.info('Criando novo perfil', {
+        userId: data.id_user,
+        data
+      });
+
+      const newProfile = await this.profileRepository.create(data);
+
+      this.logging.info('Novo perfil criado com sucesso', {
+        userId: data.id_user,
+        profileId: newProfile.id,
+        photoUrl: newProfile.photo_url,
+        position: newProfile.position
+      });
+
+      return newProfile;
     }
   }
 

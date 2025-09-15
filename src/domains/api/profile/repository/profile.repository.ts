@@ -1,15 +1,15 @@
-import ProfileModel from '@domains/api/profile/model/profile.model';
 import { ProfileEntity } from '@domains/api/profile/entity/profile.entity';
-import { ModelStatic, Op } from 'sequelize';
 import {
   CreateProfileCriteria,
   DeleteProfileCriteria,
   FindProfileCriteria,
   IProfileRepository,
-  UpdateProfileCriteria,
-  ProfileRepositoryDependencies
+  ProfileRepositoryDependencies,
+  UpdateProfileCriteria
 } from '@domains/api/profile/interfaces';
+import ProfileModel from '@domains/api/profile/model/profile.model';
 import UserModel from '@domains/api/users/model/user.model';
+import { ModelStatic, Op } from 'sequelize';
 
 export class ProfileRepository implements IProfileRepository {
   protected model: ModelStatic<ProfileModel>;
@@ -86,9 +86,18 @@ export class ProfileRepository implements IProfileRepository {
   }
 
   public async create(criteria: CreateProfileCriteria): Promise<ProfileEntity> {
+    console.log('ProfileRepository.create - Iniciando criação:', { criteria });
+
     const profile = await this.model.create({
       ...criteria,
       created_at: new Date()
+    });
+
+    console.log('ProfileRepository.create - Perfil criado:', {
+      id: profile.id,
+      id_user: profile.id_user,
+      photo_url: profile.photo_url,
+      position: profile.position
     });
 
     // Buscar o perfil criado com as associações
@@ -96,7 +105,22 @@ export class ProfileRepository implements IProfileRepository {
       include: this.getIncludeOptions()
     });
 
-    return this.mapToEntity(profileWithUser!);
+    if (!profileWithUser) {
+      throw new Error('Erro ao recuperar perfil criado');
+    }
+
+    const result = this.mapToEntity(profileWithUser);
+
+    console.log('ProfileRepository.create - Resultado final:', {
+      id: result.id,
+      id_user: result.id_user,
+      photo_url: result.photo_url,
+      position: result.position,
+      user_name: result.user_name,
+      user_email: result.user_email
+    });
+
+    return result;
   }
 
   public async find(
@@ -152,11 +176,27 @@ export class ProfileRepository implements IProfileRepository {
     if (data.position !== undefined) updateData.position = data.position;
     updateData.updated_at = new Date();
 
+    console.log('ProfileRepository.update - Dados:', {
+      whereConditions,
+      updateData,
+      originalCriteria: criteria,
+      originalData: data
+    });
+
     const [affectedRows] = await this.model.update(updateData, {
       where: whereConditions
     });
 
-    return affectedRows > 0;
+    const success = affectedRows > 0;
+
+    console.log('ProfileRepository.update - Resultado:', {
+      affectedRows,
+      success,
+      whereConditions,
+      updateData
+    });
+
+    return success;
   }
 
   public async delete(criteria: DeleteProfileCriteria): Promise<boolean> {

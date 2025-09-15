@@ -1,11 +1,11 @@
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { Response } from 'express';
 import {
+  CreateProfileControllerDependencies,
   ICreateProfileController,
   ICreateProfileInteractor,
-  InputCreateProfile,
-  CreateProfileControllerDependencies
+  InputCreateProfile
 } from '../interfaces/create.profile.interface';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 interface MulterRequest extends UserPayload {
   file?: Express.Multer.File;
@@ -23,7 +23,7 @@ export class CreateProfileController implements ICreateProfileController {
     response: Response
   ): Promise<Response> {
     const multerRequest = request as MulterRequest;
-    const { name, position } = request.body;
+    const { user_name, position } = request.body;
     const file = multerRequest.file;
 
     // Preparar dados do arquivo se existir
@@ -38,8 +38,8 @@ export class CreateProfileController implements ICreateProfileController {
     }
 
     const input: InputCreateProfile = {
-      name,
-      position,
+      name: user_name,
+      position: position && position.length > 0 ? position : undefined,
       file: fileData,
       id_user: request.user.id,
       id_company: request.user.id_company
