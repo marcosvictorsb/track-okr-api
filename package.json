@@ -17,7 +17,9 @@
   "scripts": {
     "start": "nodemon --watch src --ext ts --exec ts-node -r module-alias/register src/server.ts",
     "start:prod": "node -r module-alias/register dist/server.js",
-    "build": "tsc && tsc-alias",
+    "check-env": "node scripts/check-env-vars.js",
+    "pre-build": "npm run check-env",
+    "build": "npm run pre-build && tsc && tsc-alias",
     "pm2:start": "npm run build && pm2 start deployment/ecosystem.config.json",
     "pm2:start:prod": "npm run build && pm2 start deployment/ecosystem.production.json",
     "pm2:start:demo": "npm run build && pm2 start deployment/ecosystem.demo.json",
