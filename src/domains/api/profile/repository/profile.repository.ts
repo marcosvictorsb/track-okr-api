@@ -160,41 +160,14 @@ export class ProfileRepository implements IProfileRepository {
   }
 
   public async update(
-    criteria: UpdateProfileCriteria,
-    data: Partial<ProfileEntity>
+    data: Partial<UpdateProfileCriteria>,
+    criteria: UpdateProfileCriteria
   ): Promise<boolean> {
-    // Converter criteria para FindProfileCriteria
-    const whereConditions: Record<string, unknown> = {};
-
-    if (criteria.id) whereConditions['id'] = criteria.id;
-    if (criteria.id_user) whereConditions['id_user'] = criteria.id_user;
-
-    // Preparar dados de atualização
-    const updateData: Record<string, unknown> = {};
-
-    if (data.photo_url !== undefined) updateData.photo_url = data.photo_url;
-    if (data.position !== undefined) updateData.position = data.position;
-    updateData.updated_at = new Date();
-
-    console.log('ProfileRepository.update - Dados:', {
-      whereConditions,
-      updateData,
-      originalCriteria: criteria,
-      originalData: data
-    });
-
-    const [affectedRows] = await this.model.update(updateData, {
-      where: whereConditions
+    const [affectedRows] = await this.model.update(data, {
+      where: this.getConditions(criteria)
     });
 
     const success = affectedRows > 0;
-
-    console.log('ProfileRepository.update - Resultado:', {
-      affectedRows,
-      success,
-      whereConditions,
-      updateData
-    });
 
     return success;
   }
@@ -224,8 +197,8 @@ export class ProfileRepository implements IProfileRepository {
       }
 
       const success = await this.update(
-        { id_user: criteria.id_user },
-        updateData as Partial<ProfileEntity>
+        updateData as Partial<UpdateProfileCriteria>,
+        { id_user: criteria.id_user }
       );
 
       if (!success) {

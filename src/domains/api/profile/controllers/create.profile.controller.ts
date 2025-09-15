@@ -23,7 +23,7 @@ export class CreateProfileController implements ICreateProfileController {
     response: Response
   ): Promise<Response> {
     const multerRequest = request as MulterRequest;
-    const { user_name, position } = request.body;
+    const { name, position } = request.body;
     const file = multerRequest.file;
 
     // Preparar dados do arquivo se existir
@@ -38,7 +38,7 @@ export class CreateProfileController implements ICreateProfileController {
     }
 
     const input: InputCreateProfile = {
-      name: user_name,
+      name: name,
       position: position && position.length > 0 ? position : undefined,
       file: fileData,
       id_user: request.user.id,

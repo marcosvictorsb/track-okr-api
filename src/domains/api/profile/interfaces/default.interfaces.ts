@@ -1,6 +1,6 @@
 import { ProfileEntity } from '@domains/api/profile/entity/profile.entity';
-import { ModelStatic } from 'sequelize';
 import ProfileModel from '@domains/api/profile/model/profile.model';
+import { ModelStatic } from 'sequelize';
 
 export type CreateProfileCriteria = {
   id_user: number;
@@ -31,8 +31,8 @@ export type DeleteProfileCriteria = {
 export type UpdateProfileCriteria = {
   id?: number;
   id_user?: number;
-  photo_url?: string | null;
-  position?: string | null;
+  photo_url?: string;
+  position?: string;
 };
 
 export interface IProfileRepository {
@@ -41,8 +41,8 @@ export interface IProfileRepository {
   findAll(criteria: FindProfileCriteria): Promise<ProfileEntity[]>;
   findByUserId(id_user: number): Promise<ProfileEntity | undefined>;
   update(
-    criteria: UpdateProfileCriteria,
-    data: Partial<ProfileEntity>
+    data: Partial<ProfileEntity>,
+    criteria: UpdateProfileCriteria
   ): Promise<boolean>;
   delete(criteria: DeleteProfileCriteria): Promise<boolean>;
   upsert(criteria: CreateProfileCriteria): Promise<ProfileEntity>;

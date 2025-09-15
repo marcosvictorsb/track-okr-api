@@ -1,29 +1,28 @@
-import express, { Express } from 'express';
-import bodyParser from 'body-parser';
-import mongoSanitize from 'express-mongo-sanitize';
+import { asyncLocalStorage } from '@configs/async.context';
 import { corsMiddleware } from '@configs/cors';
-import { helmetConfig, uploadSecurityHeaders } from '@configs/security';
-import { globalLimiter } from '@configs/rate-limit';
 import {
-  secureErrorHandler,
   notFoundHandler,
+  secureErrorHandler,
   suspiciousRequestLogger
 } from '@configs/error-handling';
-import routers from '@configs/routers';
 import { logger } from '@configs/logger';
-import { asyncLocalStorage } from '@configs/async.context';
-import {
-  prometheusMiddleware,
-  metricsEndpoint,
-  healthCheckWithMetrics
-} from '@middlewares/prometheus.middleware';
 import { config as prometheusConfig } from '@configs/prometheus';
+import routers from '@configs/routers';
+import { helmetConfig, uploadSecurityHeaders } from '@configs/security';
+import {
+  healthCheckWithMetrics,
+  metricsEndpoint,
+  prometheusMiddleware
+} from '@middlewares/prometheus.middleware';
+import bodyParser from 'body-parser';
+import express, { Express } from 'express';
+import mongoSanitize from 'express-mongo-sanitize';
 import uuid4 from 'uuid4';
 
 const app: Express = express();
 
 // Configurar trust proxy para funcionar atrás do Nginx
-app.set('trust proxy', true);
+//app.set('trust proxy', true);
 
 // 1. Middleware de segurança - aplicados primeiro
 app.use(helmetConfig);
