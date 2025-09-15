@@ -36,6 +36,8 @@ export type DataLogOutput = {
   role?: string;
   user_status?: string;
   userActive?: boolean;
+  size?: number;
+  mimetype?: string;
 
   // objective
   id_objective?: number;

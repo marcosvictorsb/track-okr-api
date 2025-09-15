@@ -1,14 +1,14 @@
+import { MixCreateProfile } from '@adapters/gateways';
+import { ImageProcessingService } from '@adapters/services/image.processing.service';
+import { logger } from '@configs/logger';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { ProfileEntity } from '../entity/profile.entity';
 import {
   ICreateProfileGateway,
   ICreateProfileGatewayDependencies
 } from '../interfaces/create.profile.interface';
-import { ProfileEntity } from '../entity/profile.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { IProfileRepository } from '../interfaces/default.interfaces';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ImageProcessingService } from '@adapters/services/image.processing.service';
-import { logger } from '@configs/logger';
-import { MixCreateProfile } from '@adapters/gateways';
 
 export class CreateProfileGateway
   extends MixCreateProfile
@@ -28,7 +28,9 @@ export class CreateProfileGateway
   }
 
   public async findUser(id: number): Promise<UserEntity | null> {
-    this.logging.info('Buscando usuário', { userId: id });
+    this.logging.info('Buscando usuário para verificar se existe', {
+      userId: id
+    });
 
     const user = await this.userRepository.find({ id });
     return user || null;
