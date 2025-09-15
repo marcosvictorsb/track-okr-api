@@ -95,10 +95,9 @@ export class CreateProfileGateway
         });
       }
 
-      const success = await this.profileRepository.update(
-        { id_user: data.id_user },
-        updateData
-      );
+      const success = await this.profileRepository.update(updateData, {
+        id_user: data.id_user
+      });
 
       if (!success) {
         this.logging.error('Falha ao atualizar perfil existente', {
