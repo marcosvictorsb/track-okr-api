@@ -1,14 +1,14 @@
-import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { ModelStatic } from 'sequelize';
 import {
   CreateObjectiveCriteria,
   DeleteObjectiveCriteria,
   FindObjectiveCriteria,
   IObjectiveRepository,
-  UpdateObjectiveCriteria,
-  ObjectiveRepositoryDependencies
+  ObjectiveRepositoryDependencies,
+  UpdateObjectiveCriteria
 } from '@domains/api/objectives/interfaces';
+import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { ModelStatic, Op } from 'sequelize';
 
 export class ObjectiveRepository implements IObjectiveRepository {
   protected model: ModelStatic<ObjectiveModel>;
@@ -44,6 +44,10 @@ export class ObjectiveRepository implements IObjectiveRepository {
 
     if (criteria.status) {
       whereConditions['status'] = criteria.status;
+    }
+
+    if (criteria.statuses) {
+      whereConditions['status'] = { [Op.in]: criteria.statuses };
     }
 
     if (criteria.quarter) {

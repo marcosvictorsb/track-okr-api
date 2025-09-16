@@ -1,24 +1,24 @@
-import { HttpResponse } from '@protocols/http';
+import { logger } from '@configs/logger';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import {
-  GetOverviewInteractorDependencies,
-  InputGetOverview,
-  IGetOverviewGateway
-} from '../interfaces/get.overview.interface';
-import { IPresenter } from '@protocols/presenter';
+  FindObjectiveCriteria,
+  ObjectiveStatus
+} from '@domains/api/objectives/interfaces';
+import { FindTeamCriteria } from '@domains/api/teams/interfaces';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   IOverviewEntity,
   OverviewEntity,
   OverviewStatistics,
   TrendsComparison
 } from '../entity/overview.entity';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { logger } from '@configs/logger';
-import { FindTeamCriteria } from '@domains/api/teams/interfaces';
 import {
-  FindObjectiveCriteria,
-  ObjectiveStatus
-} from '@domains/api/objectives/interfaces';
+  GetOverviewInteractorDependencies,
+  IGetOverviewGateway,
+  InputGetOverview
+} from '../interfaces/get.overview.interface';
 
 export class GetOverviewInteractor {
   protected gateway: IGetOverviewGateway;
@@ -83,7 +83,7 @@ export class GetOverviewInteractor {
         quarter: targetQuarter,
         year: targetYear,
         id_team: teamId,
-        status: ObjectiveStatus.ACTIVE
+        statuses: [ObjectiveStatus.ACTIVE, ObjectiveStatus.COMPLETED]
       };
 
       const objectives = await this.gateway.findObjectives(objectiveCriteria);

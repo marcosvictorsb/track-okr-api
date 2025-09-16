@@ -1,6 +1,6 @@
-import { ModelStatic } from 'sequelize';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { ModelStatic } from 'sequelize';
 
 export enum ObjectiveStatus {
   ACTIVE = 'active',
@@ -28,6 +28,7 @@ export interface FindObjectiveCriteria {
   status?: string; //'active' | 'cancelled' | 'completed';
   quarter?: number;
   year?: number;
+  statuses?: string[]; //'active' | 'cancelled' | 'completed';
 }
 
 export interface UpdateObjectiveCriteria {
