@@ -1,18 +1,18 @@
-import {
-  GetTemporalEvolutionGatewayDependencies,
-  IGetTemporalEvolutionGateway,
-  FindObjectivesByCompanyAndQuarterCriteria,
-  FindCheckinsByCriteria
-} from '../interfaces/get.temporal.evolution.interface';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
-import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
-import { IResultKeyRepository } from '@domains/api/results-keys';
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
 import { ICheckinsRepository } from '@domains/api/checkins/interfaces/default.interface';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
+import { IResultKeyRepository } from '@domains/api/results-keys';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
-import { logger } from '@configs/logger';
-import { DataLogOutput } from '@adapters/services';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import {
+  FindCheckinsByCriteria,
+  FindObjectivesByCompanyAndQuarterCriteria,
+  GetTemporalEvolutionGatewayDependencies,
+  IGetTemporalEvolutionGateway
+} from '../interfaces/get.temporal.evolution.interface';
 
 export class GetTemporalEvolutionGateway
   implements IGetTemporalEvolutionGateway
@@ -41,7 +41,8 @@ export class GetTemporalEvolutionGateway
     return await this.objectiveRepository.findMany({
       id_company: criteria.id_company,
       quarter: criteria.quarter,
-      year: criteria.year
+      year: criteria.year,
+      statuses: ['ACTIVE', 'COMPLETED']
     });
   }
 

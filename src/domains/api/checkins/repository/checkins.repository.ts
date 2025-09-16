@@ -1,12 +1,12 @@
+import CheckinsModel from '@domains/api/checkins/model/checkin.model';
 import { ModelStatic, Op } from 'sequelize';
+import { CheckinsEntity } from '../entity/checkins.entity';
 import {
   CreateCheckinsCriteria,
   FindCheckinsCriteria,
-  UpdateCheckinsCriteria,
-  ICheckinsRepository
+  ICheckinsRepository,
+  UpdateCheckinsCriteria
 } from '../interfaces/default.interface';
-import { CheckinsEntity } from '../entity/checkins.entity';
-import CheckinsModel from '@domains/api/checkins/model/checkin.model';
 
 export type CheckinsRepositoryDependencies = {
   model: ModelStatic<CheckinsModel>;
@@ -49,7 +49,12 @@ export class CheckinsRepository implements ICheckinsRepository {
       created_at: new Date()
     });
 
-    return new CheckinsEntity(Checkins.toJSON());
+    const data = Checkins.toJSON();
+    return new CheckinsEntity({
+      ...data,
+      previous_value: data.previous_value ? Number(data.previous_value) : null,
+      new_value: Number(data.new_value)
+    });
   }
 
   public async findOne(
@@ -79,6 +84,8 @@ export class CheckinsRepository implements ICheckinsRepository {
 
     return new CheckinsEntity({
       ...data,
+      previous_value: data.previous_value ? Number(data.previous_value) : null,
+      new_value: Number(data.new_value),
       user_name: data.user?.name,
       result_key_name: data.result_key?.name
     });
@@ -114,8 +121,10 @@ export class CheckinsRepository implements ICheckinsRepository {
       return new CheckinsEntity({
         id: data.id,
         id_result_key: data.id_result_key,
-        previous_value: data.previous_value,
-        new_value: data.new_value,
+        previous_value: data.previous_value
+          ? Number(data.previous_value)
+          : null,
+        new_value: Number(data.new_value),
         comment: data.comment,
         id_user: data.id_user,
         created_at: data.created_at,
