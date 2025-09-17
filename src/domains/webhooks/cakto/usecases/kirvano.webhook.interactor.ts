@@ -1,23 +1,23 @@
+import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
+import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
+import { CreateCompanyCriteria } from '@domains/api/companies/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { CreateUserCriteria } from '@domains/api/users/interfaces';
+import { CreateSettingCriteria } from '@domains/common';
+import {
+  CreateSubscriptionCriteria,
+  SubscriptionStatus
+} from '@domains/common/subscriptions/interfaces';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { Utils } from '@shared/utils/utils';
+import { KirvanoWebhookPayload } from '../interfaces';
 import {
   EventsKirvanoWebhook,
   IKirvanoWebhookGateway,
   IKirvanoWebhookInteractorDependencies,
   KirvanoWebhookStatus
 } from '../interfaces/kirvano.webhook.interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
-import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
-import { CreateUserCriteria } from '@domains/api/users/interfaces';
-import { Utils } from '@shared/utils/utils';
-import { CreateSettingCriteria } from '@domains/common';
-import { KirvanoWebhookPayload } from '../interfaces';
-import { CreateCompanyCriteria } from '@domains/api/companies/interfaces';
-import {
-  CreateSubscriptionCriteria,
-  SubscriptionStatus
-} from '@domains/common/subscriptions/interfaces';
 
 export class KirvanoWebhookInteractor {
   protected gateway: IKirvanoWebhookGateway;
@@ -243,7 +243,7 @@ export class KirvanoWebhookInteractor {
     await this.sendActivationEmail(user, companyCreated, plan);
 
     this.gateway.saveWebhook({
-      source: 'cakto',
+      source: 'kirvano',
       description: 'Webhook de compra aprovada processado com sucesso',
       json: JSON.stringify(payload),
       status: KirvanoWebhookStatus.SUCCESS,
@@ -284,6 +284,15 @@ export class KirvanoWebhookInteractor {
       subscription_id: findSubscription?.id,
       new_expires_at: updateSubscription.expires_at
     });
+
+    this.gateway.saveWebhook({
+      source: 'kirvano',
+      description: 'Webhook de compra aprovada processado com sucesso',
+      json: JSON.stringify(payload),
+      status: KirvanoWebhookStatus.SUCCESS,
+      created: new Date()
+    });
+    this.gateway.loggerInfo('Webhook salvo', { event: payload.event });
 
     return this.presenter.ok({
       message: 'Renovação de assinatura processada com sucesso'

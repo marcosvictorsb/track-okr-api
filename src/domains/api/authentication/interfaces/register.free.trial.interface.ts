@@ -1,18 +1,19 @@
-import { IPresenter } from '@protocols/presenter';
 import { DataLogOutput } from '@adapters/services';
 import { logger } from '@configs/logger';
+import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
+import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
+import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import { ICompanyRepository } from '@domains/api/companies/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   CreateUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
 import { ISubscriptionRepository } from '@domains/common/subscriptions/interfaces';
-import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { RegisterFreeTrialInteractor } from '../usecases';
-import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
-import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 import { CreateTrialSubscriptionInteractor } from '@domains/common/subscriptions/usecases/create.trial.subscription.interactor';
+import { IPresenter } from '@protocols/presenter';
+import { Resend } from 'resend';
+import { RegisterFreeTrialInteractor } from '../usecases';
 
 export type InputRegisterFreeTrial = {
   name: string;
@@ -63,6 +64,7 @@ export type IRegisterFreeTrialGatewayDependencies = {
   userRepository: IUserRepository;
   planRepository: IPlanRepository;
   subscriptionRepository: ISubscriptionRepository;
+  resendService: Resend;
   logging: typeof logger;
 };
 
