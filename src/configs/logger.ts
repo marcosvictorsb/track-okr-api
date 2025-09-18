@@ -61,26 +61,26 @@ class OpenSearchTransport extends transports.Stream {
         requestId,
         environment: process.env.NODE_ENV,
         service: 'track-okr-api',
-        // Informações da requisição (campos planos)
-        'request.method': store?.method,
-        'request.url': store?.url,
-        'request.path': store?.path,
-        'request.ip': store?.ip,
-        'request.userAgent': store?.userAgent,
-        'request.referer': store?.referer,
-        'request.origin': store?.origin,
-        'request.size': store?.requestSize,
-        // Informações da resposta (campos planos)
-        'response.statusCode': store?.statusCode,
-        'response.responseTime': store?.responseTime,
-        'response.size': store?.responseSize,
-        // Informações do usuário (campos planos)
-        'user.id': store?.userId,
-        'user.companyId': store?.companyId,
-        // Métricas de performance (campos planos)
-        'performance.responseTime': store?.responseTime,
-        'performance.requestSize': store?.requestSize,
-        'performance.responseSize': store?.responseSize,
+        // Informações da requisição (campos com nomes únicos)
+        httpMethod: store?.method,
+        httpUrl: store?.url,
+        httpPath: store?.path,
+        clientIp: store?.ip,
+        clientUserAgent: store?.userAgent,
+        clientReferer: store?.referer,
+        clientOrigin: store?.origin,
+        requestBodySize: store?.requestSize,
+        // Informações da resposta (campos com nomes únicos)
+        httpStatusCode: store?.statusCode,
+        responseTimeMs: store?.responseTime,
+        responseBodySize: store?.responseSize,
+        // Informações do usuário (campos com nomes únicos)
+        userId: store?.userId,
+        companyId: store?.companyId,
+        // Métricas de performance (campos com nomes únicos)
+        performanceResponseTime: store?.responseTime,
+        performanceRequestSize: store?.requestSize,
+        performanceResponseSize: store?.responseSize,
         // Outros campos do log
         ...Object.keys(info).reduce(
           (acc, key) => {

@@ -115,34 +115,34 @@ export const requestLoggingMiddleware = () => {
       // Atualizar o contexto no AsyncLocalStorage
       asyncLocalStorage.enterWith(finalContext);
 
-      // Logar com base no nível apropriado - evitar estruturas aninhadas
+      // Logar com base no nível apropriado - usar campos únicos
       logger[logLevel](message, {
-        // Achatar campos para evitar conflitos de mapeamento
-        'request.method': req.method,
-        'request.url': req.originalUrl,
-        'request.path': req.path,
-        'request.ip': finalContext.ip,
-        'request.userAgent': finalContext.userAgent,
-        'request.referer': finalContext.referer,
-        'request.origin': finalContext.origin,
-        'request.size': finalContext.requestSize,
-        'response.statusCode': statusCode,
-        'response.responseTime': responseTime,
-        'response.size': finalContext.responseSize,
-        'user.id': finalContext.userId,
-        'user.companyId': finalContext.companyId,
-        'performance.responseTime': responseTime,
-        'performance.requestSize': finalContext.requestSize,
-        'performance.responseSize': finalContext.responseSize
+        // Campos únicos que não conflitam com mapeamentos existentes
+        httpMethod: req.method,
+        httpUrl: req.originalUrl,
+        httpPath: req.path,
+        clientIp: finalContext.ip,
+        clientUserAgent: finalContext.userAgent,
+        clientReferer: finalContext.referer,
+        clientOrigin: finalContext.origin,
+        requestBodySize: finalContext.requestSize,
+        httpStatusCode: statusCode,
+        responseTimeMs: responseTime,
+        responseBodySize: finalContext.responseSize,
+        userId: finalContext.userId,
+        companyId: finalContext.companyId,
+        performanceResponseTime: responseTime,
+        performanceRequestSize: finalContext.requestSize,
+        performanceResponseSize: finalContext.responseSize
       });
     });
 
     // Executar dentro do contexto assíncrono
     asyncLocalStorage.run(requestContext, () => {
       logger.info(`Incoming request: ${req.method} ${req.path}`, {
-        'request.ip': requestContext.ip,
-        'request.userAgent': requestContext.userAgent,
-        'request.size': requestContext.requestSize
+        clientIp: requestContext.ip,
+        clientUserAgent: requestContext.userAgent,
+        requestBodySize: requestContext.requestSize
       });
       next();
     });
