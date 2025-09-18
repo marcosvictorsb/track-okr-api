@@ -183,115 +183,45 @@ class OpenSearchTransport extends transports.Stream {
     });
   }
 
-  private sanitizeValueForOpenSearch(value: unknown): any {
-    if (value === null || value === undefined) {
-      return null;
-    }
-
-    if (typeof value === 'object' && !Array.isArray(value)) {
-      // Se já é um objeto válido, retorna como está
-      return value;
-    }
-
-    if (typeof value === 'string') {
-      // Tenta detectar e converter strings que parecem objetos mal formatados
-      if (value.startsWith('{') && value.endsWith('}')) {
-        try {
-          // Tenta converter para JSON válido
-          const formattedValue = value
-            .replace(/(\w+)=/g, '"$1":') // Converte key= para "key":
-            .replace(/:([^"{}\[\],]+)(?=,|}|$)/g, ':"$1"'); // Adiciona aspas em valores sem aspas
-
-          const parsed = JSON.parse(formattedValue);
-          return parsed;
-        } catch (error: unknown) {
-          // Se não conseguir parsear, retorna como string
-          console.warn(
-            '⚠️ Não foi possível converter string para objeto:',
-            value
-          );
-          return value;
-        }
-      }
-
-      // Tenta parsear como JSON válido
-      try {
-        const parsed = JSON.parse(value);
-        return parsed;
-      } catch {
-        // Se não for JSON válido, retorna como string
-        return value;
-      }
-    }
-
-    if (Array.isArray(value)) {
-      // Processa cada item do array recursivamente
-      return value.map((item) => this.sanitizeValueForOpenSearch(item));
-    }
-
-    return value;
-  }
-
   private async sendToOpenSearch(info: Record<string, unknown>) {
     try {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
 
-      const escapeChar = String.fromCharCode(27);
-      const ansiColorRegex = new RegExp(escapeChar + '\\[[0-9;]*m', 'g');
-      const cleanLevel = String(info.level).replace(ansiColorRegex, '').trim();
-
-      // Preparar o documento com sanitização adequada
+      // Achatar a estrutura para evitar conflitos de mapeamento
       const document = {
         '@timestamp': new Date().toISOString(),
         timestamp: info.timestamp,
-        level: cleanLevel,
-        message:
-          typeof info.message === 'string'
-            ? info.message
-            : String(info.message),
+        level: info.level,
+        message: info.message,
         requestId,
         environment: process.env.NODE_ENV,
         service: 'track-okr-api',
-
-        // Informações estruturadas
-        http: {
-          method: store?.method,
-          url: store?.url,
-          path: store?.path,
-          status_code: store?.statusCode
-        },
-
-        client: {
-          ip: store?.ip,
-          user_agent: store?.userAgent,
-          referer: store?.referer,
-          origin: store?.origin
-        },
-
-        user: store?.userId
-          ? {
-              id: store.userId,
-              company_id: store.companyId
-            }
-          : undefined,
-
-        performance: {
-          response_time_ms: store?.responseTime,
-          request_size_bytes: store?.requestSize,
-          response_size_bytes: store?.responseSize
-        },
-
-        // Sanitizar campos adicionais
+        // Informações da requisição (campos com nomes únicos)
+        httpMethod: store?.method,
+        httpUrl: store?.url,
+        httpPath: store?.path,
+        clientIp: store?.ip,
+        clientUserAgent: store?.userAgent,
+        clientReferer: store?.referer,
+        clientOrigin: store?.origin,
+        requestBodySize: store?.requestSize,
+        // Informações da resposta (campos com nomes únicos)
+        httpStatusCode: store?.statusCode,
+        responseTimeMs: store?.responseTime,
+        responseBodySize: store?.responseSize,
+        // Informações do usuário (campos com nomes únicos)
+        userId: store?.userId,
+        companyId: store?.companyId,
+        // Métricas de performance (campos com nomes únicos)
+        performanceResponseTime: store?.responseTime,
+        performanceRequestSize: store?.requestSize,
+        performanceResponseSize: store?.responseSize,
+        // Outros campos do log
         ...Object.keys(info).reduce(
           (acc, key) => {
             if (!['timestamp', 'level', 'message'].includes(key)) {
-              const sanitizedValue = this.sanitizeValueForOpenSearch(info[key]);
-
-              // Evita campos vazios ou nulos
-              if (sanitizedValue !== null && sanitizedValue !== undefined) {
-                acc[key] = sanitizedValue;
-              }
+              acc[key] = info[key];
             }
             return acc;
           },
@@ -299,115 +229,25 @@ class OpenSearchTransport extends transports.Stream {
         )
       };
 
-      // Remover campos undefined para evitar problemas no OpenSearch
-      const cleanDocument = JSON.parse(JSON.stringify(document));
-
       await this.client.index({
         index: this.index,
-        body: cleanDocument,
-        refresh: false // Para melhor performance
+        body: document
       });
 
       console.log(
-        `✅ Log enviado para OpenSearch: ${cleanLevel} - ${info.message}`
+        `✅ Log enviado para OpenSearch: ${info.level} - ${info.message}`
       );
     } catch (error) {
       console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
-
-      // Log mais detalhado do erro
-      if (error.meta?.body?.error) {
-        console.error('🔍 Detalhes do erro OpenSearch:', error.meta.body.error);
-      }
     }
   }
-
-  // private async sendToOpenSearch(info: Record<string, unknown>) {
-  //   try {
-  //     const store = asyncLocalStorage.getStore();
-  //     const requestId = store?.requestId || 'no-request-id';
-
-  //     // Limpar códigos ANSI do level também no OpenSearch
-  //     const escapeChar = String.fromCharCode(27);
-  //     const ansiColorRegex = new RegExp(escapeChar + '\\[[0-9;]*m', 'g');
-  //     const cleanLevel = String(info.level).replace(ansiColorRegex, '').trim();
-
-  //     // Achatar a estrutura para evitar conflitos de mapeamento
-  //     const document = {
-  //       '@timestamp': new Date().toISOString(),
-  //       timestamp: info.timestamp,
-  //       level: cleanLevel, // Usar level limpo
-  //       message: info.message,
-  //       requestId,
-  //       environment: process.env.NODE_ENV,
-  //       service: 'track-okr-api',
-  //       // Informações da requisição (campos com nomes únicos)
-  //       httpMethod: store?.method,
-  //       httpUrl: store?.url,
-  //       httpPath: store?.path,
-  //       clientIp: store?.ip,
-  //       clientUserAgent: store?.userAgent,
-  //       clientReferer: store?.referer,
-  //       clientOrigin: store?.origin,
-  //       requestBodySize: store?.requestSize,
-  //       // Informações da resposta (campos com nomes únicos)
-  //       httpStatusCode: store?.statusCode,
-  //       responseTimeMs: store?.responseTime,
-  //       responseBodySize: store?.responseSize,
-  //       // Informações do usuário (campos com nomes únicos)
-  //       userId: store?.userId,
-  //       companyId: store?.companyId,
-  //       // Métricas de performance (campos com nomes únicos)
-  //       performanceResponseTime: store?.responseTime,
-  //       performanceRequestSize: store?.requestSize,
-  //       performanceResponseSize: store?.responseSize,
-  //       // Outros campos do log - sanitizar tudo para evitar conflitos de mapeamento
-  //       ...Object.keys(info).reduce(
-  //         (acc, key) => {
-  //           if (!['timestamp', 'level', 'message'].includes(key)) {
-  //             const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
-  //               key,
-  //               info[key]
-  //             );
-  //             acc[finalKey] = finalValue;
-  //           }
-  //           return acc;
-  //         },
-  //         {} as Record<string, unknown>
-  //       )
-  //     };
-
-  //     console.log(
-  //       '--------------------------> Enviando log para OpenSearch:',
-  //       document
-  //     );
-
-  //     await this.client.index({
-  //       index: this.index,
-  //       body: document
-  //     });
-
-  //     console.log(
-  //       `✅ Log enviado para OpenSearch: ${cleanLevel} - ${info.message}`
-  //     );
-  //   } catch (error) {
-  //     console.log('--------------------------> Error');
-  //     console.log(error);
-  //     console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
-  //     console.error('🔍 OpenSearch config:', {
-  //       url: process.env.OPENSEARCH_URL || 'https://localhost:9200',
-  //       index: this.index,
-  //       level: String(info.level),
-  //       cleanLevel: String(info.level)
-  //         .replace(new RegExp(String.fromCharCode(27) + '\\[[0-9;]*m', 'g'), '')
-  //         .trim()
-  //     });
-  //   }
-  // }
 }
 
 // Configuração do transport do Discord para logs de error e warn
 const createDiscordTransport = () => {
   // Só ativar Discord logging em produção
+  console.log('------------------------------->');
+  console.log('isProduction:', isProduction);
   if (!isProduction) {
     console.log(
       '📝 Discord logging desabilitado em ambiente de desenvolvimento'
@@ -439,34 +279,7 @@ const createDiscordTransport = () => {
 const createOpenSearchTransport = () => {
   if (!isProduction) return null;
 
-  // Verificar se o OpenSearch está habilitado
-  const opensearchEnabled = process.env.OPENSEARCH_ENABLED === 'true';
-  if (!opensearchEnabled) {
-    console.log('📊 OpenSearch desabilitado via variável de ambiente');
-    return null;
-  }
-
-  // Verificar se as configurações do OpenSearch estão definidas
-  const opensearchUrl = process.env.OPENSEARCH_URL;
-  const opensearchUsername = process.env.OPENSEARCH_USERNAME;
-  const opensearchPassword = process.env.OPENSEARCH_PASSWORD;
-
-  if (
-    !opensearchUrl ||
-    opensearchUrl === 'your_opensearch_url_here' ||
-    !opensearchUsername ||
-    opensearchUsername === 'your_opensearch_username_here' ||
-    !opensearchPassword ||
-    opensearchPassword === 'your_opensearch_password_here'
-  ) {
-    console.log(
-      '⚠️ OpenSearch não configurado - logs só irão para console e Discord'
-    );
-    return null;
-  }
-
   try {
-    console.log('📊 OpenSearch transport ativado para produção');
     return new OpenSearchTransport({
       level: 'info'
     });
