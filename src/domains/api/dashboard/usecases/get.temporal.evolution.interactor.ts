@@ -52,6 +52,23 @@ export class GetTemporalEvolutionInteractor {
         quarter,
         year
       );
+
+      if (idObjectiveIds.length === 0) {
+        this.gateway.loggerInfo(
+          'Nenhum objetivo encontrado para a empresa no quarter',
+          {
+            id_company,
+            quarter,
+            year
+          }
+        );
+
+        return this.presenter.ok({
+          currentQuarter: new Array(12).fill(0),
+          cumulativeQuarter: new Array(12).fill(0)
+        });
+      }
+
       const resultKeys =
         await this.gateway.findResultKeysByObjectiveIds(idObjectiveIds);
 
