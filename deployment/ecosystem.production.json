@@ -9,6 +9,9 @@
       "watch": false,
       "max_memory_restart": "512M",
       "env_file": ".env",
+      "env": {
+        "NODE_ENV": "production"
+      },
       "error_file": "/var/www/gunno/production/logs/api-error.log",
       "out_file": "/var/www/gunno/production/logs/api-out.log",
       "log_file": "/var/www/gunno/production/logs/api-combined.log",
