@@ -183,49 +183,38 @@ class OpenSearchTransport extends transports.Stream {
     });
   }
 
-  private sanitizeValueForOpenSearch(value: unknown): string {
+  private sanitizeFieldForOpenSearch(
+    key: string,
+    value: unknown
+  ): [string, string] {
+    // Lista de campos que sabemos que causam conflitos de mapeamento
+    const problematicFields = [
+      'data',
+      'criteria',
+      'original',
+      'parent',
+      'updateData'
+    ];
+
+    // Se o campo é problemático, prefixar com 'raw_' para evitar conflitos
+    const finalKey = problematicFields.includes(key) ? `raw_${key}` : key;
+
+    // Sempre converter para string para evitar qualquer conflito de tipo
+    let finalValue: string;
+
     if (value === null || value === undefined) {
-      return '';
-    }
-
-    if (typeof value === 'object') {
+      finalValue = '';
+    } else if (typeof value === 'object') {
       try {
-        return JSON.stringify(value);
+        finalValue = JSON.stringify(value);
       } catch {
-        return String(value);
+        finalValue = String(value);
       }
+    } else {
+      finalValue = String(value);
     }
 
-    if (typeof value === 'string') {
-      // Se a string parece ser um objeto mal formatado (ex: {id=1, name=test})
-      if (value.startsWith('{') && value.endsWith('}') && value.includes('=')) {
-        try {
-          // Tentar converter o formato {key=value} para JSON válido
-          const cleanValue = value
-            .replace(/\{|\}/g, '') // Remove chaves
-            .split(',') // Divide por vírgulas
-            .map((pair) => {
-              const [key, ...valueParts] = pair.split('=');
-              const finalValue = valueParts.join('='); // Rejunta caso o valor tenha =
-              const cleanKey = key.trim();
-              const cleanVal = finalValue.trim();
-
-              // Se o valor é numérico, manter como número, senão como string
-              const isNumeric = /^\d+$/.test(cleanVal);
-              return `"${cleanKey}":${isNumeric ? cleanVal : `"${cleanVal}"`}`;
-            })
-            .join(',');
-
-          return `{${cleanValue}}`;
-        } catch {
-          // Se falhar na conversão, retornar como string simples
-          return value;
-        }
-      }
-      return value;
-    }
-
-    return String(value);
+    return [finalKey, finalValue];
   }
 
   private async sendToOpenSearch(info: Record<string, unknown>) {
@@ -271,7 +260,11 @@ class OpenSearchTransport extends transports.Stream {
         ...Object.keys(info).reduce(
           (acc, key) => {
             if (!['timestamp', 'level', 'message'].includes(key)) {
-              acc[key] = this.sanitizeValueForOpenSearch(info[key]);
+              const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
+                key,
+                info[key]
+              );
+              acc[finalKey] = finalValue;
             }
             return acc;
           },
