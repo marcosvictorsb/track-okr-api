@@ -222,11 +222,17 @@ class OpenSearchTransport extends transports.Stream {
         performanceResponseTime: store?.responseTime,
         performanceRequestSize: store?.requestSize,
         performanceResponseSize: store?.responseSize,
-        // Outros campos do log
+        // Outros campos do log - converter tudo para string para evitar conflitos de mapeamento
         ...Object.keys(info).reduce(
           (acc, key) => {
             if (!['timestamp', 'level', 'message'].includes(key)) {
-              acc[key] = info[key];
+              const value = info[key];
+              // Converter objetos e arrays para strings JSON para evitar conflitos de mapeamento
+              if (typeof value === 'object' && value !== null) {
+                acc[key] = JSON.stringify(value);
+              } else {
+                acc[key] = value;
+              }
             }
             return acc;
           },
