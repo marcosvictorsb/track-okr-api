@@ -183,6 +183,51 @@ class OpenSearchTransport extends transports.Stream {
     });
   }
 
+  private sanitizeValueForOpenSearch(value: unknown): string {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    if (typeof value === 'object') {
+      try {
+        return JSON.stringify(value);
+      } catch {
+        return String(value);
+      }
+    }
+
+    if (typeof value === 'string') {
+      // Se a string parece ser um objeto mal formatado (ex: {id=1, name=test})
+      if (value.startsWith('{') && value.endsWith('}') && value.includes('=')) {
+        try {
+          // Tentar converter o formato {key=value} para JSON válido
+          const cleanValue = value
+            .replace(/\{|\}/g, '') // Remove chaves
+            .split(',') // Divide por vírgulas
+            .map((pair) => {
+              const [key, ...valueParts] = pair.split('=');
+              const finalValue = valueParts.join('='); // Rejunta caso o valor tenha =
+              const cleanKey = key.trim();
+              const cleanVal = finalValue.trim();
+
+              // Se o valor é numérico, manter como número, senão como string
+              const isNumeric = /^\d+$/.test(cleanVal);
+              return `"${cleanKey}":${isNumeric ? cleanVal : `"${cleanVal}"`}`;
+            })
+            .join(',');
+
+          return `{${cleanValue}}`;
+        } catch {
+          // Se falhar na conversão, retornar como string simples
+          return value;
+        }
+      }
+      return value;
+    }
+
+    return String(value);
+  }
+
   private async sendToOpenSearch(info: Record<string, unknown>) {
     try {
       const store = asyncLocalStorage.getStore();
@@ -222,17 +267,11 @@ class OpenSearchTransport extends transports.Stream {
         performanceResponseTime: store?.responseTime,
         performanceRequestSize: store?.requestSize,
         performanceResponseSize: store?.responseSize,
-        // Outros campos do log - converter tudo para string para evitar conflitos de mapeamento
+        // Outros campos do log - sanitizar tudo para evitar conflitos de mapeamento
         ...Object.keys(info).reduce(
           (acc, key) => {
             if (!['timestamp', 'level', 'message'].includes(key)) {
-              const value = info[key];
-              // Converter objetos e arrays para strings JSON para evitar conflitos de mapeamento
-              if (typeof value === 'object' && value !== null) {
-                acc[key] = JSON.stringify(value);
-              } else {
-                acc[key] = value;
-              }
+              acc[key] = this.sanitizeValueForOpenSearch(info[key]);
             }
             return acc;
           },
