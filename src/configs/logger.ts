@@ -1,4 +1,5 @@
 import { Client } from '@opensearch-project/opensearch';
+import axios from 'axios';
 import { createLogger, format, Logger, transports } from 'winston';
 import { asyncLocalStorage } from './async.context';
 
@@ -12,6 +13,141 @@ const logLevels: Record<string, number> = {
 };
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+// Classe personalizada para Discord Transport
+class DiscordTransport extends transports.Stream {
+  private webhookUrl: string;
+
+  constructor(options: Record<string, unknown> & { webhookUrl: string }) {
+    super({ stream: process.stdout, ...options });
+    this.webhookUrl = options.webhookUrl;
+  }
+
+  log(info: Record<string, unknown>, callback: () => void) {
+    setImmediate(() => this.emit('logged', info));
+
+    // Não bloquear o callback
+    callback();
+
+    // Processar o log de forma assíncrona apenas para error e warn
+    // Remover códigos ANSI de cor que o Winston pode adicionar
+    const escapeChar = String.fromCharCode(27); // ESC character
+    const ansiColorRegex = new RegExp(escapeChar + '\\[[0-9;]*m', 'g');
+    const level = String(info.level)
+      .toLowerCase()
+      .replace(ansiColorRegex, '')
+      .trim();
+
+    if (level === 'error' || level === 'warn') {
+      this.sendToDiscord(info).catch((error) => {
+        console.error('❌ Erro ao enviar log para Discord:', error.message);
+      });
+    }
+  }
+
+  private async sendToDiscord(info: Record<string, unknown>) {
+    try {
+      const store = asyncLocalStorage.getStore();
+      const requestId = store?.requestId || 'no-request-id';
+
+      // Remover códigos ANSI do level também aqui
+      const escapeChar = String.fromCharCode(27);
+      const ansiColorRegex = new RegExp(escapeChar + '\\[[0-9;]*m', 'g');
+      const cleanLevel = String(info.level).replace(ansiColorRegex, '').trim();
+
+      // Determinar cor do embed baseado no nível
+      const color = cleanLevel === 'error' ? 15158332 : 16776960; // vermelho para error, amarelo para warn
+      const emoji = cleanLevel === 'error' ? '🚨' : '⚠️';
+
+      // Criar embed estruturado para Discord
+      const embed = {
+        title: `${emoji} ${cleanLevel.toUpperCase()} - Track OKR API`,
+        description: info.message?.toString() || 'Sem mensagem',
+        color,
+        fields: [
+          {
+            name: '🔗 Request ID',
+            value: requestId,
+            inline: true
+          },
+          {
+            name: '🌍 Environment',
+            value: process.env.NODE_ENV || 'unknown',
+            inline: true
+          },
+          {
+            name: '⏰ Timestamp',
+            value: new Date().toLocaleString('pt-BR', {
+              timeZone: 'America/Sao_Paulo'
+            }),
+            inline: true
+          }
+        ],
+        footer: {
+          text: 'Track OKR API Monitoring'
+        }
+      };
+
+      // Adicionar informações da requisição se disponível
+      if (store?.method && store?.path) {
+        embed.fields.push({
+          name: '📡 Request',
+          value: `${store.method} ${store.path}`,
+          inline: true
+        });
+      }
+
+      // Adicionar status code se disponível
+      if (store?.statusCode) {
+        embed.fields.push({
+          name: '📊 Status Code',
+          value: store.statusCode.toString(),
+          inline: true
+        });
+      }
+
+      // Adicionar informações do usuário se disponível
+      if (store?.userId) {
+        embed.fields.push({
+          name: '👤 User ID',
+          value: store.userId.toString(),
+          inline: true
+        });
+      }
+
+      // Adicionar stack trace para erros (limitado para não exceder limites do Discord)
+      if (cleanLevel === 'error' && info.stack) {
+        const stackTrace = info.stack.toString();
+        embed.fields.push({
+          name: '📝 Stack Trace',
+          value:
+            stackTrace.length > 1000
+              ? stackTrace.substring(0, 997) + '...'
+              : stackTrace,
+          inline: false
+        });
+      }
+
+      const payload = {
+        username: 'Track OKR Monitor',
+        avatar_url: 'https://cdn-icons-png.flaticon.com/512/2965/2965879.png',
+        embeds: [embed]
+      };
+
+      await axios.post(this.webhookUrl, payload);
+
+      console.log(
+        `✅ Log enviado para Discord: ${cleanLevel} - ${info.message}`
+      );
+    } catch (error) {
+      console.error('❌ Erro ao enviar log para Discord:', error);
+      if (error.response) {
+        console.error('📄 Response data:', error.response.data);
+        console.error('📊 Response status:', error.response.status);
+      }
+    }
+  }
+}
 
 // Classe personalizada para OpenSearch Transport
 class OpenSearchTransport extends transports.Stream {
@@ -107,6 +243,36 @@ class OpenSearchTransport extends transports.Stream {
   }
 }
 
+// Configuração do transport do Discord para logs de error e warn
+const createDiscordTransport = () => {
+  // Só ativar Discord logging em produção
+  if (!isProduction) {
+    console.log(
+      '📝 Discord logging desabilitado em ambiente de desenvolvimento'
+    );
+    return null;
+  }
+
+  const webhookUrl =
+    'https://discord.com/api/webhooks/1418339674505609355/oYP7oVEDhsIl-HMncwKdSck1JaWo2QxIKuP7QeH5CgY_jpwB7HInsrvuLqsm4-vAh1dB';
+
+  if (!webhookUrl) {
+    console.warn('⚠️ Discord webhook URL não configurado');
+    return null;
+  }
+
+  try {
+    console.log('📱 Discord logging ativado para ambiente de produção');
+    return new DiscordTransport({
+      level: 'warn', // Captura warn e error (error tem prioridade maior que warn)
+      webhookUrl
+    });
+  } catch (error) {
+    console.error('❌ Erro ao configurar Discord transport:', error);
+    return null;
+  }
+};
+
 // Configuração do transport do OpenSearch para produção
 const createOpenSearchTransport = () => {
   if (!isProduction) return null;
@@ -127,6 +293,15 @@ const createTransports = () => {
     new transports.Console()
   ];
 
+  // Adicionar Discord transport para error e warn
+  const discordTransport = createDiscordTransport();
+  if (discordTransport) {
+    transportsList.push(
+      discordTransport as unknown as transports.ConsoleTransportInstance
+    );
+  }
+
+  // Adicionar OpenSearch transport para produção
   const opensearchTransport = createOpenSearchTransport();
   if (opensearchTransport) {
     transportsList.push(
