@@ -188,11 +188,16 @@ class OpenSearchTransport extends transports.Stream {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
 
+      // Limpar códigos ANSI do level também no OpenSearch
+      const escapeChar = String.fromCharCode(27);
+      const ansiColorRegex = new RegExp(escapeChar + '\\[[0-9;]*m', 'g');
+      const cleanLevel = String(info.level).replace(ansiColorRegex, '').trim();
+
       // Achatar a estrutura para evitar conflitos de mapeamento
       const document = {
         '@timestamp': new Date().toISOString(),
         timestamp: info.timestamp,
-        level: info.level,
+        level: cleanLevel, // Usar level limpo
         message: info.message,
         requestId,
         environment: process.env.NODE_ENV,
@@ -235,10 +240,18 @@ class OpenSearchTransport extends transports.Stream {
       });
 
       console.log(
-        `✅ Log enviado para OpenSearch: ${info.level} - ${info.message}`
+        `✅ Log enviado para OpenSearch: ${cleanLevel} - ${info.message}`
       );
     } catch (error) {
       console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+      console.error('🔍 OpenSearch config:', {
+        url: process.env.OPENSEARCH_URL || 'https://localhost:9200',
+        index: this.index,
+        level: String(info.level),
+        cleanLevel: String(info.level)
+          .replace(new RegExp(String.fromCharCode(27) + '\\[[0-9;]*m', 'g'), '')
+          .trim()
+      });
     }
   }
 }
@@ -277,7 +290,27 @@ const createDiscordTransport = () => {
 const createOpenSearchTransport = () => {
   if (!isProduction) return null;
 
+  // Verificar se as configurações do OpenSearch estão definidas
+  const opensearchUrl = process.env.OPENSEARCH_URL;
+  const opensearchUsername = process.env.OPENSEARCH_USERNAME;
+  const opensearchPassword = process.env.OPENSEARCH_PASSWORD;
+
+  if (
+    !opensearchUrl ||
+    opensearchUrl === 'your_opensearch_url_here' ||
+    !opensearchUsername ||
+    opensearchUsername === 'your_opensearch_username_here' ||
+    !opensearchPassword ||
+    opensearchPassword === 'your_opensearch_password_here'
+  ) {
+    console.log(
+      '⚠️ OpenSearch não configurado - logs só irão para console e Discord'
+    );
+    return null;
+  }
+
   try {
+    console.log('📊 OpenSearch transport ativado para produção');
     return new OpenSearchTransport({
       level: 'info'
     });
