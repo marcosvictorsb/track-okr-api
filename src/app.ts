@@ -1,4 +1,3 @@
-import { asyncLocalStorage } from '@configs/async.context';
 import { corsMiddleware } from '@configs/cors';
 import {
   notFoundHandler,
@@ -14,10 +13,13 @@ import {
   metricsEndpoint,
   prometheusMiddleware
 } from '@middlewares/prometheus.middleware';
+import {
+  requestLoggingMiddleware,
+  userContextMiddleware
+} from '@middlewares/request-logging.middleware';
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
-import uuid4 from 'uuid4';
 
 const app: Express = express();
 
@@ -30,17 +32,8 @@ app.use(helmetConfig);
 app.use(mongoSanitize());
 app.use(suspiciousRequestLogger);
 
-// 2. Middleware para gerar e armazenar o requestId
-app.use((req, res, next) => {
-  const requestId = uuid4();
-  asyncLocalStorage.run({ requestId }, () => {
-    logger.info(`Incoming request: ${req.method} ${req.path}`, {
-      ip: req.ip,
-      userAgent: req.get('User-Agent')
-    });
-    next();
-  });
-});
+// 2. Middleware avançado de logging que captura todas as informações da requisição
+app.use(requestLoggingMiddleware());
 
 // 3. Prometheus metrics middleware (se habilitado)
 if (prometheusConfig.enabled) {
@@ -82,10 +75,13 @@ app.use(
   })
 );
 
-// 8. Routes
+// 8. Middleware para capturar contexto do usuário autenticado
+app.use(userContextMiddleware());
+
+// 9. Routes
 app.use(routers);
 
-// 9. Error handling - aplicados por último
+// 10. Error handling - aplicados por último
 app.use(notFoundHandler);
 app.use(secureErrorHandler);
 

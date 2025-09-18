@@ -1,5 +1,5 @@
-import { createLogger, format, transports, Logger } from 'winston';
 import { Client } from '@opensearch-project/opensearch';
+import { createLogger, format, Logger, transports } from 'winston';
 import { asyncLocalStorage } from './async.context';
 
 const logLevels: Record<string, number> = {
@@ -18,9 +18,9 @@ class OpenSearchTransport extends transports.Stream {
   private client: Client;
   private index: string;
 
-  constructor(options: any) {
+  constructor(options: Record<string, unknown>) {
     super({ stream: process.stdout, ...options });
-    
+
     this.client = new Client({
       node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
       auth: {
@@ -31,27 +31,27 @@ class OpenSearchTransport extends transports.Stream {
         rejectUnauthorized: process.env.OPENSEARCH_SSL_VERIFY !== 'false'
       }
     });
-    
+
     this.index = process.env.OPENSEARCH_INDEX || 'gunno-logs';
   }
 
-  log(info: any, callback: () => void) {
+  log(info: Record<string, unknown>, callback: () => void) {
     setImmediate(() => this.emit('logged', info));
 
     // Não bloquear o callback
     callback();
 
     // Processar o log de forma assíncrona
-    this.sendToOpenSearch(info).catch(error => {
+    this.sendToOpenSearch(info).catch((error) => {
       console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
     });
   }
 
-  private async sendToOpenSearch(info: any) {
+  private async sendToOpenSearch(info: Record<string, unknown>) {
     try {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
-      
+
       const document = {
         '@timestamp': new Date().toISOString(),
         timestamp: info.timestamp,
@@ -60,6 +60,34 @@ class OpenSearchTransport extends transports.Stream {
         requestId,
         environment: process.env.NODE_ENV,
         service: 'track-okr-api',
+        // Informações da requisição
+        request: {
+          method: store?.method,
+          url: store?.url,
+          path: store?.path,
+          ip: store?.ip,
+          userAgent: store?.userAgent,
+          referer: store?.referer,
+          origin: store?.origin,
+          size: store?.requestSize
+        },
+        // Informações da resposta
+        response: {
+          statusCode: store?.statusCode,
+          responseTime: store?.responseTime,
+          size: store?.responseSize
+        },
+        // Informações do usuário
+        user: {
+          id: store?.userId,
+          companyId: store?.companyId
+        },
+        // Métricas de performance
+        performance: {
+          responseTime: store?.responseTime,
+          requestSize: store?.requestSize,
+          responseSize: store?.responseSize
+        },
         ...info
       };
 
@@ -68,7 +96,9 @@ class OpenSearchTransport extends transports.Stream {
         body: document
       });
 
-      console.log(`✅ Log enviado para OpenSearch: ${info.level} - ${info.message}`);
+      console.log(
+        `✅ Log enviado para OpenSearch: ${info.level} - ${info.message}`
+      );
     } catch (error) {
       console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
     }
@@ -91,11 +121,15 @@ const createOpenSearchTransport = () => {
 
 // Criar array de transports
 const createTransports = () => {
-  const transportsList: any[] = [new transports.Console()];
+  const transportsList: transports.ConsoleTransportInstance[] = [
+    new transports.Console()
+  ];
 
   const opensearchTransport = createOpenSearchTransport();
   if (opensearchTransport) {
-    transportsList.push(opensearchTransport);
+    transportsList.push(
+      opensearchTransport as unknown as transports.ConsoleTransportInstance
+    );
   }
 
   return transportsList;
