@@ -115,43 +115,34 @@ export const requestLoggingMiddleware = () => {
       // Atualizar o contexto no AsyncLocalStorage
       asyncLocalStorage.enterWith(finalContext);
 
-      // Logar com base no nível apropriado
+      // Logar com base no nível apropriado - evitar estruturas aninhadas
       logger[logLevel](message, {
-        request: {
-          method: req.method,
-          url: req.originalUrl,
-          path: req.path,
-          query: req.query,
-          params: req.params,
-          ip: finalContext.ip,
-          userAgent: finalContext.userAgent,
-          referer: finalContext.referer,
-          origin: finalContext.origin,
-          size: finalContext.requestSize
-        },
-        response: {
-          statusCode,
-          responseTime,
-          size: finalContext.responseSize
-        },
-        user: {
-          id: finalContext.userId,
-          companyId: finalContext.companyId
-        },
-        performance: {
-          responseTime,
-          requestSize: finalContext.requestSize,
-          responseSize: finalContext.responseSize
-        }
+        // Achatar campos para evitar conflitos de mapeamento
+        'request.method': req.method,
+        'request.url': req.originalUrl,
+        'request.path': req.path,
+        'request.ip': finalContext.ip,
+        'request.userAgent': finalContext.userAgent,
+        'request.referer': finalContext.referer,
+        'request.origin': finalContext.origin,
+        'request.size': finalContext.requestSize,
+        'response.statusCode': statusCode,
+        'response.responseTime': responseTime,
+        'response.size': finalContext.responseSize,
+        'user.id': finalContext.userId,
+        'user.companyId': finalContext.companyId,
+        'performance.responseTime': responseTime,
+        'performance.requestSize': finalContext.requestSize,
+        'performance.responseSize': finalContext.responseSize
       });
     });
 
     // Executar dentro do contexto assíncrono
     asyncLocalStorage.run(requestContext, () => {
       logger.info(`Incoming request: ${req.method} ${req.path}`, {
-        ip: requestContext.ip,
-        userAgent: requestContext.userAgent,
-        requestSize: requestContext.requestSize
+        'request.ip': requestContext.ip,
+        'request.userAgent': requestContext.userAgent,
+        'request.size': requestContext.requestSize
       });
       next();
     });

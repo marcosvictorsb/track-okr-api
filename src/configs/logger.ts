@@ -52,6 +52,7 @@ class OpenSearchTransport extends transports.Stream {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
 
+      // Achatar a estrutura para evitar conflitos de mapeamento
       const document = {
         '@timestamp': new Date().toISOString(),
         timestamp: info.timestamp,
@@ -60,35 +61,36 @@ class OpenSearchTransport extends transports.Stream {
         requestId,
         environment: process.env.NODE_ENV,
         service: 'track-okr-api',
-        // Informações da requisição
-        request: {
-          method: store?.method,
-          url: store?.url,
-          path: store?.path,
-          ip: store?.ip,
-          userAgent: store?.userAgent,
-          referer: store?.referer,
-          origin: store?.origin,
-          size: store?.requestSize
-        },
-        // Informações da resposta
-        response: {
-          statusCode: store?.statusCode,
-          responseTime: store?.responseTime,
-          size: store?.responseSize
-        },
-        // Informações do usuário
-        user: {
-          id: store?.userId,
-          companyId: store?.companyId
-        },
-        // Métricas de performance
-        performance: {
-          responseTime: store?.responseTime,
-          requestSize: store?.requestSize,
-          responseSize: store?.responseSize
-        },
-        ...info
+        // Informações da requisição (campos planos)
+        'request.method': store?.method,
+        'request.url': store?.url,
+        'request.path': store?.path,
+        'request.ip': store?.ip,
+        'request.userAgent': store?.userAgent,
+        'request.referer': store?.referer,
+        'request.origin': store?.origin,
+        'request.size': store?.requestSize,
+        // Informações da resposta (campos planos)
+        'response.statusCode': store?.statusCode,
+        'response.responseTime': store?.responseTime,
+        'response.size': store?.responseSize,
+        // Informações do usuário (campos planos)
+        'user.id': store?.userId,
+        'user.companyId': store?.companyId,
+        // Métricas de performance (campos planos)
+        'performance.responseTime': store?.responseTime,
+        'performance.requestSize': store?.requestSize,
+        'performance.responseSize': store?.responseSize,
+        // Outros campos do log
+        ...Object.keys(info).reduce(
+          (acc, key) => {
+            if (!['timestamp', 'level', 'message'].includes(key)) {
+              acc[key] = info[key];
+            }
+            return acc;
+          },
+          {} as Record<string, unknown>
+        )
       };
 
       await this.client.index({
