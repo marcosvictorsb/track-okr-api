@@ -1,6 +1,6 @@
-import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '@infra/database/connection/mysql';
 import Company from '@domains/api/companies/model/company.model';
+import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 
 interface PlannerModelAttributes {
   id?: number;
@@ -36,7 +36,7 @@ PlannerModel.init(
       type: DataTypes.INTEGER
     },
     title: { type: DataTypes.STRING },
-    description: { type: DataTypes.STRING },
+    description: { type: DataTypes.TEXT },
     year: { type: DataTypes.NUMBER },
     id_company: {
       type: DataTypes.INTEGER,

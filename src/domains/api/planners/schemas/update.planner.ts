@@ -16,7 +16,7 @@ export const updatePlannerSchema = z.object({
     description: z
       .string()
       .min(1, 'Descrição é obrigatória')
-      .max(250, 'A descrição deve ter no máximo 150 caracteres'),
+      .max(5000, 'A descrição deve ter no máximo 5000 caracteres'),
     year: z
       .number()
       .int()
