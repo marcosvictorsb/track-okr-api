@@ -1,16 +1,18 @@
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
-import { ModelStatic } from 'sequelize';
 import CompanyModel from '@domains/api/companies/model/company.model';
+import { ModelStatic } from 'sequelize';
 
 export type CreateCompanyCriteria = {
   name: string;
   cnpj: string;
+  website?: string;
 };
 
 export type FindCompanyCriteria = {
   id?: number;
   name?: string;
   cnpj?: string;
+  website?: string;
 };
 
 export type DeleteCompanyCriteria = {
@@ -21,13 +23,12 @@ export type UpdateCompanyCriteria = {
   id?: number;
   name?: string;
   cnpj?: string;
+  website?: string;
 };
 
 export interface ICompanyRepository {
   create(criteria: CreateCompanyCriteria): Promise<CompanyEntity>;
-  find(
-    criteria: FindCompanyCriteria
-  ): Promise<CompanyEntity | undefined>;
+  find(criteria: FindCompanyCriteria): Promise<CompanyEntity | undefined>;
   // findAll(criteria: FindCompanyCriteria): Promise<CompanyEntity[]>;
   update(
     criteria: UpdateCompanyCriteria,

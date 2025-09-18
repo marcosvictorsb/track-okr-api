@@ -1,11 +1,11 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   ActivateUserPurchaseInteractorDependencies,
-  InputActivateUserPurchase,
-  IActivateUserPurchaseGateway
+  IActivateUserPurchaseGateway,
+  InputActivateUserPurchase
 } from '../interfaces/activate.user.purchase.interface';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserStatus } from '../interfaces/default.interfaces';
 
 export class ActivateUserPurchaseInteractor {
@@ -80,14 +80,15 @@ export class ActivateUserPurchaseInteractor {
         name: company_name,
         cnpj: company_document
       };
-      await this.gateway.updateCompany({ id: id_company }, updateDataCompany);
+      await this.gateway.updateCompany(updateDataCompany, { id: id_company });
 
       return this.presenter.ok({
         message: 'Usuário ativado com sucesso'
       });
     } catch (error) {
       this.gateway.loggerError('Erro ao ativar o usuário', {
-        error: String(error)
+        error: (error as Error).message,
+        stack: (error as Error).stack
       });
       return this.presenter.serverError('Erro ao ativar o usuário');
     }

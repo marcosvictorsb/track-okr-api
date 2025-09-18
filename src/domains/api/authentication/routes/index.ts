@@ -4,6 +4,7 @@ import * as factories from '../factories';
 import {
   confirmPasswordResetSchema,
   forgotPasswordSchema,
+  registerBetaSchema,
   registerFreeTrialSchema,
   requestPasswordResetSchema
 } from '../schemas';
@@ -14,6 +15,7 @@ const {
   makeRequestPasswordResetController,
   makeConfirmPasswordResetController,
   makeRegisterFreeTrialController,
+  makeRegisterBetaController,
   makeForgotPasswordController,
   makeChangePasswordController
 } = factories;
@@ -21,6 +23,7 @@ const {
 const requestPasswordResetController = makeRequestPasswordResetController();
 const confirmPasswordResetController = makeConfirmPasswordResetController();
 const registerController = makeRegisterFreeTrialController();
+const registerBetaController = makeRegisterBetaController();
 const forgotPasswordController = makeForgotPasswordController();
 const changePasswordController = makeChangePasswordController();
 
@@ -34,6 +37,12 @@ authRoutes.post(
   '/register',
   validateSchema(registerFreeTrialSchema),
   (request, response) => registerController.register(request, response)
+);
+
+authRoutes.post(
+  '/register-beta',
+  validateSchema(registerBetaSchema),
+  (request, response) => registerBetaController.registerBeta(request, response)
 );
 
 authRoutes.post(

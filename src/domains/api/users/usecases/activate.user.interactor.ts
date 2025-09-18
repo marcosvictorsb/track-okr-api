@@ -1,11 +1,11 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   ActivateUserInteractorDependencies,
-  InputActivateUser,
-  IActivateUserGateway
+  IActivateUserGateway,
+  InputActivateUser
 } from '../interfaces/activate.user.interface';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class ActivateUserInteractor {
   protected gateway: IActivateUserGateway;
@@ -101,7 +101,8 @@ export class ActivateUserInteractor {
       });
     } catch (error) {
       this.gateway.loggerError('Erro ao ativar o usuário', {
-        error: String(error)
+        error: (error as Error).message,
+        stack: (error as Error).stack
       });
       return this.presenter.serverError('Erro ao ativar o usuário');
     }

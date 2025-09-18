@@ -1,32 +1,32 @@
+import { UserStatus } from '@domains/api/users/interfaces';
 import { CreateFreeSubscriptionInput } from '@domains/common/subscriptions/interfaces';
 import { CreateTrialSubscriptionInteractor } from '@domains/common/subscriptions/usecases/create.trial.subscription.interactor';
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { Utils } from '@shared/utils/utils';
-import bcrypt from 'bcryptjs';
 import {
-  InputRegisterFreeTrial,
-  IRegisterFreeTrialGateway,
-  RegisterFreeTrialInteractorDependencies
-} from '../interfaces/register.free.trial.interface';
+  InputRegisterBeta,
+  IRegisterBetaGateway,
+  RegisterBetaInteractorDependencies
+} from '../interfaces/register.beta.interface';
 
-export class RegisterFreeTrialInteractor {
-  protected gateway: IRegisterFreeTrialGateway;
+export class RegisterBetaInteractor {
+  protected gateway: IRegisterBetaGateway;
   protected presenter: IPresenter;
   protected interactorCreateTrialSubscription: CreateTrialSubscriptionInteractor;
 
-  constructor(params: RegisterFreeTrialInteractorDependencies) {
+  constructor(params: RegisterBetaInteractorDependencies) {
     this.gateway = params.gateway;
     this.presenter = params.presenter;
     this.interactorCreateTrialSubscription =
       params.interactorCreateTrialSubscription;
   }
 
-  async execute(input: InputRegisterFreeTrial): Promise<HttpResponse> {
+  async execute(input: InputRegisterBeta): Promise<HttpResponse> {
     try {
-      const { name, email, password, company_name, plan } = input;
+      const { name, email, company_name, website, is_beta_tester } = input;
 
-      this.gateway.loggerInfo('Iniciando processo de registro', {
+      this.gateway.loggerInfo('Iniciando processo de registro beta', {
         data: JSON.stringify(input)
       });
 
@@ -38,9 +38,11 @@ export class RegisterFreeTrialInteractor {
       }
 
       // 2. Verificar se o plano existe
-      const planFound = await this.gateway.findPlanByName(plan);
+      const planFound = await this.gateway.findPlanByName({
+        name: 'Plano Beta'
+      });
       if (!planFound) {
-        this.gateway.loggerInfo('Plano não encontrado', { plan });
+        this.gateway.loggerInfo('Plano não encontrado', { name: 'Plano Beta' });
         return this.presenter.badRequest('Plano não encontrado');
       }
 
@@ -49,10 +51,11 @@ export class RegisterFreeTrialInteractor {
         plan_name: planFound.name
       });
 
-      // 3. Criar a empresa com CNPJ zerado inicialmente
+      // 3. Criar a empresa com website se fornecido
       const companyData = {
         name: company_name,
-        cnpj: `${new Date()}`, // CNPJ zerado conforme solicitado
+        cnpj: `${email} / ${new Date()}`,
+        website: website || undefined,
         created_at: new Date(),
         updated_at: new Date()
       };
@@ -63,36 +66,38 @@ export class RegisterFreeTrialInteractor {
         company_name
       });
 
-      // 4. Criar o usuário administrador
-      const hashedPassword = await bcrypt.hash(password, 10);
+      // 4. Criar o usuário administrador sem senha (beta tester)
       const userData = {
         name,
         email,
-        password_hash: hashedPassword,
+        password_hash: '',
         role: 'admin',
-        status: 'pending',
-        id_company: company.id as number,
-        created_at: new Date(),
-        updated_at: new Date()
+        status: UserStatus.PENDING_ACTIVATION,
+        id_company: company.id as number
       };
 
       const user = await this.gateway.createUser(userData);
-      this.gateway.loggerInfo('Usuário administrador criado com sucesso', {
+      this.gateway.loggerInfo('Usuário beta criado com sucesso', {
         id_user: user.id,
         email,
         role: 'admin'
       });
-      // 5. Criar a assinatura de teste (trial) de 14 dias
-      const inputCreateTrialSubscription: CreateFreeSubscriptionInput = {
-        id_company: company.id as number
+
+      // 5. Criar a assinatura beta (3 meses)
+      const inputCreateBetaSubscription: CreateFreeSubscriptionInput = {
+        id_company: company.id as number,
+        isBeta: true,
+        name: 'Plano Beta'
       };
+
+      // Usando CreateTrialSubscriptionInteractor com isBeta=true para 3 meses
       await this.interactorCreateTrialSubscription.execute(
-        inputCreateTrialSubscription
+        inputCreateBetaSubscription
       );
 
-      // 6. Preparar resposta de sucesso (sem dados sensíveis)
+      // 6. Preparar resposta de sucesso
       const response = {
-        message: 'Registro realizado com sucesso',
+        message: 'Registro beta realizado com sucesso',
         data: {
           user: {
             id: user.id,
@@ -103,24 +108,18 @@ export class RegisterFreeTrialInteractor {
           },
           company: {
             id: company.id,
-            name: company.name
+            name: company.name,
+            website: company.website
           }
-          // subscription: {
-          //   id: subscription.id,
-          //   status: subscription.status,
-          //   trial_end_date: trialEndDate,
-          //   plan: planFound.name
-          // }
         }
       };
 
-      this.gateway.loggerInfo('Registro concluído com sucesso', {
+      this.gateway.loggerInfo('Registro beta concluído com sucesso', {
         id_user: user.id,
-        id_company: company.id,
-        subscription_id: 1 // subscription.id
+        id_company: company.id
       });
 
-      // Gerar token de ativação
+      // 7. Gerar token de ativação
       const _activationToken = await this.gateway.generateActivationToken(
         user.id!
       );
@@ -131,8 +130,10 @@ export class RegisterFreeTrialInteractor {
         id: user.id as number,
         id_company: company.id as number
       });
+
       const variables = {
         userName: user.name,
+        companyName: company.name,
         baseUrl:
           process.env.NODE_ENV === 'production'
             ? (process.env.PRODUCTION_BASE_URL as string)
@@ -144,27 +145,32 @@ export class RegisterFreeTrialInteractor {
         maxTeams: String(planFound.max_teams),
         maxObjectives: String(planFound.max_objectives_per_quarter),
         maxKeyResults: String(planFound.max_key_results_per_objective),
-        currentYear: String(new Date().getFullYear())
+        currentYear: String(new Date().getFullYear()),
+        betaDuration: '3 meses',
+        website: website || 'Não informado'
       };
+
       const emailContent = Utils.loadEmailTemplate(templateName, variables);
 
       const emailSent = await this.gateway.sendInviteEmail(email, emailContent);
 
       if (!emailSent) {
-        this.gateway.loggerError('Erro ao enviar email de convite', { email });
-        // return this.presenter.serverError('Erro ao enviar email de convite');
+        this.gateway.loggerError('Erro ao enviar email beta', { email });
       }
 
-      this.gateway.loggerInfo('Convite enviado com sucesso', {
+      this.gateway.loggerInfo('Email beta enviado com sucesso', {
         email,
         data: `userId: ${user.id}`
       });
 
       return this.presenter.created(response);
     } catch (error) {
-      this.gateway.loggerError('Erro no processo de registro', { error });
+      this.gateway.loggerError('Erro no processo de registro beta', {
+        error: (error as Error).message,
+        stack: (error as Error).stack
+      });
       return this.presenter.serverError(
-        'Erro interno no servidor durante o registro'
+        'Erro interno no servidor durante o registro beta'
       );
     }
   }

@@ -1,14 +1,14 @@
-import CompanyModel from '@domains/api/companies/model/company.model';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
-import { ModelStatic } from 'sequelize';
 import {
+  CompanyRepositoryDependencies,
   CreateCompanyCriteria,
   DeleteCompanyCriteria,
   FindCompanyCriteria,
   ICompanyRepository,
-  UpdateCompanyCriteria,
-  CompanyRepositoryDependencies
+  UpdateCompanyCriteria
 } from '@domains/api/companies/interfaces';
+import CompanyModel from '@domains/api/companies/model/company.model';
+import { ModelStatic } from 'sequelize';
 
 export class CompanyRepository implements ICompanyRepository {
   protected model: ModelStatic<CompanyModel>;
@@ -17,8 +17,10 @@ export class CompanyRepository implements ICompanyRepository {
     this.model = params.model;
   }
 
-  private getConditions(criteria: FindCompanyCriteria): Record<string, any> {
-    const whereConditions: Record<string, any> = {};
+  private getConditions(
+    criteria: FindCompanyCriteria
+  ): Record<string, unknown> {
+    const whereConditions: Record<string, unknown> = {};
 
     if (criteria.id) {
       whereConditions['id'] = criteria.id;
@@ -30,6 +32,10 @@ export class CompanyRepository implements ICompanyRepository {
 
     if (criteria.name) {
       whereConditions['name'] = criteria.name;
+    }
+
+    if (criteria.website) {
+      whereConditions['website'] = criteria.website;
     }
 
     return whereConditions;
@@ -53,7 +59,9 @@ export class CompanyRepository implements ICompanyRepository {
     return new CompanyEntity(company);
   }
 
-  public async findAll(criteria: FindCompanyCriteria): Promise<CompanyEntity[]> {
+  public async findAll(
+    criteria: FindCompanyCriteria
+  ): Promise<CompanyEntity[]> {
     const companies = await this.model.findAll({
       where: this.getConditions(criteria),
       attributes: {
@@ -64,15 +72,15 @@ export class CompanyRepository implements ICompanyRepository {
 
     if (!companies || companies.length === 0) return [];
 
-    return companies.map((company: any) => new CompanyEntity(company));
+    return companies.map((company: CompanyModel) => new CompanyEntity(company));
   }
 
   public async update(
-    criteria: UpdateCompanyCriteria,
-    data: Partial<UpdateCompanyCriteria>
+    data: Partial<UpdateCompanyCriteria>,
+    criteria: UpdateCompanyCriteria
   ): Promise<boolean> {
     const [affectedRows] = await this.model.update(data, {
-      where: { id: criteria.id }
+      where: this.getConditions(criteria)
     });
     if (affectedRows === 0) return false;
     return true;

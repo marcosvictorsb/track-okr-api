@@ -18,10 +18,11 @@ export class CreateTrialSubscriptionInteractor {
       requestTxt: JSON.stringify(input)
     });
 
-    const { id_company } = input;
+    const { id_company, isBeta = false } = input;
 
     const freePlan = await this.gateway.findPlanTrial({
-      isTrial: true
+      isTrial: true,
+      name: isBeta ? 'Plano Beta' : 'Plano Gratuito'
     });
 
     this.gateway.loggerInfo(
@@ -32,17 +33,24 @@ export class CreateTrialSubscriptionInteractor {
       }
     );
 
-    // 5. Criar a subscription com trial de 14 dias
+    // 5. Criar a subscription com trial baseado no tipo
     const now = new Date();
     const trialEndDate = new Date();
-    trialEndDate.setDate(now.getDate() + 14);
+
+    if (isBeta) {
+      // Beta: 3 meses
+      trialEndDate.setMonth(now.getMonth() + 3);
+    } else {
+      // Trial normal: 14 dias
+      trialEndDate.setDate(now.getDate() + 14);
+    }
 
     const dataCreatetrialSubscription: CreateSubscriptionCriteria = {
       company_id: id_company,
       plan_id: freePlan?.id as number,
       status: SubscriptionStatus.TRIAL,
       trial_start_date: new Date(),
-      trial_end_date: trialEndDate, // 14 dias
+      trial_end_date: trialEndDate,
       started_at: new Date(),
       expires_at: trialEndDate,
       auto_renew: false

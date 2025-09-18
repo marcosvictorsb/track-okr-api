@@ -28,6 +28,7 @@ export type DataLogOutput = {
   targetValue?: number;
   initialValue?: number;
   weeklyProgressPercentage?: number;
+  name?: string;
 
   id_user?: number;
   id_expense?: number;

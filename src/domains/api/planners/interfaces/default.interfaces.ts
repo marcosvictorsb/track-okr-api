@@ -1,6 +1,6 @@
 import { PlannerEntity } from '@domains/api/planners/entity/planner.entity';
-import { ModelStatic } from 'sequelize';
 import PlannerModel from '@domains/api/planners/model/planner.model';
+import { ModelStatic } from 'sequelize';
 
 export type CreatePlannerCriteria = {
   title: string;
@@ -14,6 +14,7 @@ export type CreatePlannerCriteria = {
 
 export type FindPlannerCriteria = {
   id?: number;
+  name?: string;
   title?: string;
   description?: string;
   year?: number;
