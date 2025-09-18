@@ -21,7 +21,7 @@
     "pre-build": "npm run check-env",
     "build": "npm run pre-build && tsc && tsc-alias",
     "pm2:start": "npm run build && pm2 start deployment/ecosystem.config.json",
-    "pm2:start:prod": "npm run pre-build && npm run build && pm2 start deployment/ecosystem.production.json",
+    "pm2:start:prod": "npm run check-env && npm run build && pm2 start deployment/ecosystem.production.json",
     "pm2:start:demo": "npm run build && pm2 start deployment/ecosystem.demo.json",
     "pm2:stop": "pm2 stop track-okr-api",
     "pm2:restart": "pm2 restart track-okr-api",

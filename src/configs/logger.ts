@@ -296,6 +296,13 @@ const createDiscordTransport = () => {
 const createOpenSearchTransport = () => {
   if (!isProduction) return null;
 
+  // Verificar se o OpenSearch está habilitado
+  const opensearchEnabled = process.env.OPENSEARCH_ENABLED === 'true';
+  if (!opensearchEnabled) {
+    console.log('📊 OpenSearch desabilitado via variável de ambiente');
+    return null;
+  }
+
   // Verificar se as configurações do OpenSearch estão definidas
   const opensearchUrl = process.env.OPENSEARCH_URL;
   const opensearchUsername = process.env.OPENSEARCH_USERNAME;
