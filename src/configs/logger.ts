@@ -26,7 +26,7 @@ class DiscordTransport extends transports.Stream {
   log(info: Record<string, unknown>, callback: () => void) {
     setImmediate(() => this.emit('logged', info));
 
-    // Não bloquear o callback
+    // Não bloquear o callback - chamá-lo imediatamente
     callback();
 
     // Processar o log de forma assíncrona apenas para error e warn
@@ -39,9 +39,16 @@ class DiscordTransport extends transports.Stream {
       .trim();
 
     if (level === 'error' || level === 'warn') {
-      this.sendToDiscord(info).catch((error) => {
-        console.error('❌ Erro ao enviar log para Discord:', error.message);
+      // Timeout para evitar acúmulo de promises pendentes
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Discord timeout')), 10000);
       });
+
+      Promise.race([this.sendToDiscord(info), timeoutPromise]).catch(
+        (error) => {
+          console.error('❌ Erro ao enviar log para Discord:', error.message);
+        }
+      );
     }
   }
 
@@ -174,13 +181,19 @@ class OpenSearchTransport extends transports.Stream {
   log(info: Record<string, unknown>, callback: () => void) {
     setImmediate(() => this.emit('logged', info));
 
-    // Não bloquear o callback
+    // Não bloquear o callback - chamá-lo imediatamente
     callback();
 
-    // Processar o log de forma assíncrona
-    this.sendToOpenSearch(info).catch((error) => {
-      console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+    // Processar o log de forma assíncrona com timeout para evitar acúmulo
+    const timeoutPromise = new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('OpenSearch timeout')), 5000);
     });
+
+    Promise.race([this.sendToOpenSearch(info), timeoutPromise]).catch(
+      (error) => {
+        console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+      }
+    );
   }
 
   private async sendToOpenSearch(info: Record<string, unknown>) {

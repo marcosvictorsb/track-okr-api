@@ -1,8 +1,12 @@
-import { Router, Request, Response } from 'express';
-import path from 'path';
+import { Request, Response, Router } from 'express';
 import fs from 'fs';
+import path from 'path';
+import memoryRouter from './memory';
 
 const router = Router();
+
+// Usar sub-router para rotas de memória
+router.use(memoryRouter);
 
 // Health check básico
 router.get('/health', (req: Request, res: Response) => {

@@ -4,24 +4,30 @@
       "name": "track-okr-production",
       "script": "dist/server.js",
       "cwd": "/var/www/gunno/production/track-okr-api",
-      "instances": 2,
+      "instances": "max",
       "exec_mode": "cluster",
       "watch": false,
-      "max_memory_restart": "512M",
+      "max_memory_restart": "1000M",
+      "memory_restart_interval": "10000",
+      "node_args": "--max-old-space-size=900 --expose-gc",
       "env_file": ".env",
       "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "INSTANCE_ID": "production"
       },
       "error_file": "/var/www/gunno/production/logs/api-error.log",
       "out_file": "/var/www/gunno/production/logs/api-out.log",
       "log_file": "/var/www/gunno/production/logs/api-combined.log",
+      "log_rotate": true,
+      "log_retain": 30,
       "time": true,
       "autorestart": true,
-      "max_restarts": 10,
-      "min_uptime": "10s",
-      "restart_delay": 4000,
-      "kill_timeout": 5000,
-      "listen_timeout": 8000
+      "max_restarts": 5,
+      "min_uptime": "30s",
+      "restart_delay": 5000,
+      "kill_timeout": 8000,
+      "listen_timeout": 30000,
+      "wait_ready": true
     }
   ]
 }
