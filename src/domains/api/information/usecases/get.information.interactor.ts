@@ -39,7 +39,7 @@ export class GetInformationInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      const userTeam = await this.gateway.findUserTeam({ id: id_user });
+      const userTeam = await this.gateway.findUserTeam({ id_user: id_user });
       if (!userTeam) {
         this.gateway.loggerInfo('Usuário não pertence a nenhum time', {
           id_user
@@ -50,11 +50,16 @@ export class GetInformationInteractor {
       }
 
       return this.presenter.ok({
-        id_team: userTeam[0].id_team
+        id_team: userTeam.id_team
       });
     } catch (error) {
-      this.gateway.loggerError('Erro ao criar o planejamento anual', { error });
-      return this.presenter.serverError('Error ao criar o planejamento anual');
+      this.gateway.loggerError('Erro ao buscar information do usuário', {
+        error: (error as Error).message,
+        stack: (error as Error).stack
+      });
+      return this.presenter.serverError(
+        'Erro ao buscar information do usuário'
+      );
     }
   }
 }
