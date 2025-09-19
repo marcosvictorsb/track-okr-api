@@ -1,16 +1,17 @@
-import UserTeamModel, {
-  UserTeamModelAttributes
-} from '../model/user-team.model';
-import { UserTeamEntity } from '../entity/user-team.entity';
 import { ModelStatic, Op } from 'sequelize';
+import { UserTeamEntity } from '../entity/user-team.entity';
 import {
   CreateUserTeamCriteria,
   DeleteUserTeamCriteria,
   FindUserTeamCriteria,
   IUserTeamRepository,
   UpdateUserTeamCriteria,
+  UpdateUserTeamData,
   UserTeamRepositoryDependencies
 } from '../interfaces/default.interfaces';
+import UserTeamModel, {
+  UserTeamModelAttributes
+} from '../model/user-team.model';
 
 export class UserTeamRepository implements IUserTeamRepository {
   protected model: ModelStatic<UserTeamModel>;
@@ -64,6 +65,23 @@ export class UserTeamRepository implements IUserTeamRepository {
   public async find(
     criteria: FindUserTeamCriteria
   ): Promise<UserTeamEntity | undefined> {
+    const whereConditions = this.getConditions(criteria);
+    // Por padrão, filtra apenas relacionamentos ativos (não deletados)
+    whereConditions['deleted_at'] = { [Op.is]: null };
+
+    const userTeam = await this.model.findOne({
+      where: whereConditions,
+      raw: true
+    });
+
+    if (!userTeam) return undefined;
+
+    return new UserTeamEntity(userTeam);
+  }
+
+  public async findIncludingSoftDeleted(
+    criteria: FindUserTeamCriteria
+  ): Promise<UserTeamEntity | undefined> {
     const userTeam = await this.model.findOne({
       where: this.getConditions(criteria),
       raw: true
@@ -90,10 +108,11 @@ export class UserTeamRepository implements IUserTeamRepository {
   }
 
   public async update(
-    data: Partial<UpdateUserTeamCriteria>,
+    data: Partial<UpdateUserTeamData>,
     criteria: UpdateUserTeamCriteria
   ): Promise<boolean> {
-    const [affectedRows] = await this.model.update(data, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [affectedRows] = await this.model.update(data as any, {
       where: this.getConditions(criteria)
     });
     return affectedRows > 0;

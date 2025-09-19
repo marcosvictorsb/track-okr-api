@@ -1,6 +1,6 @@
+import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { IAuthenticationGateway, InputAuthentication } from '../interfaces';
-import { HttpResponse } from '@protocols/http';
 
 export class AuthenticationInteractor {
   protected gateway: IAuthenticationGateway;
@@ -53,6 +53,7 @@ export class AuthenticationInteractor {
       const userTeam = await this.gateway.getUserTeam(user.id as number);
 
       return this.presenter.ok({
+        id: user.id,
         name: user.name,
         email: user.email,
         token: credential,
