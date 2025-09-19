@@ -178,6 +178,41 @@ class OpenSearchTransport extends transports.Stream {
     this.index = process.env.OPENSEARCH_INDEX || 'gunno-logs';
   }
 
+  private sanitizeFieldForOpenSearch(
+    key: string,
+    value: unknown
+  ): [string, string] {
+    // Lista de campos que causam conflitos de mapeamento
+    const problematicFields = [
+      'data',
+      'criteria',
+      'original',
+      'parent',
+      'updateData',
+      'requestTxt'
+    ];
+
+    // Se o campo é problemático, prefixar com 'raw_' para evitar conflitos
+    const finalKey = problematicFields.includes(key) ? `raw_${key}` : key;
+
+    // Sempre converter para string para evitar qualquer conflito de tipo
+    let finalValue: string;
+
+    if (value === null || value === undefined) {
+      finalValue = '';
+    } else if (typeof value === 'object') {
+      try {
+        finalValue = JSON.stringify(value);
+      } catch {
+        finalValue = String(value);
+      }
+    } else {
+      finalValue = String(value);
+    }
+
+    return [finalKey, finalValue];
+  }
+
   log(info: Record<string, unknown>, callback: () => void) {
     setImmediate(() => this.emit('logged', info));
 
@@ -230,11 +265,15 @@ class OpenSearchTransport extends transports.Stream {
         performanceResponseTime: store?.responseTime,
         performanceRequestSize: store?.requestSize,
         performanceResponseSize: store?.responseSize,
-        // Outros campos do log
+        // Outros campos do log - sanitizar para evitar conflitos de mapeamento
         ...Object.keys(info).reduce(
           (acc, key) => {
             if (!['timestamp', 'level', 'message'].includes(key)) {
-              acc[key] = info[key];
+              const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
+                key,
+                info[key]
+              );
+              acc[finalKey] = finalValue;
             }
             return acc;
           },

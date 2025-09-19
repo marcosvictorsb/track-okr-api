@@ -1,12 +1,12 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   FindTeamCriteria,
   GetTeamInteractorDependencies,
-  InputGetTeam,
-  IGetTeamGateway
+  IGetTeamGateway,
+  InputGetTeam
 } from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class GetTeamInteractor {
   protected gateway: IGetTeamGateway;
@@ -22,7 +22,11 @@ export class GetTeamInteractor {
   async execute(input: InputGetTeam): Promise<HttpResponse> {
     try {
       this.gateway.loggerInfo('Iniciando a busca dos times', {
-        requestTxt: JSON.stringify(input)
+        input: JSON.stringify(input),
+        id_user: input.id_user,
+        id_company: input.id_company,
+        limit: input.limite,
+        data: input.name || 'sem filtro de nome'
       });
       const { id_user, limite, id_company, name } = input;
 
