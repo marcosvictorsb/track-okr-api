@@ -5,6 +5,7 @@ import { backofficeRouter } from '@domains/api/backoffice/routes/backoffice.rout
 import checkInsRouters from '@domains/api/checkins/routers';
 import { dashboardRouter } from '@domains/api/dashboard/routers';
 import healthRouter from '@domains/api/health/routers';
+import informationRouter from '@domains/api/information/routers';
 import leadRouter from '@domains/api/landing-page-leads/routers';
 import objectiveRouter from '@domains/api/objectives/routers';
 import permissionsRouter from '@domains/api/permissions/routers';
@@ -29,6 +30,7 @@ routers.use('/webhook', caktoWebhookRouter);
 routers.use('/users', routerUser);
 routers.use('/authenticate', authRoutes);
 routers.use('/planners', plannerRouter);
+routers.use('/informations', informationRouter);
 routers.use('/teams', teamRouter);
 routers.use('/objectives', objectiveRouter);
 routers.use('/key-results', resultKeyRoutes);
