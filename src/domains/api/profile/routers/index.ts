@@ -1,19 +1,24 @@
+import { createLimiter, uploadLimiter } from '@configs/rate-limit';
+import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { advancedFileValidation } from '@middlewares/file-validation.middleware';
+import {
+  handleUploadErrors,
+  validateFileUpload
+} from '@middlewares/upload.middleware';
+import { validateSchema } from '@middlewares/validate.schema';
 import { Response, Router } from 'express';
 import * as factories from '../factories/';
-import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { validateSchema } from '@middlewares/validate.schema';
-import {
-  validateFileUpload,
-  handleUploadErrors
-} from '@middlewares/upload.middleware';
-import { advancedFileValidation } from '@middlewares/file-validation.middleware';
-import { uploadLimiter, createLimiter } from '@configs/rate-limit';
 import { createProfileSchema } from '../schemas';
 
-const { makeCreateProfileFactory, makeGetProfileFactory } = factories;
+const {
+  makeCreateProfileFactory,
+  makeGetProfileFactory,
+  makeDeleteAvatarFactory
+} = factories;
 
 const createProfileController = makeCreateProfileFactory();
 const getProfileController = makeGetProfileFactory();
+const deleteAvatarController = makeDeleteAvatarFactory();
 
 const router = Router();
 
@@ -32,6 +37,14 @@ router.post(
   handleUploadErrors,
   (request: UserPayload, response: Response) =>
     createProfileController.createProfile(request, response)
+);
+
+// Rota para deletar avatar
+router.delete(
+  '/avatar',
+  authMiddleware,
+  (request: UserPayload, response: Response) =>
+    deleteAvatarController.deleteAvatar(request, response)
 );
 
 export default router;

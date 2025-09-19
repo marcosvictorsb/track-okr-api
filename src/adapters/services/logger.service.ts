@@ -97,6 +97,7 @@ type LoggerServiceDependencies = {
 export interface ILoggerMixin {
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
+  loggerWarn(message: string, data?: DataLogOutput): void;
 }
 
 export function LoggerMixin<T extends new (...args: any[]) => object>(Base: T) {
@@ -109,16 +110,22 @@ export function LoggerMixin<T extends new (...args: any[]) => object>(Base: T) {
       this.logging = params.logging;
     }
 
-    loggerInfo(message: string, data?: DataLogOutput) {
+    public loggerInfo(message: string, data?: DataLogOutput) {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
       return this.logging.info(message, { ...data, requestId });
     }
 
-    loggerError(message: string, data?: DataLogOutput) {
+    public loggerError(message: string, data?: DataLogOutput) {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
       return this.logging.error(message, { ...data, requestId });
+    }
+
+    public loggerWarn(message: string, data?: DataLogOutput) {
+      const store = asyncLocalStorage.getStore();
+      const requestId = store?.requestId || 'no-request-id';
+      return this.logging.warn(message, { ...data, requestId });
     }
   };
 }
