@@ -4,7 +4,7 @@
       "name": "track-okr-production",
       "script": "dist/server.js",
       "cwd": "/var/www/gunno/production/track-okr-api",
-      "instances": "max",
+      "instances": 2,
       "exec_mode": "cluster",
       "watch": false,
       "max_memory_restart": "1000M",

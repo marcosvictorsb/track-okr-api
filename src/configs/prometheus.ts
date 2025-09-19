@@ -17,8 +17,8 @@ const register = new promClient.Registry();
 promClient.collectDefaultMetrics({
   register,
   prefix: `${appName}_`,
-  gcDurationBuckets: [0.001, 0.01, 0.1, 1, 2, 5],
-  eventLoopMonitoringPrecision: 10
+  gcDurationBuckets: [0.01, 0.1, 1, 5],
+  eventLoopMonitoringPrecision: 100
 });
 
 // Labels padrão para todas as métricas
@@ -37,7 +37,7 @@ register.setDefaultLabels({
 const httpRequestsTotal = new promClient.Counter({
   name: `${appName}_http_requests_total`,
   help: 'Total number of HTTP requests',
-  labelNames: ['method', 'route', 'status_code', 'environment'],
+  labelNames: ['method', 'route', 'status_code'],
   registers: [register]
 });
 
@@ -45,8 +45,8 @@ const httpRequestsTotal = new promClient.Counter({
 const httpRequestDuration = new promClient.Histogram({
   name: `${appName}_http_request_duration_seconds`,
   help: 'HTTP request duration in seconds',
-  labelNames: ['method', 'route', 'status_code', 'environment'],
-  buckets: [0.1, 0.5, 1, 2, 5, 10],
+  labelNames: ['method', 'route', 'status_code'],
+  buckets: [0.1, 0.5, 1, 2, 5],
   registers: [register]
 });
 
@@ -295,7 +295,7 @@ const metricsConfig = {
     endpoint: '/metrics',
     port: process.env.METRICS_PORT || 9090,
     collectDefaultMetrics: true,
-    collectInterval: 10000
+    collectInterval: 30000
   },
   demo: {
     enabled: true,
@@ -320,34 +320,32 @@ const currentConfig = metricsConfig[environment] || metricsConfig.development;
 // ========================================
 
 export {
-  register,
+  activeUsers,
+  authAttempts,
+  cacheOperations,
   currentConfig as config,
-  environment,
-
-  // Métricas
-  httpRequestsTotal,
-  httpRequestDuration,
-  httpRequestSize,
-  httpResponseSize,
   dbConnectionsActive,
   dbQueryDuration,
+  environment,
   errorsTotal,
-  activeUsers,
-  cacheOperations,
   fileUploads,
   fileUploadSize,
-  authAttempts,
-
+  httpRequestDuration,
+  httpRequestSize,
+  // Métricas
+  httpRequestsTotal,
+  httpResponseSize,
   // Funções helper
   normalizeRoute,
-  recordHttpRequest,
+  recordAuthAttempt,
+  recordCacheOperation,
   recordDatabaseQuery,
   recordError,
-  updateDatabaseConnections,
-  updateActiveUsers,
-  recordCacheOperation,
   recordFileUpload,
-  recordAuthAttempt
+  recordHttpRequest,
+  register,
+  updateActiveUsers,
+  updateDatabaseConnections
 };
 
 export default {
