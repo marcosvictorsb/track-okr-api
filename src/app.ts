@@ -20,6 +20,7 @@ import {
 import bodyParser from 'body-parser';
 import express, { Express } from 'express';
 import mongoSanitize from 'express-mongo-sanitize';
+import heapDumpRouter from './debug/heapdump.routes';
 
 const app: Express = express();
 
@@ -80,6 +81,7 @@ app.use(
 app.use(userContextMiddleware());
 
 // 9. Routes
+app.use('/debug', heapDumpRouter);
 app.use(routers);
 
 // 10. Error handling - aplicados por último
