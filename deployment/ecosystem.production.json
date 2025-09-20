@@ -7,9 +7,9 @@
       "instances": 2,
       "exec_mode": "cluster",
       "watch": false,
-      "max_memory_restart": "1000M",
+      "max_memory_restart": "2100M",
+      "node_args": "--max-old-space-size=2048",
       "memory_restart_interval": "10000",
-      "node_args": "--max-old-space-size=900 --expose-gc",
       "env_file": ".env",
       "env": {
         "NODE_ENV": "production",
