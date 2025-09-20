@@ -349,29 +349,96 @@ const createDiscordTransport = () => {
 };
 
 // Configuração do transport do OpenSearch para produção
+// const createOpenSearchTransport = () => {
+//   if (!isProduction) return null;
+
+//   try {
+//     // Testar conexão com OpenSearch
+//     console.log({
+//       node: process.env.OPENSEARCH_URL,
+//       auth: {
+//         username: process.env.OPENSEARCH_USERNAME as string,
+//         password: process.env.OPENSEARCH_PASSWORD as string
+//       },
+//       ssl: {
+//         rejectUnauthorized: false
+//       }
+//     });
+
+//     const testClient = new Client({
+//       node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
+//       auth: {
+//         username: process.env.OPENSEARCH_USERNAME as string,
+//         password: process.env.OPENSEARCH_PASSWORD as string
+//       },
+//       ssl: {
+//         rejectUnauthorized: false
+//       }
+//     });
+
+//     // Verificar se o OpenSearch está respondendo
+//     testClient
+//       .ping()
+//       .then(() => console.log('✅ Conexão com OpenSearch estabelecida'))
+//       .catch((err) =>
+//         console.error('❌ Erro ao conectar com OpenSearch:', err.message)
+//       );
+
+//     return new OpenSearchTransport({
+//       level: 'info'
+//     });
+//   } catch (error) {
+//     console.error('❌ Erro ao configurar OpenSearch transport:', error.message);
+//     return null;
+//   }
+// };
+
 const createOpenSearchTransport = () => {
   if (!isProduction) return null;
 
   try {
+    const opensearchUrl = process.env.OPENSEARCH_URL;
+    const username = process.env.OPENSEARCH_USERNAME;
+    const password = process.env.OPENSEARCH_PASSWORD;
+
+    if (!opensearchUrl || !username || !password) {
+      console.error('❌ Variáveis de ambiente do OpenSearch não configuradas');
+      console.error('📋 OPENSEARCH_URL:', opensearchUrl);
+      console.error(
+        '👤 OPENSEARCH_USERNAME:',
+        username ? '*** configurado ***' : 'não configurado'
+      );
+      console.error(
+        '🔒 OPENSEARCH_PASSWORD:',
+        password ? '*** configurado ***' : 'não configurado'
+      );
+      return null;
+    }
+
     // Testar conexão com OpenSearch
     const testClient = new Client({
-      node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
-      auth: {
-        username: process.env.OPENSEARCH_USERNAME as string,
-        password: process.env.OPENSEARCH_PASSWORD as string
-      },
-      ssl: {
-        rejectUnauthorized: false
-      }
+      node: opensearchUrl,
+      auth: { username, password },
+      ssl: { rejectUnauthorized: false }
     });
 
     // Verificar se o OpenSearch está respondendo
     testClient
       .ping()
       .then(() => console.log('✅ Conexão com OpenSearch estabelecida'))
-      .catch((err) =>
-        console.error('❌ Erro ao conectar com OpenSearch:', err.message)
-      );
+      .catch((err) => {
+        console.error('❌ Erro ao conectar com OpenSearch:');
+        console.error('📄 Mensagem:', err.message);
+        if (err.meta?.statusCode) {
+          console.error('📋 Status Code:', err.meta.statusCode);
+        }
+        if (err.meta?.body?.error) {
+          console.error(
+            '🐛 Detalhes do erro:',
+            JSON.stringify(err.meta.body.error, null, 2)
+          );
+        }
+      });
 
     return new OpenSearchTransport({
       level: 'info'
