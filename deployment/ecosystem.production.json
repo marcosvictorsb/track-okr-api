@@ -8,12 +8,13 @@
       "exec_mode": "cluster",
       "watch": false,
       "max_memory_restart": "2100M",
-      "node_args": "--max-old-space-size=2048",
+      "node_args": "--max-old-space-size=2048 --expose-gc --use-openssl-ca",
       "memory_restart_interval": "10000",
       "env_file": ".env",
       "env": {
         "NODE_ENV": "production",
-        "INSTANCE_ID": "production"
+        "INSTANCE_ID": "production",
+        "NODE_OPTIONS": "--max-old-space-size=2048 --expose-gc --use-openssl-ca"
       },
       "error_file": "/var/www/gunno/production/logs/api-error.log",
       "out_file": "/var/www/gunno/production/logs/api-out.log",
