@@ -32,13 +32,21 @@ app.use(helmetConfig);
 app.use(mongoSanitize());
 app.use(suspiciousRequestLogger);
 
-// 2. Middleware avançado de logging que captura todas as informações da requisição
-app.use(requestLoggingMiddleware());
-
 // 3. Prometheus metrics middleware (se habilitado)
+// 6. Endpoints específicos do Prometheus
+
 if (prometheusConfig.enabled) {
   app.use(prometheusMiddleware());
   logger.info(`Prometheus metrics enabled on ${prometheusConfig.endpoint}`);
+}
+
+// 2. Middleware avançado de logging que captura todas as informações da requisição
+app.use(requestLoggingMiddleware());
+
+if (prometheusConfig.enabled) {
+  app.get(prometheusConfig.endpoint, metricsEndpoint());
+  app.get('/health', healthCheckWithMetrics());
+  logger.info(`Metrics endpoint available at ${prometheusConfig.endpoint}`);
 }
 
 // 4. CORS
@@ -47,13 +55,6 @@ app.use(corsMiddleware);
 // 5. Body parsing
 app.use(bodyParser.urlencoded({ extended: false, limit: '10mb' }));
 app.use(bodyParser.json({ limit: '10mb' }));
-
-// 6. Endpoints específicos do Prometheus
-if (prometheusConfig.enabled) {
-  app.get(prometheusConfig.endpoint, metricsEndpoint());
-  app.get('/health', healthCheckWithMetrics());
-  logger.info(`Metrics endpoint available at ${prometheusConfig.endpoint}`);
-}
 
 // 7. Static files com headers de segurança e CORS específico
 app.use(

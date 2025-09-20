@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { recordHttpRequest, recordError } from '@configs/prometheus';
+import { recordError, recordHttpRequest } from '@configs/prometheus';
+import { NextFunction, Request, Response } from 'express';
 
 /**
  * Middleware para capturar métricas do Prometheus
@@ -168,7 +168,8 @@ export function metricsEndpoint() {
       res.end(metrics);
     } catch (error) {
       console.error('Error generating metrics:', error);
-      res.status(500).json({ error: 'Failed to generate metrics' });
+      res.set('Content-Type', 'text/plain');
+      res.status(500).end('# ERROR Failed to generate metrics\n');
     }
   };
 }
