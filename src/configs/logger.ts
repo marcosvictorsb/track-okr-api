@@ -167,8 +167,8 @@ class OpenSearchTransport extends transports.Stream {
     this.client = new Client({
       node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
       auth: {
-        username: process.env.OPENSEARCH_USERNAME || 'admin',
-        password: process.env.OPENSEARCH_PASSWORD || 'MyStrongPassword123!'
+        username: process.env.OPENSEARCH_USERNAME as string,
+        password: process.env.OPENSEARCH_PASSWORD as string
       },
       ssl: {
         rejectUnauthorized: false // process.env.OPENSEARCH_SSL_VERIFY !== 'false'
@@ -181,36 +181,40 @@ class OpenSearchTransport extends transports.Stream {
   private sanitizeFieldForOpenSearch(
     key: string,
     value: unknown
-  ): [string, string] {
-    // Lista de campos que causam conflitos de mapeamento
-    const problematicFields = [
+  ): [string, unknown] {
+    // Lista de campos conhecidos por causar conflitos
+    const knownProblematicFields = [
+      'ids',
       'data',
       'criteria',
       'original',
       'parent',
       'updateData',
-      'requestTxt'
+      'requestTxt',
+      'metadata',
+      'config'
     ];
 
-    // Se o campo é problemático, prefixar com 'raw_' para evitar conflitos
-    const finalKey = problematicFields.includes(key) ? `raw_${key}` : key;
+    const finalKey = knownProblematicFields.includes(key) ? `raw_${key}` : key;
 
-    // Sempre converter para string para evitar qualquer conflito de tipo
-    let finalValue: string;
+    // Se for um array ou objeto complexo, converter para string JSON
+    if (value !== null && typeof value === 'object') {
+      // Verificar se é um array ou objeto não-vazio
+      const shouldStringify =
+        Array.isArray(value) ||
+        Object.keys(value as Record<string, unknown>).length > 0;
 
-    if (value === null || value === undefined) {
-      finalValue = '';
-    } else if (typeof value === 'object') {
-      try {
-        finalValue = JSON.stringify(value);
-      } catch {
-        finalValue = String(value);
+      if (shouldStringify) {
+        try {
+          return [finalKey, JSON.stringify(value)];
+        } catch {
+          return [finalKey, '[Unserializable Object]'];
+        }
       }
-    } else {
-      finalValue = String(value);
     }
 
-    return [finalKey, finalValue];
+    // Para valores primitivos, manter como estão
+    return [finalKey, value];
   }
 
   log(info: Record<string, unknown>, callback: () => void) {
@@ -281,6 +285,17 @@ class OpenSearchTransport extends transports.Stream {
         )
       };
 
+      // Adicionar campos do info com sanitização
+      Object.keys(info).forEach((key) => {
+        if (!['timestamp', 'level', 'message'].includes(key)) {
+          const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
+            key,
+            info[key]
+          );
+          document[finalKey] = finalValue;
+        }
+      });
+
       await this.client.index({
         index: this.index,
         body: document
@@ -291,6 +306,9 @@ class OpenSearchTransport extends transports.Stream {
       );
     } catch (error) {
       console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+      if (error.meta?.body?.error) {
+        console.error('📄 Detalhes do erro:', error.meta.body.error);
+      }
     }
   }
 }
