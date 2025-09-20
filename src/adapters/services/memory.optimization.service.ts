@@ -1,4 +1,5 @@
 import { logger } from '@configs/logger';
+import v8 from 'v8';
 
 export class MemoryOptimizationService {
   private gcInterval: NodeJS.Timeout | null = null;
@@ -83,28 +84,44 @@ export class MemoryOptimizationService {
   public checkMemoryUsage(): void {
     try {
       const memUsage = process.memoryUsage();
+      const heapStats = v8.getHeapStatistics();
+
       const heapUsagePercent = Math.round(
-        (memUsage.heapUsed / memUsage.heapTotal) * 100
+        (memUsage.heapUsed / heapStats.heap_size_limit) * 100
       );
+
       const heapUsedMB = Math.round(memUsage.heapUsed / 1024 / 1024);
       const heapTotalMB = Math.round(memUsage.heapTotal / 1024 / 1024);
+      const heapLimitMB = Math.round(heapStats.heap_size_limit / 1024 / 1024);
       const rssMB = Math.round(memUsage.rss / 1024 / 1024);
+      const externalMB = Math.round(memUsage.external / 1024 / 1024);
+      const arrayBuffersMB = Math.round(memUsage.arrayBuffers / 1024 / 1024);
 
       logger.info('Monitoramento de memória', {
         heap_used_mb: heapUsedMB,
         heap_total_mb: heapTotalMB,
+        heap_limit_mb: heapLimitMB,
         heap_usage_percent: heapUsagePercent,
         rss_mb: rssMB,
-        external_mb: Math.round(memUsage.external / 1024 / 1024),
-        uptime_minutes: Math.round(process.uptime() / 60)
+        external_mb: externalMB,
+        array_buffers_mb: arrayBuffersMB,
+        uptime_minutes: Math.round(process.uptime() / 60),
+        total_available_size_mb: Math.round(
+          heapStats.total_available_size / 1024 / 1024
+        ),
+        total_physical_size_mb: Math.round(
+          heapStats.total_physical_size / 1024 / 1024
+        )
       });
 
       // Alertas baseados no uso de memória
       if (heapUsagePercent > 85) {
         logger.warn('Uso de memória heap crítico', {
           heap_usage_percent: heapUsagePercent,
+          heap_used_mb: heapUsedMB,
+          heap_limit_mb: heapLimitMB,
           recommendation:
-            'Considere reiniciar a aplicação ou investigar vazamentos'
+            'Considere reiniciar a aplicação ou investigar vazamentos de memória'
         });
 
         // Forçar GC se disponível
@@ -114,7 +131,21 @@ export class MemoryOptimizationService {
       } else if (heapUsagePercent > 70) {
         logger.warn('Uso de memória heap alto', {
           heap_usage_percent: heapUsagePercent,
-          recommendation: 'Monitore o crescimento da memória'
+          heap_used_mb: heapUsedMB,
+          heap_limit_mb: heapLimitMB,
+          recommendation:
+            'Monitore o crescimento da memória e verifique possíveis vazamentos'
+        });
+      }
+
+      const heapLimitWarningThreshold = 90;
+      if (heapTotalMB > heapLimitMB * (heapLimitWarningThreshold / 100)) {
+        logger.warn('Heap total aproximando-se do limite máximo', {
+          heap_total_mb: heapTotalMB,
+          heap_limit_mb: heapLimitMB,
+          percentage_of_limit: Math.round((heapTotalMB / heapLimitMB) * 100),
+          recommendation:
+            'O heap está se aproximando do limite máximo configurado'
         });
       }
 
