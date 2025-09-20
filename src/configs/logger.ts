@@ -167,11 +167,11 @@ class OpenSearchTransport extends transports.Stream {
     this.client = new Client({
       node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
       auth: {
-        username: process.env.OPENSEARCH_USERNAME as string,
-        password: process.env.OPENSEARCH_PASSWORD as string
+        username: process.env.OPENSEARCH_USERNAME || 'admin',
+        password: process.env.OPENSEARCH_PASSWORD || 'MyStrongPassword123!'
       },
       ssl: {
-        rejectUnauthorized: false
+        rejectUnauthorized: false // process.env.OPENSEARCH_SSL_VERIFY !== 'false'
       }
     });
 
@@ -181,34 +181,36 @@ class OpenSearchTransport extends transports.Stream {
   private sanitizeFieldForOpenSearch(
     key: string,
     value: unknown
-  ): [string, unknown] {
-    // Lista de campos conhecidos por causar conflitos
-    const knownProblematicFields = [
-      'ids',
+  ): [string, string] {
+    // Lista de campos que causam conflitos de mapeamento
+    const problematicFields = [
       'data',
       'criteria',
       'original',
       'parent',
       'updateData',
-      'requestTxt',
-      'metadata',
-      'config',
-      'input'
+      'requestTxt'
     ];
 
-    const finalKey = knownProblematicFields.includes(key) ? `raw_${key}` : key;
+    // Se o campo é problemático, prefixar com 'raw_' para evitar conflitos
+    const finalKey = problematicFields.includes(key) ? `raw_${key}` : key;
 
-    // Se for um array ou objeto complexo, converter para string JSON
-    if (value !== null && typeof value === 'object') {
+    // Sempre converter para string para evitar qualquer conflito de tipo
+    let finalValue: string;
+
+    if (value === null || value === undefined) {
+      finalValue = '';
+    } else if (typeof value === 'object') {
       try {
-        return [finalKey, JSON.stringify(value)];
+        finalValue = JSON.stringify(value);
       } catch {
-        return [finalKey, '[Unserializable Object]'];
+        finalValue = String(value);
       }
+    } else {
+      finalValue = String(value);
     }
 
-    // Para valores primitivos, manter como estão
-    return [finalKey, value];
+    return [finalKey, finalValue];
   }
 
   log(info: Record<string, unknown>, callback: () => void) {
@@ -225,12 +227,6 @@ class OpenSearchTransport extends transports.Stream {
     Promise.race([this.sendToOpenSearch(info), timeoutPromise]).catch(
       (error) => {
         console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
-        if (error.meta?.body?.error) {
-          console.error(
-            '📄 Detalhes do erro:',
-            JSON.stringify(error.meta.body.error, null, 2)
-          );
-        }
       }
     );
   }
@@ -240,8 +236,8 @@ class OpenSearchTransport extends transports.Stream {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
 
-      // Criar documento base
-      const document: Record<string, unknown> = {
+      // Achatar a estrutura para evitar conflitos de mapeamento
+      const document = {
         '@timestamp': new Date().toISOString(),
         timestamp: info.timestamp,
         level: info.level,
@@ -249,7 +245,7 @@ class OpenSearchTransport extends transports.Stream {
         requestId,
         environment: process.env.NODE_ENV,
         service: 'track-okr-api',
-        // Informações da requisição
+        // Informações da requisição (campos com nomes únicos)
         httpMethod: store?.method,
         httpUrl: store?.url,
         httpPath: store?.path,
@@ -258,62 +254,43 @@ class OpenSearchTransport extends transports.Stream {
         clientReferer: store?.referer,
         clientOrigin: store?.origin,
         requestBodySize: store?.requestSize,
-        // Informações da resposta
+        // Informações da resposta (campos com nomes únicos)
         httpStatusCode: store?.statusCode,
         responseTimeMs: store?.responseTime,
         responseBodySize: store?.responseSize,
-        // Informações do usuário
+        // Informações do usuário (campos com nomes únicos)
         userId: store?.userId,
         companyId: store?.companyId,
-        // Métricas de performance
+        // Métricas de performance (campos com nomes únicos)
         performanceResponseTime: store?.responseTime,
         performanceRequestSize: store?.requestSize,
-        performanceResponseSize: store?.responseSize
+        performanceResponseSize: store?.responseSize,
+        // Outros campos do log - sanitizar para evitar conflitos de mapeamento
+        ...Object.keys(info).reduce(
+          (acc, key) => {
+            if (!['timestamp', 'level', 'message'].includes(key)) {
+              const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
+                key,
+                info[key]
+              );
+              acc[finalKey] = finalValue;
+            }
+            return acc;
+          },
+          {} as Record<string, unknown>
+        )
       };
-
-      // Adicionar campos do info com sanitização (apenas uma vez)
-      Object.keys(info).forEach((key) => {
-        if (!['timestamp', 'level', 'message'].includes(key)) {
-          const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
-            key,
-            info[key]
-          );
-          document[finalKey] = finalValue;
-        }
-      });
 
       await this.client.index({
         index: this.index,
-        body: document,
-        refresh: false
+        body: document
       });
 
       console.log(
         `✅ Log enviado para OpenSearch: ${info.level} - ${info.message}`
       );
     } catch (error) {
-      console.error('❌ Erro ao enviar log para OpenSearch:');
-      console.error('📄 Mensagem:', error.message);
-
-      if (error.meta?.body?.error) {
-        console.error(
-          '📊 Detalhes do erro:',
-          JSON.stringify(error.meta.body.error, null, 2)
-        );
-      }
-
-      if (error.meta?.connection) {
-        console.error('🔗 Conexão:', error.meta.connection);
-      }
-
-      if (error.meta?.statusCode) {
-        console.error('📋 Status Code:', error.meta.statusCode);
-      }
-
-      // Logar o documento que causou o erro para debug
-      if (error.meta?.body?.error?.caused_by) {
-        console.error('🐛 Causa raiz:', error.meta.body.error.caused_by);
-      }
+      console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
     }
   }
 }
@@ -321,6 +298,8 @@ class OpenSearchTransport extends transports.Stream {
 // Configuração do transport do Discord para logs de error e warn
 const createDiscordTransport = () => {
   // Só ativar Discord logging em produção
+  console.log('------------------------------->');
+  console.log('isProduction:', isProduction);
   if (!isProduction) {
     console.log(
       '📝 Discord logging desabilitado em ambiente de desenvolvimento'
@@ -339,7 +318,7 @@ const createDiscordTransport = () => {
   try {
     console.log('📱 Discord logging ativado para ambiente de produção');
     return new DiscordTransport({
-      level: 'warn',
+      level: 'warn', // Captura warn e error (error tem prioridade maior que warn)
       webhookUrl
     });
   } catch (error) {
@@ -349,102 +328,15 @@ const createDiscordTransport = () => {
 };
 
 // Configuração do transport do OpenSearch para produção
-// const createOpenSearchTransport = () => {
-//   if (!isProduction) return null;
-
-//   try {
-//     // Testar conexão com OpenSearch
-//     console.log({
-//       node: process.env.OPENSEARCH_URL,
-//       auth: {
-//         username: process.env.OPENSEARCH_USERNAME as string,
-//         password: process.env.OPENSEARCH_PASSWORD as string
-//       },
-//       ssl: {
-//         rejectUnauthorized: false
-//       }
-//     });
-
-//     const testClient = new Client({
-//       node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
-//       auth: {
-//         username: process.env.OPENSEARCH_USERNAME as string,
-//         password: process.env.OPENSEARCH_PASSWORD as string
-//       },
-//       ssl: {
-//         rejectUnauthorized: false
-//       }
-//     });
-
-//     // Verificar se o OpenSearch está respondendo
-//     testClient
-//       .ping()
-//       .then(() => console.log('✅ Conexão com OpenSearch estabelecida'))
-//       .catch((err) =>
-//         console.error('❌ Erro ao conectar com OpenSearch:', err.message)
-//       );
-
-//     return new OpenSearchTransport({
-//       level: 'info'
-//     });
-//   } catch (error) {
-//     console.error('❌ Erro ao configurar OpenSearch transport:', error.message);
-//     return null;
-//   }
-// };
-
 const createOpenSearchTransport = () => {
   if (!isProduction) return null;
 
   try {
-    const opensearchUrl = process.env.OPENSEARCH_URL;
-    const username = process.env.OPENSEARCH_USERNAME;
-    const password = process.env.OPENSEARCH_PASSWORD;
-
-    if (!opensearchUrl || !username || !password) {
-      console.error('❌ Variáveis de ambiente do OpenSearch não configuradas');
-      console.error('📋 OPENSEARCH_URL:', opensearchUrl);
-      console.error(
-        '👤 OPENSEARCH_USERNAME:',
-        username ? '*** configurado ***' : 'não configurado'
-      );
-      console.error(
-        '🔒 OPENSEARCH_PASSWORD:',
-        password ? '*** configurado ***' : 'não configurado'
-      );
-      return null;
-    }
-
-    // Testar conexão com OpenSearch
-    const testClient = new Client({
-      node: opensearchUrl,
-      auth: { username, password },
-      ssl: { rejectUnauthorized: false }
-    });
-
-    // Verificar se o OpenSearch está respondendo
-    testClient
-      .ping()
-      .then(() => console.log('✅ Conexão com OpenSearch estabelecida'))
-      .catch((err) => {
-        console.error('❌ Erro ao conectar com OpenSearch:');
-        console.error('📄 Mensagem:', err.message);
-        if (err.meta?.statusCode) {
-          console.error('📋 Status Code:', err.meta.statusCode);
-        }
-        if (err.meta?.body?.error) {
-          console.error(
-            '🐛 Detalhes do erro:',
-            JSON.stringify(err.meta.body.error, null, 2)
-          );
-        }
-      });
-
     return new OpenSearchTransport({
       level: 'info'
     });
   } catch (error) {
-    console.error('❌ Erro ao configurar OpenSearch transport:', error.message);
+    console.error('❌ Erro ao configurar OpenSearch transport:', error);
     return null;
   }
 };
