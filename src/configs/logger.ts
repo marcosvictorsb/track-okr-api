@@ -171,7 +171,7 @@ class OpenSearchTransport extends transports.Stream {
         password: process.env.OPENSEARCH_PASSWORD || 'MyStrongPassword123!'
       },
       ssl: {
-        rejectUnauthorized: process.env.OPENSEARCH_SSL_VERIFY !== 'false'
+        rejectUnauthorized: false // process.env.OPENSEARCH_SSL_VERIFY !== 'false'
       }
     });
 
