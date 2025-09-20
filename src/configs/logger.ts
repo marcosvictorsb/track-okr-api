@@ -171,7 +171,7 @@ class OpenSearchTransport extends transports.Stream {
         password: process.env.OPENSEARCH_PASSWORD as string
       },
       ssl: {
-        rejectUnauthorized: false // process.env.OPENSEARCH_SSL_VERIFY !== 'false'
+        rejectUnauthorized: false
       }
     });
 
@@ -192,24 +192,18 @@ class OpenSearchTransport extends transports.Stream {
       'updateData',
       'requestTxt',
       'metadata',
-      'config'
+      'config',
+      'input'
     ];
 
     const finalKey = knownProblematicFields.includes(key) ? `raw_${key}` : key;
 
     // Se for um array ou objeto complexo, converter para string JSON
     if (value !== null && typeof value === 'object') {
-      // Verificar se é um array ou objeto não-vazio
-      const shouldStringify =
-        Array.isArray(value) ||
-        Object.keys(value as Record<string, unknown>).length > 0;
-
-      if (shouldStringify) {
-        try {
-          return [finalKey, JSON.stringify(value)];
-        } catch {
-          return [finalKey, '[Unserializable Object]'];
-        }
+      try {
+        return [finalKey, JSON.stringify(value)];
+      } catch {
+        return [finalKey, '[Unserializable Object]'];
       }
     }
 
@@ -231,6 +225,12 @@ class OpenSearchTransport extends transports.Stream {
     Promise.race([this.sendToOpenSearch(info), timeoutPromise]).catch(
       (error) => {
         console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+        if (error.meta?.body?.error) {
+          console.error(
+            '📄 Detalhes do erro:',
+            JSON.stringify(error.meta.body.error, null, 2)
+          );
+        }
       }
     );
   }
@@ -240,8 +240,8 @@ class OpenSearchTransport extends transports.Stream {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
 
-      // Achatar a estrutura para evitar conflitos de mapeamento
-      const document = {
+      // Criar documento base
+      const document: Record<string, unknown> = {
         '@timestamp': new Date().toISOString(),
         timestamp: info.timestamp,
         level: info.level,
@@ -249,7 +249,7 @@ class OpenSearchTransport extends transports.Stream {
         requestId,
         environment: process.env.NODE_ENV,
         service: 'track-okr-api',
-        // Informações da requisição (campos com nomes únicos)
+        // Informações da requisição
         httpMethod: store?.method,
         httpUrl: store?.url,
         httpPath: store?.path,
@@ -258,34 +258,20 @@ class OpenSearchTransport extends transports.Stream {
         clientReferer: store?.referer,
         clientOrigin: store?.origin,
         requestBodySize: store?.requestSize,
-        // Informações da resposta (campos com nomes únicos)
+        // Informações da resposta
         httpStatusCode: store?.statusCode,
         responseTimeMs: store?.responseTime,
         responseBodySize: store?.responseSize,
-        // Informações do usuário (campos com nomes únicos)
+        // Informações do usuário
         userId: store?.userId,
         companyId: store?.companyId,
-        // Métricas de performance (campos com nomes únicos)
+        // Métricas de performance
         performanceResponseTime: store?.responseTime,
         performanceRequestSize: store?.requestSize,
-        performanceResponseSize: store?.responseSize,
-        // Outros campos do log - sanitizar para evitar conflitos de mapeamento
-        ...Object.keys(info).reduce(
-          (acc, key) => {
-            if (!['timestamp', 'level', 'message'].includes(key)) {
-              const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
-                key,
-                info[key]
-              );
-              acc[finalKey] = finalValue;
-            }
-            return acc;
-          },
-          {} as Record<string, unknown>
-        )
+        performanceResponseSize: store?.responseSize
       };
 
-      // Adicionar campos do info com sanitização
+      // Adicionar campos do info com sanitização (apenas uma vez)
       Object.keys(info).forEach((key) => {
         if (!['timestamp', 'level', 'message'].includes(key)) {
           const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
@@ -298,16 +284,35 @@ class OpenSearchTransport extends transports.Stream {
 
       await this.client.index({
         index: this.index,
-        body: document
+        body: document,
+        refresh: false
       });
 
       console.log(
         `✅ Log enviado para OpenSearch: ${info.level} - ${info.message}`
       );
     } catch (error) {
-      console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+      console.error('❌ Erro ao enviar log para OpenSearch:');
+      console.error('📄 Mensagem:', error.message);
+
       if (error.meta?.body?.error) {
-        console.error('📄 Detalhes do erro:', error.meta.body.error);
+        console.error(
+          '📊 Detalhes do erro:',
+          JSON.stringify(error.meta.body.error, null, 2)
+        );
+      }
+
+      if (error.meta?.connection) {
+        console.error('🔗 Conexão:', error.meta.connection);
+      }
+
+      if (error.meta?.statusCode) {
+        console.error('📋 Status Code:', error.meta.statusCode);
+      }
+
+      // Logar o documento que causou o erro para debug
+      if (error.meta?.body?.error?.caused_by) {
+        console.error('🐛 Causa raiz:', error.meta.body.error.caused_by);
       }
     }
   }
@@ -316,8 +321,6 @@ class OpenSearchTransport extends transports.Stream {
 // Configuração do transport do Discord para logs de error e warn
 const createDiscordTransport = () => {
   // Só ativar Discord logging em produção
-  console.log('------------------------------->');
-  console.log('isProduction:', isProduction);
   if (!isProduction) {
     console.log(
       '📝 Discord logging desabilitado em ambiente de desenvolvimento'
@@ -336,7 +339,7 @@ const createDiscordTransport = () => {
   try {
     console.log('📱 Discord logging ativado para ambiente de produção');
     return new DiscordTransport({
-      level: 'warn', // Captura warn e error (error tem prioridade maior que warn)
+      level: 'warn',
       webhookUrl
     });
   } catch (error) {
@@ -350,11 +353,31 @@ const createOpenSearchTransport = () => {
   if (!isProduction) return null;
 
   try {
+    // Testar conexão com OpenSearch
+    const testClient = new Client({
+      node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
+      auth: {
+        username: process.env.OPENSEARCH_USERNAME as string,
+        password: process.env.OPENSEARCH_PASSWORD as string
+      },
+      ssl: {
+        rejectUnauthorized: false
+      }
+    });
+
+    // Verificar se o OpenSearch está respondendo
+    testClient
+      .ping()
+      .then(() => console.log('✅ Conexão com OpenSearch estabelecida'))
+      .catch((err) =>
+        console.error('❌ Erro ao conectar com OpenSearch:', err.message)
+      );
+
     return new OpenSearchTransport({
       level: 'info'
     });
   } catch (error) {
-    console.error('❌ Erro ao configurar OpenSearch transport:', error);
+    console.error('❌ Erro ao configurar OpenSearch transport:', error.message);
     return null;
   }
 };
