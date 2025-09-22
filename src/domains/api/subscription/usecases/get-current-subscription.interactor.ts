@@ -5,6 +5,7 @@ import {
 } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
+import { Utils } from '@shared/utils/utils';
 import {
   GetCurrentSubscriptionInteractorDependencies,
   IGetCurrentSubscriptionGateway,
@@ -88,7 +89,8 @@ export class GetCurrentSubscriptionInteractor {
         planners: await this.checkFeaturePermission(
           id_company,
           FeatureType.MAX_PLANNERS,
-          plan?.max_planners as number
+          plan?.max_planners as number,
+          new Date().getFullYear()
         ),
         teams: await this.checkFeaturePermission(
           id_company,
@@ -98,7 +100,9 @@ export class GetCurrentSubscriptionInteractor {
         objectives: await this.checkFeaturePermission(
           id_company,
           FeatureType.MAX_OBJECTIVES_PER_QUARTER,
-          plan?.max_objectives_per_quarter as number
+          plan?.max_objectives_per_quarter as number,
+          new Date().getFullYear(),
+          Utils.currentQuarter()
         )
       };
 
@@ -118,12 +122,30 @@ export class GetCurrentSubscriptionInteractor {
   private async checkFeaturePermission(
     id_company: number,
     feature: FeatureType,
-    limit: number
+    limit: number,
+    year?: number,
+    quarter?: number
   ): Promise<{
     current: number;
     limit: number;
     percentage: number;
   }> {
+    if (feature === FeatureType.MAX_OBJECTIVES_PER_QUARTER) {
+      const result = await this.checkCompanyFeatureLimits.execute({
+        id_company,
+        feature,
+        year: year as number,
+        quarter
+      });
+
+      return {
+        current: result.currentUsage,
+        limit: limit,
+        percentage:
+          limit > 0 ? Math.round((result.currentUsage / limit) * 100) : 0
+      };
+    }
+
     const result = await this.checkCompanyFeatureLimits.execute({
       id_company,
       feature

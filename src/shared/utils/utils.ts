@@ -49,8 +49,14 @@ export function truncateString(str: string, maxLength: number = 254): string {
   return str.length > maxLength ? str.substring(0, maxLength) : str;
 }
 
+export const currentQuarter = () => {
+  const currentQuarter = Math.floor(new Date().getMonth() / 3) + 1;
+  return currentQuarter;
+};
+
 export const Utils = {
   loadEmailTemplate,
   generateRandomPassword,
-  truncateString
+  truncateString,
+  currentQuarter
 };

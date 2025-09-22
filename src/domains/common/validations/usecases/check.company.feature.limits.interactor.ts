@@ -1,10 +1,10 @@
+import { IPresenter } from '@protocols/presenter';
 import {
   CheckCompanyFeatureLimitsInput,
   CheckCompanyFeatureLimitsInteractorDependencies,
   ICheckCompanyFeatureLimitsGateway,
   ICheckCompanyFeatureLimitsInteractor
 } from '../interfaces/check.company.feature.limits.interface';
-import { IPresenter } from '@protocols/presenter';
 
 export class CheckCompanyFeatureLimitsInteractor
   implements ICheckCompanyFeatureLimitsInteractor
