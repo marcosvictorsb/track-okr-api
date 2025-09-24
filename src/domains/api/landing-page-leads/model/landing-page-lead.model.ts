@@ -1,5 +1,5 @@
-import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 
 export interface LandingPageLeadModelAttributes {
   id?: number;
@@ -7,6 +7,7 @@ export interface LandingPageLeadModelAttributes {
   email: string;
   company?: string | null;
   phone?: string | null;
+  site?: string | null;
   position?: string | null;
   company_size?: string | null;
   source: string;
@@ -37,6 +38,7 @@ class LandingPageLeadModel
   declare company?: string | null;
   declare phone?: string | null;
   declare position?: string | null;
+  declare site?: string | null;
   declare company_size?: string | null;
   declare source: string;
   declare page_url?: string | null;
@@ -147,6 +149,11 @@ LandingPageLeadModel.init(
       type: DataTypes.STRING(255),
       allowNull: true,
       comment: 'Cargo/posição do lead na empresa'
+    },
+    site: {
+      type: DataTypes.STRING(255),
+      allowNull: true,
+      comment: 'Site da empresa do lead'
     },
     company_size: {
       type: DataTypes.STRING(50),

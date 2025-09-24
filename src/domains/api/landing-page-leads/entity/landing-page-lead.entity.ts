@@ -5,6 +5,7 @@ export class LandingPageLeadEntity {
   public readonly company?: string | null;
   public readonly phone?: string | null;
   public readonly position?: string | null;
+  public readonly site?: string | null;
   public readonly company_size?: string | null;
   public readonly source: string;
   public readonly page_url?: string | null;
@@ -35,6 +36,7 @@ export class LandingPageLeadEntity {
     company?: string | null;
     phone?: string | null;
     position?: string | null;
+    site?: string | null;
     company_size?: string | null;
     source: string;
     page_url?: string | null;
@@ -59,6 +61,7 @@ export class LandingPageLeadEntity {
     this.company = params.company;
     this.phone = params.phone;
     this.position = params.position;
+    this.site = params.site;
     this.company_size = params.company_size;
     this.source = params.source;
     this.page_url = params.page_url;

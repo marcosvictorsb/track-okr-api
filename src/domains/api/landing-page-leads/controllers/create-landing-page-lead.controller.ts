@@ -1,6 +1,6 @@
+import { logger } from '@configs/logger';
 import { Request, Response } from 'express';
 import { LandingPageLeadRepository } from '../repository/landing-page-lead.repository';
-import { logger } from '@configs/logger';
 
 export interface CreateLeadRequest extends Request {
   body: {
@@ -8,6 +8,7 @@ export interface CreateLeadRequest extends Request {
     email: string;
     company?: string;
     phone?: string;
+    site?: string;
     position?: string;
     companySize?: string;
     source?: string;
@@ -45,7 +46,8 @@ export class CreateLandingPageLeadController {
         utm_medium,
         utm_campaign,
         utm_term,
-        utm_content
+        utm_content,
+        site
       } = req.body;
 
       // Validação básica
@@ -97,6 +99,7 @@ export class CreateLandingPageLeadController {
         company: company?.trim(),
         phone: phone?.trim(),
         position: position?.trim(),
+        site: site?.trim(),
         company_size: companySize,
         source: source || 'landing-page',
         page_url,
