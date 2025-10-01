@@ -408,8 +408,11 @@ export class GetTemporalEvolutionInteractor {
         const globalWeekIndex = monthIndex * 4 + weekIndex;
         const currentDate = new Date();
 
-        // Se a semana é no futuro, usar o progresso atual das result keys
-        const isCurrentOrFutureWeek = week.end >= currentDate;
+        // Para a última semana do quarter, SEMPRE usar o current_value das result keys
+        // independentemente de ser passada ou não, pois representa o estado final
+        const isLastWeekOfQuarter = globalWeekIndex === 11;
+        const isCurrentOrFutureWeek =
+          week.end >= currentDate || isLastWeekOfQuarter;
 
         // Calcular progresso por objetivo
         let totalObjectivesProgress = 0;
@@ -428,17 +431,21 @@ export class GetTemporalEvolutionInteractor {
               resultKey.initial_value?.toString() || '0'
             );
 
-            // Incluir TODAS as result keys válidas (com target > initial)
-            if (targetValue > initialValue && resultKey.id) {
+            // Incluir TODAS as result keys válidas (com target definido)
+            if (targetValue !== 0 && resultKey.id) {
               let currentValue = initialValue;
 
-              if (isCurrentOrFutureWeek) {
-                // Para semanas atuais/futuras, usar o current_value da result key
+              if (isCurrentOrFutureWeek || isLastWeekOfQuarter) {
+                // Para semanas atuais/futuras OU última semana, usar o current_value da result key
                 currentValue = parseFloat(
                   resultKey.current_value?.toString() || initialValue.toString()
                 );
+
+                this.gateway.loggerInfo('Usando current_value da result key', {
+                  data: `Semana ${globalWeekIndex} - RK ${resultKey.id}: usando current_value ${currentValue} (isLastWeek: ${isLastWeekOfQuarter})`
+                });
               } else {
-                // Para semanas passadas, buscar o último checkin até aquela data
+                // Para semanas passadas (exceto a última), buscar o valor baseado nos checkins até aquela data
                 const relevantCheckins = checkins
                   .filter(
                     (checkin) =>
@@ -447,27 +454,51 @@ export class GetTemporalEvolutionInteractor {
                   )
                   .sort(
                     (a, b) =>
-                      new Date(a.created_at as Date).getTime() -
-                      new Date(b.created_at as Date).getTime()
+                      new Date(b.created_at as Date).getTime() -
+                      new Date(a.created_at as Date).getTime()
                   );
 
                 if (relevantCheckins.length > 0) {
-                  const latestCheckin =
-                    relevantCheckins[relevantCheckins.length - 1];
+                  // Usar o new_value do checkin mais recente até essa data
+                  const latestCheckin = relevantCheckins[0];
                   currentValue = parseFloat(
                     latestCheckin.new_value?.toString() ||
                       initialValue.toString()
                   );
+
+                  this.gateway.loggerInfo(
+                    'Usando checkin para semana passada',
+                    {
+                      data: `Semana ${globalWeekIndex} - RK ${resultKey.id}: usando checkin ${currentValue} de ${latestCheckin.created_at}`
+                    }
+                  );
                 }
-                // Se não tem checkins, currentValue fica como initialValue (0% de progresso)
+                // Se não tem checkins até essa data, currentValue fica como initialValue
               }
 
               // Calcular progresso percentual desta result key até esta semana
-              const progress =
-                ((currentValue - initialValue) / (targetValue - initialValue)) *
-                100;
-              const clampedProgress = Math.min(Math.max(progress, 0), 100);
+              let progress = 0;
+              if (targetValue > initialValue) {
+                // Meta crescente (ex: 0 -> 100)
+                progress =
+                  ((currentValue - initialValue) /
+                    (targetValue - initialValue)) *
+                  100;
+              } else if (targetValue < initialValue) {
+                // Meta decrescente (ex: 100 -> 0)
+                progress =
+                  ((initialValue - currentValue) /
+                    (initialValue - targetValue)) *
+                  100;
+              } else if (
+                targetValue === initialValue &&
+                currentValue >= targetValue
+              ) {
+                // Meta binária atingida (ex: 0 -> 1 e atual = 1)
+                progress = 100;
+              }
 
+              const clampedProgress = Math.min(Math.max(progress, 0), 100);
               totalResultKeyProgress += clampedProgress;
               validResultKeysCount++;
 
@@ -505,10 +536,10 @@ export class GetTemporalEvolutionInteractor {
             ? totalObjectivesProgress / validObjectivesCount
             : 0;
 
-        cumulativeProgress[globalWeekIndex] = Math.ceil(averageProgress);
+        cumulativeProgress[globalWeekIndex] = Math.round(averageProgress);
 
         this.gateway.loggerInfo('Progresso acumulado da semana', {
-          data: `Semana ${globalWeekIndex} (${week.end.toISOString().substring(0, 10)}): ${Math.ceil(averageProgress)}% - Total objetivos: ${totalObjectivesProgress.toFixed(1)} / ${validObjectivesCount} objetivos`
+          data: `Semana ${globalWeekIndex} (${week.end.toISOString().substring(0, 10)}): ${Math.round(averageProgress)}% - Total objetivos: ${totalObjectivesProgress.toFixed(1)} / ${validObjectivesCount} objetivos`
         });
       });
     }
