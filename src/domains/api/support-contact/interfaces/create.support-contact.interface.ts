@@ -1,4 +1,4 @@
-import { DataLogOutput } from '@adapters/services';
+import { DataLogOutput, DiscordNotificationService } from '@adapters/services';
 import { logger } from '@configs/logger';
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
@@ -34,12 +34,14 @@ export interface ICreateSupportContactGateway {
   createSupportContact(
     data: CreateSupportContactCriteria
   ): Promise<SupportContactEntity>;
+  sendDiscordNotification(supportData: SupportContactEntity): Promise<void>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }
 
 export interface ICreateSupportContactGatewayDependencies {
   supportContactRepository: ISupportContactRepository;
+  discordNotificationService: DiscordNotificationService;
   logging: typeof logger;
 }
 
