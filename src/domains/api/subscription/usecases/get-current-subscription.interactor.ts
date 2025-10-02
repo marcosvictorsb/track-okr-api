@@ -103,7 +103,8 @@ export class GetCurrentSubscriptionInteractor {
           plan?.max_objectives_per_quarter as number,
           new Date().getFullYear(),
           Utils.currentQuarter()
-        )
+        ),
+        resultKeyPerObjective: plan?.max_key_results_per_objective
       };
 
       return this.presenter.ok({ subscription, plan, usage_stats });
