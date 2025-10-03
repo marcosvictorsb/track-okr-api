@@ -9,7 +9,7 @@ export const getTemporalEvolutionSchema = z.object({
         (val) => {
           if (!val) return true;
           const num = parseInt(val);
-          return !isNaN(num) && num >= 1 && num <= 4;
+          return !isNaN(num) && num >= 1 && num <= 5;
         },
         {
           message: 'Quarter deve ser um número entre 1 e 4'

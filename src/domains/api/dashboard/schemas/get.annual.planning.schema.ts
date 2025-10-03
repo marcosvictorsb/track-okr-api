@@ -19,11 +19,11 @@ export const getAnnualPlanningSchema = z.object({
       (value) => {
         const quarterNumber = Number(value);
         return (
-          !isNaN(quarterNumber) && quarterNumber >= 1 && quarterNumber <= 4
+          !isNaN(quarterNumber) && quarterNumber >= 1 && quarterNumber <= 5
         );
       },
       {
-        message: 'Quarter é obrigatório e deve ser um número válido entre 1 e 4'
+        message: 'Quarter é obrigatório e deve ser um número válido entre 1 e 5'
       }
     )
   })

@@ -47,6 +47,11 @@ export class GetTemporalEvolutionInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
+      // Se quarter = 5, usar lógica específica para ano todo
+      if (quarter === 5) {
+        return await this.handleYearlyEvolution(id_company, year);
+      }
+
       const idObjectiveIds = await this.getIdObjectiveIds(
         id_company,
         quarter,
@@ -193,6 +198,68 @@ export class GetTemporalEvolutionInteractor {
     }
   }
 
+  // Método específico para lidar com quarter 5 (ano todo)
+  private async handleYearlyEvolution(
+    id_company: number,
+    year: number
+  ): Promise<HttpResponse> {
+    this.gateway.loggerInfo('Processando evolução temporal anual (quarter 5)', {
+      id_company,
+      year
+    });
+
+    // Buscar todos os objetivos do ano
+    const allObjectives = await this.gateway.findObjectivesByCompanyAndQuarter({
+      id_company,
+      year,
+      quarter: undefined
+    } as unknown as Parameters<
+      typeof this.gateway.findObjectivesByCompanyAndQuarter
+    >[0]);
+
+    if (allObjectives.length === 0) {
+      this.gateway.loggerInfo('Nenhum objetivo encontrado para o ano', {
+        id_company,
+        year
+      });
+
+      return this.presenter.ok({
+        currentQuarter: new Array(12).fill(0),
+        cumulativeQuarter: new Array(12).fill(0)
+      });
+    }
+
+    const objectiveIds = allObjectives
+      .map((obj: ObjectiveEntity) => obj.id)
+      .filter((id): id is number => id !== undefined);
+
+    const resultKeys =
+      await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
+    const resultKeyIds = this.getResultKeyIds(resultKeys);
+    const checkins = await this.gateway.findCheckinsByIds({ resultKeyIds });
+
+    // Calcular evolução mensal para o ano todo
+    const monthlyEvolution = await this.calculateYearlyMonthlyEvolution(
+      resultKeys,
+      checkins,
+      year,
+      id_company
+    );
+
+    // Calcular progresso acumulado mensal
+    const cumulativeMonthly = await this.calculateYearlyCumulativeProgress(
+      resultKeys,
+      checkins,
+      year,
+      id_company
+    );
+
+    return this.presenter.ok({
+      currentQuarter: monthlyEvolution,
+      cumulativeQuarter: cumulativeMonthly
+    });
+  }
+
   private getLastDayOfMonth(year: number, month: number): Date {
     // Criar data do primeiro dia do próximo mês e subtrair 1 dia
     return new Date(year, month + 1, 0);
@@ -311,11 +378,25 @@ export class GetTemporalEvolutionInteractor {
     quarter: number,
     year: number
   ): Promise<number[]> {
-    const objectives = await this.gateway.findObjectivesByCompanyAndQuarter({
+    const criteria: {
+      id_company: number;
+      year: number;
+      quarter?: number;
+    } = {
       id_company,
-      quarter: quarter as number,
       year: year as number
-    });
+    };
+
+    // Se quarter não for 5, adicionar filtro de quarter
+    if (quarter !== 5) {
+      criteria.quarter = quarter as number;
+    }
+
+    const objectives = await this.gateway.findObjectivesByCompanyAndQuarter(
+      criteria as unknown as Parameters<
+        typeof this.gateway.findObjectivesByCompanyAndQuarter
+      >[0]
+    );
 
     return objectives
       .map((obj: ObjectiveEntity) => obj.id)
@@ -557,8 +638,181 @@ export class GetTemporalEvolutionInteractor {
         return [6, 7, 8]; // Jul, Ago, Set
       case 4:
         return [9, 10, 11]; // Out, Nov, Dez
+      case 5:
+        return [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; // Ano todo: Jan - Dez
       default:
         return [];
     }
+  }
+
+  // Calcular evolução mensal para o ano todo (quarter 5)
+  private async calculateYearlyMonthlyEvolution(
+    resultKeys: ResultKeyEntity[],
+    checkins: CheckinsEntity[],
+    year: number,
+    _id_company: number
+  ): Promise<number[]> {
+    const monthlyEvolution = new Array(12).fill(0);
+    const resultKeyIds = this.getResultKeyIds(resultKeys);
+
+    // Para cada mês do ano
+    for (let month = 0; month < 12; month++) {
+      const startDate = new Date(year, month, 1);
+      const endDate = this.getLastDayOfMonth(year, month);
+
+      // Calcular progresso do mês usando a lógica existente
+      const monthProgress = this.getPercetualEvolutionWeekly(
+        resultKeys,
+        resultKeyIds,
+        checkins,
+        startDate,
+        endDate
+      );
+
+      monthlyEvolution[month] = monthProgress;
+
+      this.gateway.loggerInfo('Evolução mensal calculada', {
+        data: `Mês ${month + 1}/${year}: ${monthProgress}%`
+      });
+    }
+
+    return monthlyEvolution;
+  }
+
+  // Calcular progresso acumulado mensal para o ano todo (quarter 5)
+  private async calculateYearlyCumulativeProgress(
+    resultKeys: ResultKeyEntity[],
+    checkins: CheckinsEntity[],
+    year: number,
+    id_company: number
+  ): Promise<number[]> {
+    const cumulativeProgress = new Array(12).fill(0);
+
+    // Buscar TODOS os objetivos do ano
+    const allObjectives = await this.gateway.findObjectivesByCompanyAndQuarter({
+      id_company,
+      year,
+      quarter: undefined
+    } as unknown as Parameters<
+      typeof this.gateway.findObjectivesByCompanyAndQuarter
+    >[0]);
+
+    // Agrupar result keys por objetivo
+    const resultKeysByObjective = new Map<number, ResultKeyEntity[]>();
+
+    // Inicializar TODOS os objetivos com array vazio
+    allObjectives.forEach((objective) => {
+      if (objective.id) {
+        resultKeysByObjective.set(objective.id, []);
+      }
+    });
+
+    // Adicionar as result keys aos objetivos correspondentes
+    resultKeys.forEach((rk) => {
+      if (rk.id_okr && resultKeysByObjective.has(rk.id_okr)) {
+        resultKeysByObjective.get(rk.id_okr)!.push(rk);
+      }
+    });
+
+    // Para cada mês, calcular o progresso acumulado
+    for (let month = 0; month < 12; month++) {
+      const endOfMonth = this.getLastDayOfMonth(year, month);
+      const currentDate = new Date();
+      const isCurrentOrFutureMonth = endOfMonth >= currentDate;
+
+      let totalObjectivesProgress = 0;
+      let validObjectivesCount = 0;
+
+      resultKeysByObjective.forEach((objectiveResultKeys, _objectiveId) => {
+        let totalResultKeyProgress = 0;
+        let validResultKeysCount = 0;
+
+        objectiveResultKeys.forEach((resultKey) => {
+          const targetValue = parseFloat(
+            resultKey.target_value?.toString() || '0'
+          );
+          const initialValue = parseFloat(
+            resultKey.initial_value?.toString() || '0'
+          );
+
+          if (targetValue !== 0 && resultKey.id) {
+            let currentValue = initialValue;
+
+            if (isCurrentOrFutureMonth) {
+              // Para mêses atuais/futuros, usar current_value
+              currentValue = parseFloat(
+                resultKey.current_value?.toString() || initialValue.toString()
+              );
+            } else {
+              // Para mêses passados, buscar checkins até o final do mês
+              const relevantCheckins = checkins
+                .filter(
+                  (checkin) =>
+                    checkin.id_result_key === resultKey.id &&
+                    new Date(checkin.created_at as Date) <= endOfMonth
+                )
+                .sort(
+                  (a, b) =>
+                    new Date(b.created_at as Date).getTime() -
+                    new Date(a.created_at as Date).getTime()
+                );
+
+              if (relevantCheckins.length > 0) {
+                const latestCheckin = relevantCheckins[0];
+                currentValue = parseFloat(
+                  latestCheckin.new_value?.toString() || initialValue.toString()
+                );
+              }
+            }
+
+            // Calcular progresso percentual
+            let progress = 0;
+            if (targetValue > initialValue) {
+              progress =
+                ((currentValue - initialValue) / (targetValue - initialValue)) *
+                100;
+            } else if (targetValue < initialValue) {
+              progress =
+                ((initialValue - currentValue) / (initialValue - targetValue)) *
+                100;
+            } else if (
+              targetValue === initialValue &&
+              currentValue >= targetValue
+            ) {
+              progress = 100;
+            }
+
+            const clampedProgress = Math.min(Math.max(progress, 0), 100);
+            totalResultKeyProgress += clampedProgress;
+            validResultKeysCount++;
+          }
+        });
+
+        // Calcular média do objetivo
+        if (validResultKeysCount > 0) {
+          const objectiveAverage =
+            totalResultKeyProgress / validResultKeysCount;
+          totalObjectivesProgress += objectiveAverage;
+        } else {
+          totalObjectivesProgress += 0;
+        }
+
+        validObjectivesCount++;
+      });
+
+      // Calcular média geral dos objetivos
+      const averageProgress =
+        validObjectivesCount > 0
+          ? totalObjectivesProgress / validObjectivesCount
+          : 0;
+
+      cumulativeProgress[month] = Math.round(averageProgress);
+
+      this.gateway.loggerInfo('Progresso acumulado mensal', {
+        data: `Mês ${month + 1}/${year}: ${Math.round(averageProgress)}%`
+      });
+    }
+
+    return cumulativeProgress;
   }
 }

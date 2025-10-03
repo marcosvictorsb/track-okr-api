@@ -1,22 +1,22 @@
-import {
-  IGetRecentCheckInsGateway,
-  FindObjectivesByCompanyAndQuarterCriteria
-} from '../interfaces/get.recent-checkins.interface';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
+import { MixGetRecentCheckInGateway } from '@adapters/gateways/api/dashboard/get.recent.checkin.gateway';
+import { logger } from '@configs/logger';
 import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
-import { IObjectiveRepository } from '@domains/api/objectives/interfaces/default.interface';
-import { IResultKeyRepository } from '@domains/api/results-keys/interfaces/default.interface';
 import {
   FindCheckinsCriteria,
   ICheckinsRepository
 } from '@domains/api/checkins/interfaces/default.interface';
-import { IUserRepository } from '@domains/api/users/interfaces/default.interfaces';
-import { MixGetRecentCheckInGateway } from '@adapters/gateways/api/dashboard/get.recent.checkin.gateway';
-import { logger } from '@configs/logger';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import { IObjectiveRepository } from '@domains/api/objectives/interfaces/default.interface';
 import { IProfileRepository } from '@domains/api/profile/interfaces';
+import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
+import { IResultKeyRepository } from '@domains/api/results-keys/interfaces/default.interface';
 import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { IUserRepository } from '@domains/api/users/interfaces/default.interfaces';
 import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
+import {
+  FindObjectivesByCompanyAndQuarterCriteria,
+  IGetRecentCheckInsGateway
+} from '../interfaces/get.recent-checkins.interface';
 
 export interface GetRecentCheckInsGatewayDependencies {
   objectiveRepository: IObjectiveRepository;
@@ -40,6 +40,7 @@ export class GetRecentCheckInsGateway
   protected profileRepository: IProfileRepository;
   protected teamRepository: ITeamRepository;
   protected userTeamRepository: IUserTeamRepository;
+  logging: typeof logger;
 
   constructor(params: GetRecentCheckInsGatewayDependencies) {
     super(params);
@@ -50,11 +51,14 @@ export class GetRecentCheckInsGateway
     this.profileRepository = params.profileRepository;
     this.userTeamRepository = params.userTeamRepository;
     this.teamRepository = params.teamRepository;
+    this.logging = params.logging;
   }
 
   public async findObjectivesByCompanyAndQuarter(
     criteria: FindObjectivesByCompanyAndQuarterCriteria
   ): Promise<ObjectiveEntity[]> {
+    this.logging.info('Buscando objetivos por empresa e quarter', { criteria });
+
     return await this.objectiveRepository.findMany({
       id_company: criteria.id_company,
       quarter: criteria.quarter,
@@ -65,6 +69,9 @@ export class GetRecentCheckInsGateway
   public async findResultKeysByObjectiveIds(
     objectiveIds: number[]
   ): Promise<ResultKeyEntity[]> {
+    this.logging.info('Buscando resultados-chave por IDs de objetivos', {
+      objectiveIds
+    });
     const resultKeys = await this.resultKeyRepository.findMany({
       ids_okr: objectiveIds
     });
@@ -78,6 +85,8 @@ export class GetRecentCheckInsGateway
   public async findRecentCheckins(
     criteria: FindCheckinsCriteria
   ): Promise<CheckinsEntity[]> {
+    this.logging.info('Buscando check-ins recentes', { criteria });
+
     const checkIns = await this.checkinsRepository.findMany({
       ids_result_key: criteria.ids_result_key
     });
@@ -101,6 +110,8 @@ export class GetRecentCheckInsGateway
   public async findUserById(
     id: number
   ): Promise<{ id: number; name: string; avatar?: string } | null> {
+    this.logging.info('Buscando usuário por ID', { id });
+
     const user = await this.userRepository.find({ id });
     if (!user) return null;
 
@@ -123,6 +134,7 @@ export class GetRecentCheckInsGateway
   }
 
   public async findUserTeam(_userId: number): Promise<{ name: string } | null> {
+    this.logging.info('Buscando time do usuário', { _userId });
     const userTeam = await this.userTeamRepository.find({ id_user: _userId });
     if (!userTeam) {
       return {

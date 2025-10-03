@@ -51,7 +51,11 @@ export class ObjectiveRepository implements IObjectiveRepository {
     }
 
     if (criteria.quarter) {
-      whereConditions['quarter'] = criteria.quarter;
+      if (criteria.quarter >= 1 && criteria.quarter <= 4) {
+        whereConditions['quarter'] = criteria.quarter;
+      } else {
+        whereConditions['quarter'] = { [Op.in]: [1, 2, 3, 4] };
+      }
     }
 
     if (criteria.year) {

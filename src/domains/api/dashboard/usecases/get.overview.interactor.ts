@@ -139,7 +139,7 @@ export class GetOverviewInteractor {
     const statistics = this.buildStatistics(objectivesMetrics, teamPerformance);
 
     return new OverviewEntity({
-      quarter: `Q${targetQuarter}`,
+      quarter: targetQuarter === 5 ? 'Ano todo' : `Q${targetQuarter}`,
       year: targetYear,
       progress: objectivesMetrics.avgProgress,
       totalObjectives: objectivesMetrics.totalObjectives,
@@ -247,6 +247,10 @@ export class GetOverviewInteractor {
       case 4: // Q4: Outubro - Dezembro
         startMonth = 9; // Outubro
         endMonth = 11; // Dezembro
+        break;
+      case 5:
+        startMonth = 0; // Outubro
+        endMonth = 11;
         break;
       default:
         throw new Error(`Quarter inválido: ${quarter}. Deve ser entre 1 e 4.`);
