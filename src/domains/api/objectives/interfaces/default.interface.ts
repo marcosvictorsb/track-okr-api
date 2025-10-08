@@ -23,6 +23,7 @@ export interface FindObjectiveCriteria {
   id?: number;
   title?: string;
   id_team?: number;
+  ids_team?: number[];
   id_company?: number;
   id_planner?: number;
   status?: string; //'active' | 'cancelled' | 'completed';
@@ -58,4 +59,5 @@ export interface IObjectiveRepository {
   ): Promise<ObjectiveEntity | null>;
   delete(criteria: DeleteObjectiveCriteria): Promise<boolean>;
   countObjectivesByQuarter(criteria: FindObjectiveCriteria): Promise<number>;
+  findYearsByCompany(id_company: number): Promise<number[]>;
 }

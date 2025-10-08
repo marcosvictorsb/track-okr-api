@@ -1,10 +1,10 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
-import { IResultKeyRepository } from './default.interface';
-import { logger } from '@configs/logger';
-import { DataLogOutput } from '@adapters/services';
 import { ResultKeyEntity } from '../entity/result-key.entity';
+import { IResultKeyRepository } from './default.interface';
 
 // Input types
 export type InputUpdateResultKey = {
@@ -40,7 +40,8 @@ export type UpdateResultKeyControllerDependencies = {
 
 // Find criteria
 export interface FindResultKeyCriteria {
-  id: number;
+  id?: number;
+  id_result_key?: number;
 }
 
 // Update criteria

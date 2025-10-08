@@ -1,5 +1,5 @@
-import { CheckinsEntity } from '../entity/checkins.entity';
 import { DataLogOutput } from '@adapters/services';
+import { CheckinsEntity } from '../entity/checkins.entity';
 
 export interface CreateCheckinsCriteria {
   id_result_key: number;
@@ -18,6 +18,8 @@ export interface FindCheckinsCriteria {
   new_value?: number;
   previous_value?: number;
   limit?: number;
+  startPeriod?: Date;
+  endPeriod?: Date;
 }
 
 export interface UpdateCheckinsCriteria {

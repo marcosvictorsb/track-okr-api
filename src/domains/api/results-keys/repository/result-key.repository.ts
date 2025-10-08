@@ -1,16 +1,16 @@
-import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
+import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import { ModelStatic, Op } from 'sequelize';
 import {
   CreateResultKeyCriteria,
   DeleteResultKeyCriteria,
   FindResultKeyCriteria,
   IResultKeyRepository,
-  UpdateResultKeyCriteria,
-  ResultKeyRepositoryDependencies
+  ResultKeyRepositoryDependencies,
+  UpdateResultKeyCriteria
 } from '@domains/api/results-keys/interfaces';
+import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
 import TeamModel from '@domains/api/teams/model/team.model';
-import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { ModelStatic, Op } from 'sequelize';
 
 export class ResultKeyRepository implements IResultKeyRepository {
   protected model: ModelStatic<ResultKeyModel>;

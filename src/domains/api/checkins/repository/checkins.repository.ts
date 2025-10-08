@@ -33,6 +33,20 @@ export class CheckinsRepository implements ICheckinsRepository {
     if (criteria.id_user !== undefined) conditions.id_user = criteria.id_user;
     if (criteria.created_at !== undefined)
       conditions.created_at = criteria.created_at;
+
+    if (criteria.startPeriod || criteria.endPeriod) {
+      const dateConditions: Record<symbol, Date> = {};
+      if (criteria.startPeriod) {
+        dateConditions[Op.gte] = criteria.startPeriod;
+      }
+
+      if (criteria.endPeriod) {
+        dateConditions[Op.lte] = criteria.endPeriod;
+      }
+
+      conditions.created_at = dateConditions;
+    }
+
     if (criteria.new_value !== undefined)
       conditions.new_value = criteria.new_value;
     if (criteria.previous_value !== undefined)

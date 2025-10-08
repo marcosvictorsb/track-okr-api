@@ -34,6 +34,12 @@ export class ObjectiveRepository implements IObjectiveRepository {
       whereConditions['id_team'] = criteria.id_team;
     }
 
+    if (criteria.ids_team && criteria.ids_team.length > 0) {
+      whereConditions['id_team'] = {
+        [Op.in]: criteria.ids_team
+      };
+    }
+
     if (criteria.id_company) {
       whereConditions['id_company'] = criteria.id_company;
     }
@@ -167,5 +173,16 @@ export class ObjectiveRepository implements IObjectiveRepository {
     return this.model.count({
       where: this.getConditions(criteria)
     });
+  }
+
+  public async findYearsByCompany(id_company: number): Promise<number[]> {
+    const years = await this.model.findAll({
+      attributes: ['year'],
+      where: { id_company },
+      group: ['year'],
+      order: [['year', 'ASC']]
+    });
+
+    return years.map((record) => record.year);
   }
 }
