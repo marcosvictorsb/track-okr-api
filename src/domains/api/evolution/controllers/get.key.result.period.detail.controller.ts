@@ -19,14 +19,15 @@ export class GetKeyResultPeriodDetailController
     request: UserPayload,
     response: Response
   ): Promise<Response> {
-    const { kr_id, period } = request.params;
+    const { kr_id, period, year } = request.params;
     const { id_company, id: id_user } = request.user;
 
     const input: InputGetKeyResultPeriodDetail = {
       kr_id: Number(kr_id),
       period,
       id_company,
-      id_user
+      id_user,
+      year: Number(year)
     };
 
     const httpResponse = await this.interactor.execute(input);

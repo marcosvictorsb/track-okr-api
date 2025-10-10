@@ -28,7 +28,7 @@ router.get(
 
 // Buscar detalhes de período de key result
 router.get(
-  '/key-result/:kr_id/period/:period',
+  '/key-result/:kr_id/period/:period/year/:year',
   authMiddleware,
   validateSchema(getKeyResultPeriodDetailSchema),
   (request: UserPayload, response: Response) =>

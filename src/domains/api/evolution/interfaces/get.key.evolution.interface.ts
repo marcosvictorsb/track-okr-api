@@ -16,6 +16,7 @@ export interface InputGetKeyResultPeriodDetail {
   period: string;
   id_company: number;
   id_user: number;
+  year: number;
 }
 
 export interface IGetKeyResultPeriodDetailController {

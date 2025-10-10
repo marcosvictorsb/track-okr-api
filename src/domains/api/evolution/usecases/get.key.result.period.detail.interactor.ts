@@ -30,7 +30,7 @@ export class GetKeyResultPeriodDetailInteractor {
         }
       );
 
-      const { kr_id, period, id_company, id_user } = input;
+      const { kr_id, period, id_company, id_user, year } = input;
 
       // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
@@ -48,8 +48,8 @@ export class GetKeyResultPeriodDetailInteractor {
 
       const criteria: FindCheckinsCriteria = {
         id_result_key: kr_id,
-        startPeriod: this.getStartPeriod(period),
-        endPeriod: this.getEndPeriod(period)
+        startPeriod: this.getStartPeriod(period, year),
+        endPeriod: this.getEndPeriod(period, year)
       };
 
       const checkins = await this.gateway.getCheckinsByPeriod(criteria);
@@ -71,8 +71,8 @@ export class GetKeyResultPeriodDetailInteractor {
    * @returns Date representando o primeiro dia do mês às 00:00:00
    * @example getStartPeriod('Mar') → 2025-03-01T00:00:00.000Z
    */
-  private getStartPeriod(period: string): Date {
-    const currentYear = new Date().getFullYear();
+  private getStartPeriod(period: string, year: number): Date {
+    const currentYear = year;
     const monthMap: { [key: string]: number } = {
       Jan: 0,
       Fev: 1,
@@ -98,8 +98,8 @@ export class GetKeyResultPeriodDetailInteractor {
    * @returns Date representando o último dia do mês às 23:59:59
    * @example getEndPeriod('Mar') → 2025-03-31T23:59:59.999Z
    */
-  private getEndPeriod(period: string): Date {
-    const currentYear = new Date().getFullYear();
+  private getEndPeriod(period: string, year: number): Date {
+    const currentYear = year;
     const monthMap: { [key: string]: number } = {
       Jan: 0,
       Fev: 1,
