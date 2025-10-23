@@ -74,18 +74,18 @@ export class GetKeyResultPeriodDetailInteractor {
   private getStartPeriod(period: string, year: number): Date {
     const currentYear = year;
     const monthMap: { [key: string]: number } = {
-      Jan: 0,
-      Fev: 1,
-      Mar: 2,
-      Abr: 3,
-      Mai: 4,
-      Jun: 5,
-      Jul: 6,
-      Ago: 7,
-      Set: 8,
-      Out: 9,
-      Nov: 10,
-      Dez: 11
+      Janeiro: 0,
+      Fevereiro: 1,
+      Março: 2,
+      Abril: 3,
+      Maio: 4,
+      Junho: 5,
+      Julho: 6,
+      Agosto: 7,
+      Setembro: 8,
+      Outubro: 9,
+      Novembro: 10,
+      Dezembro: 11
     };
 
     const month = monthMap[period];
@@ -101,18 +101,18 @@ export class GetKeyResultPeriodDetailInteractor {
   private getEndPeriod(period: string, year: number): Date {
     const currentYear = year;
     const monthMap: { [key: string]: number } = {
-      Jan: 0,
-      Fev: 1,
-      Mar: 2,
-      Abr: 3,
-      Mai: 4,
-      Jun: 5,
-      Jul: 6,
-      Ago: 7,
-      Set: 8,
-      Out: 9,
-      Nov: 10,
-      Dez: 11
+      Janeiro: 0,
+      Fevereiro: 1,
+      Março: 2,
+      Abril: 3,
+      Maio: 4,
+      Junho: 5,
+      Julho: 6,
+      Agosto: 7,
+      Setembro: 8,
+      Outubro: 9,
+      Novembro: 10,
+      Dezembro: 11
     };
 
     const month = monthMap[period];

@@ -190,18 +190,18 @@ export class GetEvolutionInteractor {
   private generatePeriods(granularity: GranularityType): string[] {
     if (granularity === 'monthly') {
       return [
-        'Jan',
-        'Fev',
-        'Mar',
-        'Abr',
-        'Mai',
-        'Jun',
-        'Jul',
-        'Ago',
-        'Set',
-        'Out',
-        'Nov',
-        'Dez'
+        'Janeiro',
+        'Fevereiro',
+        'Março',
+        'Abril',
+        'Maio',
+        'Junho',
+        'Julho',
+        'Agosto',
+        'Setembro',
+        'Outubro',
+        'Novembro',
+        'Dezembro'
       ];
     } else {
       // weekly - futuro
