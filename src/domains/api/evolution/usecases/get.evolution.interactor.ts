@@ -235,15 +235,24 @@ export class GetEvolutionInteractor {
           year
         );
 
-        let previousValue = keyResult.initial_value;
+        // previousValue removed: não necessário quando não herdamos valores
 
         for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
           const period = periodNames[monthIndex];
           const monthCheckins = checkinsByMonth[monthIndex];
 
           if (monthCheckins && monthCheckins.length > 0) {
-            // Pegar o último check-in do mês (mais recente)
-            const lastCheckin = monthCheckins[monthCheckins.length - 1];
+            // Selecionar o checkin com maior id do mês (mais confiável quando timestamps iguais/ordenados de forma inconsistente)
+            let lastCheckin = monthCheckins[0];
+            for (let i = 1; i < monthCheckins.length; i++) {
+              const c = monthCheckins[i];
+              const idC = typeof c.id === 'number' ? c.id : Number(c.id) || 0;
+              const idLast =
+                typeof lastCheckin.id === 'number'
+                  ? lastCheckin.id
+                  : Number(lastCheckin.id) || 0;
+              if (idC > idLast) lastCheckin = c;
+            }
             const currentValue = lastCheckin.new_value;
 
             const progress = this.calculateProgress(
@@ -253,23 +262,23 @@ export class GetEvolutionInteractor {
             );
 
             // Calcular delta em relação ao período anterior
-            const delta =
-              monthIndex === 0
-                ? null
-                : this.calculateProgress(
-                    currentValue,
-                    keyResult.initial_value,
-                    keyResult.target_value
-                  ) -
-                  this.calculateProgress(
-                    previousValue,
-                    keyResult.initial_value,
-                    keyResult.target_value
-                  );
+            // const delta =
+            //   monthIndex === 0
+            //     ? null
+            //     : this.calculateProgress(
+            //         currentValue,
+            //         keyResult.initial_value,
+            //         keyResult.target_value
+            //       ) -
+            //       this.calculateProgress(
+            //         previousValue,
+            //         keyResult.initial_value,
+            //         keyResult.target_value
+            //       );
 
             periods[period] = {
               progress: Math.min(Math.max(progress, 0), 100),
-              delta,
+              // delta,
               status: this.calculateStatus(progress, monthIndex + 1, 12),
               current_value: currentValue,
               updated_at:
@@ -279,12 +288,12 @@ export class GetEvolutionInteractor {
               has_manual_update: true
             };
 
-            previousValue = currentValue;
+            // previousValue is no longer used; state is tracked via previousProgress
           } else {
             // Se não há check-ins no mês, deixar o período zerado
             periods[period] = {
               progress: 0,
-              delta: null,
+              // delta: null,
               status: 'no_data',
               current_value: 0,
               updated_at: new Date(year, monthIndex, 1).toISOString(),
@@ -325,7 +334,11 @@ export class GetEvolutionInteractor {
       monthCheckins.sort((a, b) => {
         const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
         const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
-        return dateA - dateB;
+        if (dateA !== dateB) return dateA - dateB;
+        // Se as datas forem iguais (ou ambas ausentes), desempatar por id
+        const idA = typeof a.id === 'number' ? a.id : 0;
+        const idB = typeof b.id === 'number' ? b.id : 0;
+        return idA - idB;
       });
     });
 

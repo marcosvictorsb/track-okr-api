@@ -11,7 +11,7 @@ export type GranularityType = 'monthly' | 'weekly';
 
 export interface PeriodInfo {
   progress: number;
-  delta: number | null;
+  // delta: number | null;
   status: KeyResultStatus;
   current_value: number;
   updated_at: string;
