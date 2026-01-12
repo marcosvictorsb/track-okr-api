@@ -41,7 +41,8 @@
     "test:run": "vitest run",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
-    "scaffold": "node scaffold.js"
+    "scaffold": "node scaffold.js",
+    "setup:dev": "npm install && npm run check-env && npm run migration && npm start"
   },
   "repository": {
     "type": "git",
@@ -54,7 +55,6 @@
   },
   "homepage": "https://github.com/marcosvictorsb/track-okr-api#readme",
   "dependencies": {
-    "@airbnb/node-memwatch": "^3.0.0",
     "@elastic/elasticsearch": "^9.1.1",
     "@opensearch-project/opensearch": "^3.5.1",
     "axios": "^1.11.0",

@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+import uuid4 from 'uuid4';
 
 export interface ImageProcessingOptions {
   width?: number;
@@ -46,7 +46,7 @@ export class ImageProcessingService {
     }
 
     // Gerar nome único para o arquivo com timestamp
-    const uniqueId = uuidv4();
+    const uniqueId = uuid4();
     const timestamp = Date.now();
     const fileName = `avatar_${userId}_${timestamp}_${uniqueId}${fileExtension}`;
     const filePath = path.join(this.uploadsDir, fileName);
