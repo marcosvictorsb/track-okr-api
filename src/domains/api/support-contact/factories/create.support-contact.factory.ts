@@ -12,12 +12,10 @@ const supportContactRepository = new SupportContactRepository({
 });
 
 // Instanciar o serviço Discord com a URL do webhook do suporte
-const discordWebhookUrl =
-  process.env.DISCORD_SUPPORT_WEBHOOK_URL ||
-  'https://discord.com/api/webhooks/1423291754366369833/KA8sWZgvmT2cxkDtiFGlScB5Il7df5SG0-IlupTbeZUjT3oJrk8oP2BbWQCeb_aRHaJB';
+const discordWebhookUrl = process.env.DISCORD_SUPPORT_WEBHOOK_URL;
 
 const discordNotificationService = new DiscordNotificationService(
-  discordWebhookUrl
+  discordWebhookUrl as string
 );
 
 const params = {
