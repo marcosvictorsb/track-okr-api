@@ -12,7 +12,8 @@
     "@middlewares": "src/middlewares",
     "@protocols": "src/protocols",
     "@tasks": "src/tasks",
-    "@shared": "src/shared"
+    "@shared": "src/shared",
+    "@test": "src/test"
   },
   "scripts": {
     "start": "nodemon --watch src --ext ts --exec ts-node -r module-alias/register src/server.ts",
@@ -41,6 +42,7 @@
     "test:run": "vitest run",
     "test:watch": "vitest --watch",
     "test:coverage": "vitest --coverage",
+    "coverage:html": "vitest run --coverage && open coverage/index.html",
     "scaffold": "node scaffold.js",
     "setup:dev": "npm install && npm run check-env && npm run migration && npm start"
   },
