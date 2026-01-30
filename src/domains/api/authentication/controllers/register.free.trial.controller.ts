@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import {
-  RegisterFreeTrialControllerDependencies,
-  InputRegisterFreeTrial
+  InputRegisterFreeTrial,
+  RegisterFreeTrialControllerDependencies
 } from '../interfaces/register.free.trial.interface';
 import { RegisterFreeTrialInteractor } from '../usecases';
 

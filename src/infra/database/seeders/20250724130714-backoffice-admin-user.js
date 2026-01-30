@@ -42,11 +42,6 @@ module.exports = {
       ],
       {}
     );
-
-    console.log('Usuário admin criado com sucesso!');
-    console.log('Email: admin@gunno.io');
-    console.log('Senha: admin123!@#');
-    console.log('IMPORTANTE: Altere a senha após o primeiro login!');
   },
 
   async down(queryInterface, Sequelize) {

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import {
-  RequestPasswordResetControllerDependencies,
-  InputRequestPasswordReset
+  InputRequestPasswordReset,
+  RequestPasswordResetControllerDependencies
 } from '../interfaces/request-password-reset.interface';
 
 export class RequestPasswordResetController {

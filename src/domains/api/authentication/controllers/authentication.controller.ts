@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
 import {
   AuthenticationDependencies,
   InputAuthentication
 } from '@domains/api/authentication/interfaces';
 import { AuthenticationInteractor } from '@domains/api/authentication/usecases/authentication.interactor';
+import { Request, Response } from 'express';
 
 export class AuthenticationController {
   private interactor: AuthenticationInteractor;
