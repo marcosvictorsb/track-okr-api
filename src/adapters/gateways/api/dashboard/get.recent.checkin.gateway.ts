@@ -1,6 +1,6 @@
 import { LoggerMixin } from '../../../services';
 
 class BaseGateway {
-  constructor(...args: any[]) {}
+  constructor(...args: unknown[]) {}
 }
 export const MixGetRecentCheckInGateway = LoggerMixin(BaseGateway);

@@ -1,9 +1,9 @@
-import { Request, Response } from 'express';
+import { UserPayload } from '@middlewares/index';
+import { Response } from 'express';
 import {
   InputUpdateSetting,
   UpdateSettingControllerDependencies
 } from '../interfaces/update.setting.interface';
-import { UserPayload } from '@middlewares/index';
 
 export class UpdateSettingController {
   private interactor: UpdateSettingControllerDependencies['interactor'];

@@ -2,7 +2,7 @@
 import { EmailService, LoggerMixin } from '../../../services';
 
 class BaseGateway {
-  constructor(...args: never[]) {}
+  constructor(...args: unknown[]) {}
 }
 export const MixRegisterPasswordResetGateway = LoggerMixin(
   EmailService(BaseGateway)

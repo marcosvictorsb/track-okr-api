@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { logger } from '@configs/logger';
 import * as dotenv from 'dotenv';
 import { Resend } from 'resend';

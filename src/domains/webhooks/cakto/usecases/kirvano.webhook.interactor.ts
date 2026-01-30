@@ -162,7 +162,7 @@ export class KirvanoWebhookInteractor {
 
     const companyData: CreateCompanyCriteria = {
       name: payload.customer?.name || 'Empresa sem nome',
-      cnpj: payload.customer?.document || `${new Date().getTime()}`
+      cnpj: payload.customer?.document as string
     };
 
     const companyCreated = await this.gateway.createCompany(companyData);

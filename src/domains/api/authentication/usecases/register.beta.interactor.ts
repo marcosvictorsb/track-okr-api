@@ -24,7 +24,7 @@ export class RegisterBetaInteractor {
 
   async execute(input: InputRegisterBeta): Promise<HttpResponse> {
     try {
-      const { name, email, company_name, website, is_beta_tester } = input;
+      const { name, email, company_name, website } = input;
 
       this.gateway.loggerInfo('Iniciando processo de registro beta', {
         data: JSON.stringify(input)
@@ -51,10 +51,8 @@ export class RegisterBetaInteractor {
         plan_name: planFound.name
       });
 
-      // 3. Criar a empresa com website se fornecido
       const companyData = {
         name: company_name,
-        cnpj: `${email} / ${new Date()}`,
         website: website || undefined,
         created_at: new Date(),
         updated_at: new Date()

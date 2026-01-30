@@ -1,7 +1,7 @@
 export class CompanyEntity {
   public readonly id?: number;
   public readonly name: string;
-  public readonly cnpj: string;
+  public readonly cnpj?: string;
   public readonly website?: string;
   public readonly created_at?: Date;
   public readonly updated_at?: Date | null;
@@ -10,7 +10,7 @@ export class CompanyEntity {
   constructor(params: {
     id?: number;
     name: string;
-    cnpj: string;
+    cnpj?: string;
     website?: string;
     created_at?: Date;
     updated_at?: Date | null;
@@ -25,23 +25,6 @@ export class CompanyEntity {
     this.deleted_at = params.deleted_at;
   }
 
-  /**
-   * Factory method para criar instância da entity
-   * @param params Dados parciais da company
-   * @returns Nova instância de CompanyEntity
-   */
-  public static create(params: Partial<CompanyEntity> = {}): CompanyEntity {
-    return new CompanyEntity({
-      name: params.name || '',
-      cnpj: params.cnpj || '',
-      ...params
-    });
-  }
-
-  /**
-   * Converte a entity para objeto simples
-   * @returns Objeto com as propriedades da entity
-   */
   public toJSON(): Record<string, unknown> {
     return {
       id: this.id,
@@ -54,12 +37,7 @@ export class CompanyEntity {
     };
   }
 
-  /**
-   * Valida se o CNPJ está no formato correto
-   * @returns true se o CNPJ for válido
-   */
   public isValidCnpj(): boolean {
-    // Implementação básica - pode ser expandida
-    return this.cnpj?.length === 14; // Apenas verifica tamanho
+    return this.cnpj?.length === 14;
   }
 }

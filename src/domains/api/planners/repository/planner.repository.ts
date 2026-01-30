@@ -1,14 +1,14 @@
-import PlannerModel from '@domains/api/planners/model/planner.model';
 import { PlannerEntity } from '@domains/api/planners/entity/planner.entity';
-import { ModelStatic, Op } from 'sequelize';
 import {
   CreatePlannerCriteria,
   DeletePlannerCriteria,
   FindPlannerCriteria,
   IPlannerRepository,
-  UpdatePlannerCriteria,
-  PlannerRepositoryDependencies
+  PlannerRepositoryDependencies,
+  UpdatePlannerCriteria
 } from '@domains/api/planners/interfaces';
+import PlannerModel from '@domains/api/planners/model/planner.model';
+import { ModelStatic, Op } from 'sequelize';
 
 export class PlannerRepository implements IPlannerRepository {
   protected model: ModelStatic<PlannerModel>;

@@ -6,13 +6,13 @@
 //   rollbackTransaction(transaction: Transaction): Promise<void>;
 // }
 
-// export function TransactionMixin<T extends new (...args: any[]) => {}>(
+// export function TransactionMixin<T extends new (...args: unknown[]) => {}>(
 //   Base: T
 // ) {
 //   return class extends Base {
 //     transaction: Sequelize;
 
-//     constructor(...args: any[]) {
+//     constructor(...args: unknown[]) {
 //       super(...args);
 //       const params = args[0];
 //       this.transaction = params.sequelize.transaction();

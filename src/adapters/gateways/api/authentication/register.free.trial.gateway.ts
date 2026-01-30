@@ -1,7 +1,7 @@
-import { TokenService, LoggerMixin, EmailService } from '../../../services';
+import { EmailService, LoggerMixin, TokenService } from '../../../services';
 
 class BaseGateway {
-  constructor(...args: any[]) {}
+  constructor(...args: unknown[]) {}
 }
 export const MixRegisterGateway = TokenService(
   LoggerMixin(EmailService(BaseGateway))

@@ -6,7 +6,7 @@ import {
 } from '../../../services';
 
 class BaseGateway {
-  constructor(...args: never[]) {}
+  constructor(...args: unknown[]) {}
 }
 export const GetTokenMixed = TokenService(
   LoggerMixin(EncryptionService(BaseGateway))

@@ -32,7 +32,6 @@ export type InputRegisterBeta = {
 
 export type CreateBetaCompanyData = {
   name: string;
-  cnpj: string;
   website?: string;
   created_at?: Date;
   updated_at?: Date;

@@ -2,6 +2,6 @@
 import { LoggerMixin } from '../../../services/logger.service';
 
 class BaseGateway {
-  constructor(...args: any[]) {}
+  constructor(...args: unknown[]) {}
 }
 export const MixGetCurrentSubscription = LoggerMixin(BaseGateway);

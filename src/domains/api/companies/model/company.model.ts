@@ -4,7 +4,7 @@ import { DataTypes, Model } from 'sequelize';
 interface CompanyAttributes {
   id?: number;
   name: string;
-  cnpj: string;
+  cnpj?: string;
   website?: string;
   created_at?: Date;
   updated_at?: Date;
@@ -14,7 +14,7 @@ interface CompanyAttributes {
 class Company extends Model<CompanyAttributes> implements CompanyAttributes {
   declare id?: number;
   declare name: string;
-  declare cnpj: string;
+  declare cnpj?: string;
   declare website?: string;
   declare created_at?: Date;
   declare updated_at?: Date;

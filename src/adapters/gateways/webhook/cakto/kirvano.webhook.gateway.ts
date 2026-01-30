@@ -2,7 +2,7 @@
 import { EmailService, LoggerMixin, TokenService } from '../../../services';
 
 class BaseGateway {
-  constructor(...args: never[]) {}
+  constructor(...args: unknown[]) {}
 }
 export const MixKirvanoWebhookGateway = TokenService(
   LoggerMixin(EmailService(BaseGateway))

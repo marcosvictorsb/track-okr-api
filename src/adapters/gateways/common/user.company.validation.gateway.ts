@@ -2,6 +2,6 @@
 import { LoggerMixin } from '../../services/';
 
 class BaseGateway {
-  constructor(...args: never[]) {}
+  constructor(...args: unknown[]) {}
 }
 export const MixUserCompanyValidation = LoggerMixin(BaseGateway);

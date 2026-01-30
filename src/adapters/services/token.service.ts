@@ -1,11 +1,12 @@
-import * as jwt from 'jsonwebtoken';
-import * as dotenv from 'dotenv';
-import { UserEntity } from '../../domains/api/users/entity/user.entity';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FindUserCriteria } from '@domains/api/users/interfaces';
 import {
   TOKEN_EXPIRATION_SHORT,
   TOKEN_EXPIRATION_VERY_LONG
 } from '@shared/utils/constants';
+import * as dotenv from 'dotenv';
+import * as jwt from 'jsonwebtoken';
+import { UserEntity } from '../../domains/api/users/entity/user.entity';
 
 dotenv.config();
 

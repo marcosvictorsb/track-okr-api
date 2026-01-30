@@ -4,7 +4,7 @@ import { ModelStatic } from 'sequelize';
 
 export type CreateCompanyCriteria = {
   name: string;
-  cnpj: string;
+  cnpj?: string;
   website?: string;
 };
 

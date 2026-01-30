@@ -25,7 +25,7 @@ export type InputRegisterFreeTrial = {
 
 export type CreateCompanyData = {
   name: string;
-  cnpj: string;
+  cnpj?: string;
   created_at?: Date;
   updated_at?: Date;
 };
