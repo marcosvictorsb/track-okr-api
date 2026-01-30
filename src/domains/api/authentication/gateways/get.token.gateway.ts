@@ -1,17 +1,17 @@
 import { GetTokenMixed } from '@adapters/gateways';
+import {
+  IAuthenticationGateway,
+  IAuthenticationGatewayDependencies
+} from '@domains/api/authentication/interfaces';
+import { ProfileEntity } from '@domains/api/profile/entity';
+import { IProfileRepository } from '@domains/api/profile/interfaces';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
-import {
-  IAuthenticationGatewayDependencies,
-  IAuthenticationGateway
-} from '@domains/api/authentication/interfaces';
-import { IProfileRepository } from '@domains/api/profile/interfaces';
-import { ProfileEntity } from '@domains/api/profile/entity';
-import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
 import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
+import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
 
 export class AuthenticationGateway
   extends GetTokenMixed

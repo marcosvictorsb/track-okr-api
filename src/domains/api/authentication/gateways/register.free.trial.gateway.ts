@@ -1,21 +1,21 @@
-import {
-  IRegisterFreeTrialGateway,
-  IRegisterFreeTrialGatewayDependencies,
-  CreateCompanyData
-} from '../interfaces/register.free.trial.interface';
+import { MixRegisterGateway } from '@adapters/gateways/api/authentication/register.free.trial.gateway';
+import { logger } from '@configs/logger';
+import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
+import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
 import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { ICompanyRepository } from '@domains/api/companies/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   CreateUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
 import { ISubscriptionRepository } from '@domains/common/subscriptions/interfaces';
-import { logger } from '@configs/logger';
-import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
-import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
-import { MixRegisterGateway } from '@adapters/gateways/api/authentication/register.free.trial.gateway';
 import crypto from 'crypto';
+import {
+  CreateCompanyData,
+  IRegisterFreeTrialGateway,
+  IRegisterFreeTrialGatewayDependencies
+} from '../interfaces/register.free.trial.interface';
 
 export class RegisterGateway
   extends MixRegisterGateway
@@ -66,14 +66,7 @@ export class RegisterGateway
     return await this.userRepository.create(data);
   }
 
-  // async createSubscription(
-  //   data: CreateSubscriptionData
-  // ): Promise<SubscriptionEntity> {
-  //   return await this.subscriptionRepository.create(data);
-  // }
-
   async generateActivationToken(userId: number): Promise<string> {
-    // Gerar um token seguro para ativação
     const token = crypto.randomBytes(32).toString('hex');
     this.logging.info('Token de ativação gerado', { userId, token });
 

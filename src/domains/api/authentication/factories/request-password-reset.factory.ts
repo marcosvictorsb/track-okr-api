@@ -1,12 +1,12 @@
-import { UserRepository } from '@domains/api/users/repository/user.repository';
-import UserModel from '@domains/api/users/model/user.model';
-import { PasswordResetTokenRepository } from '@domains/api/authentication/repository/password-reset-token.repository';
-import { RequestPasswordResetGateway } from '@domains/api/authentication/gateways/request-password-reset.gateway';
-import { RequestPasswordResetInteractor } from '@domains/api/authentication/usecases/request-password-reset.interactor';
-import { RequestPasswordResetController } from '@domains/api/authentication/controllers/request-password-reset.controller';
-import { Presenter } from '@protocols/presenter';
-import { IRequestPasswordResetGatewayDependencies } from '@domains/api/authentication/interfaces/request-password-reset.interface';
 import { logger } from '@configs/logger';
+import { RequestPasswordResetController } from '@domains/api/authentication/controllers/request-password-reset.controller';
+import { RequestPasswordResetGateway } from '@domains/api/authentication/gateways/request-password-reset.gateway';
+import { IRequestPasswordResetGatewayDependencies } from '@domains/api/authentication/interfaces/request-password-reset.interface';
+import { PasswordResetTokenRepository } from '@domains/api/authentication/repository/password-reset-token.repository';
+import { RequestPasswordResetInteractor } from '@domains/api/authentication/usecases/request-password-reset.interactor';
+import UserModel from '@domains/api/users/model/user.model';
+import { UserRepository } from '@domains/api/users/repository/user.repository';
+import { Presenter } from '@protocols/presenter';
 import { Resend } from 'resend';
 
 export const makeRequestPasswordResetController =

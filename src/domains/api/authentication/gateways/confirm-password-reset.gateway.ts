@@ -1,17 +1,15 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import bcrypt from 'bcryptjs';
 import {
   IConfirmPasswordResetGateway,
   IConfirmPasswordResetGatewayDependencies
 } from '../interfaces/confirm-password-reset.interface';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { logger } from '@configs/logger';
 import { IPasswordResetTokenRepository } from '../repository/password-reset-token.repository';
-import { DataLogOutput } from '@adapters/services';
-import bcrypt from 'bcryptjs';
 
-export class ConfirmPasswordResetGateway
-  implements IConfirmPasswordResetGateway
-{
+export class ConfirmPasswordResetGateway implements IConfirmPasswordResetGateway {
   userRepository: IUserRepository;
   passwordResetTokenRepository: IPasswordResetTokenRepository;
   logging: typeof logger;

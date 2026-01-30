@@ -70,7 +70,6 @@ export class RegisterBetaGateway
   }
 
   async generateActivationToken(userId: number): Promise<string> {
-    // Gerar um token seguro para ativação
     const token = crypto.randomBytes(32).toString('hex');
     this.logging.info('Token de ativação gerado para beta tester', {
       userId,

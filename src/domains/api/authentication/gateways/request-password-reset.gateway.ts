@@ -75,7 +75,6 @@ export class RequestPasswordResetGateway
     try {
       this.logging.info('Enviando email de reset de senha', { email });
 
-      // Usar a função loadEmailTemplate do Utils que detecta automaticamente produção
       const emailTemplate = Utils.loadEmailTemplate(
         'password-reset.template.html',
         {
