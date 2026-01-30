@@ -40,23 +40,17 @@ export class ImageProcessingService {
       );
     }
 
-    // Verificar se é uma imagem válida
     if (!this.isValidImageBuffer(fileBuffer)) {
       throw new Error('Arquivo não é uma imagem válida.');
     }
 
-    // Gerar nome único para o arquivo com timestamp
     const uniqueId = uuid4();
     const timestamp = Date.now();
     const fileName = `avatar_${userId}_${timestamp}_${uniqueId}${fileExtension}`;
     const filePath = path.join(this.uploadsDir, fileName);
 
     try {
-      // Salvar o arquivo (por enquanto sem processamento)
-      // TODO: Implementar redimensionamento com Sharp quando disponível
       await fs.writeFile(filePath, fileBuffer);
-
-      // Retornar o caminho relativo
       return `/uploads/avatars/${fileName}`;
     } catch (error) {
       throw new Error(
@@ -70,13 +64,11 @@ export class ImageProcessingService {
       const fullPath = path.join(process.cwd(), avatarPath);
       await fs.unlink(fullPath);
     } catch (error) {
-      // Log do erro, mas não falha a operação
       console.warn(`Não foi possível deletar avatar: ${avatarPath}`, error);
     }
   }
 
   isValidImageBuffer(buffer: Buffer): boolean {
-    // Verificar assinaturas de arquivo comuns
     const jpegSignature = [0xff, 0xd8, 0xff];
     const pngSignature = [0x89, 0x50, 0x4e, 0x47];
     const webpSignature = [0x52, 0x49, 0x46, 0x46];

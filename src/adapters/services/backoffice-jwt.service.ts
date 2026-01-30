@@ -1,6 +1,5 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { BackofficeUserModel } from '@domains/api/backoffice/models/backoffice-user.model';
 import { BackofficeUserEntity } from '@domains/api/backoffice/entities/backoffice-user.entity';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export interface BackofficeJWTPayload extends JwtPayload {
   id: number;
@@ -16,19 +15,11 @@ export interface RefreshTokenPayload extends JwtPayload {
 }
 
 export class BackofficeJWTService {
-  private static readonly JWT_SECRET: string =
-    (process.env.BACKOFFICE_JWT_SECRET as string) ||
-    'backoffice_secret_key_2025';
-  private static readonly JWT_EXPIRES_IN: string =
-    (process.env.BACKOFFICE_JWT_EXPIRES_IN as string) || '8h';
-  private static readonly REFRESH_TOKEN_SECRET: string =
-    (process.env.BACKOFFICE_REFRESH_SECRET as string) ||
-    'backoffice_refresh_secret_2025';
-  private static readonly REFRESH_EXPIRES_IN: string = '7d';
+  private static readonly JWT_SECRET: string = process.env
+    .BACKOFFICE_JWT_SECRET as string;
+  private static readonly REFRESH_TOKEN_SECRET: string = process.env
+    .BACKOFFICE_REFRESH_SECRET as string;
 
-  /**
-   * Gera token de acesso JWT
-   */
   static generateAccessToken(user: BackofficeUserEntity): string {
     const payload: Omit<
       BackofficeJWTPayload,
@@ -45,9 +36,6 @@ export class BackofficeJWTService {
     });
   }
 
-  /**
-   * Gera refresh token
-   */
   static generateRefreshToken(user: BackofficeUserEntity): string {
     const payload: Omit<
       RefreshTokenPayload,
@@ -63,9 +51,6 @@ export class BackofficeJWTService {
     });
   }
 
-  /**
-   * Verifica e decodifica token de acesso
-   */
   static verifyAccessToken(token: string): BackofficeJWTPayload | null {
     try {
       const decoded = jwt.verify(
@@ -80,9 +65,6 @@ export class BackofficeJWTService {
     }
   }
 
-  /**
-   * Verifica refresh token
-   */
   static verifyRefreshToken(token: string): RefreshTokenPayload | null {
     try {
       return jwt.verify(
@@ -95,9 +77,6 @@ export class BackofficeJWTService {
     }
   }
 
-  /**
-   * Gera par de tokens (access + refresh)
-   */
   static generateTokenPair(user: BackofficeUserEntity) {
     const accessToken = this.generateAccessToken(user);
     const refreshToken = this.generateRefreshToken(user);
@@ -111,9 +90,6 @@ export class BackofficeJWTService {
     };
   }
 
-  /**
-   * Extrai token do header Authorization
-   */
   static extractTokenFromHeader(authHeader?: string): string | null {
     if (!authHeader) return null;
 
@@ -123,9 +99,6 @@ export class BackofficeJWTService {
     return parts[1];
   }
 
-  /**
-   * Converte string de expiração para segundos
-   */
   private static parseExpirationTime(expiresIn: string): number {
     const timeMap: Record<string, number> = {
       s: 1,
@@ -141,9 +114,6 @@ export class BackofficeJWTService {
     return parseInt(value) * timeMap[unit];
   }
 
-  /**
-   * Verifica se o token está próximo do vencimento (menos de 1 hora)
-   */
   static isTokenExpiringSoon(token: string): boolean {
     try {
       const decoded = jwt.decode(token) as JwtPayload;
@@ -152,7 +122,6 @@ export class BackofficeJWTService {
       const now = Math.floor(Date.now() / 1000);
       const timeUntilExpiration = decoded.exp - now;
 
-      // Se resta menos de 1 hora (3600 segundos)
       return timeUntilExpiration < 3600;
     } catch {
       return true;

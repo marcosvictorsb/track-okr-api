@@ -101,7 +101,6 @@ export class DiscordNotificationService {
         '❌ Erro ao enviar notificação de suporte para Discord:',
         error
       );
-      // Não vamos quebrar o fluxo principal por erro de notificação
     }
   }
 

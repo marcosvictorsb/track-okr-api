@@ -17,21 +17,19 @@ export class MemoryOptimizationService {
   }
 
   public startMemoryOptimization(): void {
-    // Garbage collection a cada 30 minutos
     this.gcInterval = setInterval(
       () => {
         this.forceGarbageCollection();
       },
-      30 * 60 * 1000
-    ); // 30 minutos
+      30 * 60 * 1000 // 30 minutos
+    );
 
-    // Monitoramento de memória a cada 5 minutos
     this.memoryCheckInterval = setInterval(
       () => {
         this.checkMemoryUsage();
       },
-      5 * 60 * 1000
-    ); // 5 minutos
+      5 * 60 * 1000 // 5 minutos
+    );
 
     logger.info('Serviço de otimização de memória iniciado', {
       gc_available: this.isGCAvailable,

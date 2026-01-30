@@ -8,6 +8,7 @@ dotenv.config();
 const logging = logger;
 
 const isProduction = process.env.NODE_ENV === 'production';
+const emailContato = process.env.EMAIL_CONTATO as string;
 
 export interface IEmailService {
   sendEmail(subject: string, to: string, emailContent: string): void;
@@ -34,8 +35,8 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
     ): Promise<void> {
       try {
         await this.resendService.emails.send({
-          from: 'contato@gunno.io',
-          to: isProduction ? to : 'contato@gunno.io',
+          from: emailContato,
+          to: isProduction ? to : emailContato,
           subject,
           html: emailContent
         });
@@ -55,8 +56,8 @@ export function EmailService<T extends new (...args: any[]) => {}>(Base: T) {
       try {
         logging.info('Enviando email de convite', { email });
         const response = await this.resendService.emails.send({
-          from: 'contato@gunno.io',
-          to: isProduction ? email : 'contato@gunno.io',
+          from: emailContato,
+          to: isProduction ? email : emailContato,
           subject: `Convite para Ativação de Conta`,
           html: emailContent
         });
