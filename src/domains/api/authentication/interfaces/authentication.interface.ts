@@ -1,15 +1,15 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { AuthenticationInteractor } from '@domains/api/authentication/usecases';
+import { ProfileEntity } from '@domains/api/profile/entity';
+import { IProfileRepository } from '@domains/api/profile/interfaces';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
-import { logger } from '@configs/logger';
-import { DataLogOutput } from '@adapters/services';
-import { AuthenticationInteractor } from '@domains/api/authentication/usecases';
-import { ProfileEntity } from '@domains/api/profile/entity';
-import { IProfileRepository } from '@domains/api/profile/interfaces';
-import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
 import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
+import { IUserTeamRepository } from '@domains/common/user-teams/interfaces';
 
 export type InputAuthentication = {
   email: string;

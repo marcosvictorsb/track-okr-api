@@ -78,7 +78,6 @@ export interface IRegisterFreeTrialGateway {
   findPlanByName(name: string): Promise<PlanEntity | undefined>;
   createCompany(data: CreateCompanyData): Promise<CompanyEntity>;
   createUser(data: CreateUserCriteria): Promise<UserEntity>;
-  // createSubscription(data: CreateSubscriptionData): Promise<SubscriptionEntity>;
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
   sendInviteEmail(email: string, activationLink: string): Promise<boolean>;
