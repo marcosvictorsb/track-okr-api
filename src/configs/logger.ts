@@ -26,11 +26,8 @@ class DiscordTransport extends transports.Stream {
   log(info: Record<string, unknown>, callback: () => void) {
     setImmediate(() => this.emit('logged', info));
 
-    // Não bloquear o callback - chamá-lo imediatamente
     callback();
 
-    // Processar o log de forma assíncrona apenas para error e warn
-    // Remover códigos ANSI de cor que o Winston pode adicionar
     const escapeChar = String.fromCharCode(27); // ESC character
     const ansiColorRegex = new RegExp(escapeChar + '\\[[0-9;]*m', 'g');
     const level = String(info.level)
@@ -39,7 +36,6 @@ class DiscordTransport extends transports.Stream {
       .trim();
 
     if (level === 'error' || level === 'warn') {
-      // Timeout para evitar acúmulo de promises pendentes
       const timeoutPromise = new Promise((_, reject) => {
         setTimeout(() => reject(new Error('Discord timeout')), 10000);
       });
@@ -57,16 +53,13 @@ class DiscordTransport extends transports.Stream {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
 
-      // Remover códigos ANSI do level também aqui
       const escapeChar = String.fromCharCode(27);
       const ansiColorRegex = new RegExp(escapeChar + '\\[[0-9;]*m', 'g');
       const cleanLevel = String(info.level).replace(ansiColorRegex, '').trim();
 
-      // Determinar cor do embed baseado no nível
       const color = cleanLevel === 'error' ? 15158332 : 16776960; // vermelho para error, amarelo para warn
       const emoji = cleanLevel === 'error' ? '🚨' : '⚠️';
 
-      // Criar embed estruturado para Discord
       const embed = {
         title: `${emoji} ${cleanLevel.toUpperCase()} - Track OKR API`,
         description: info.message?.toString() || 'Sem mensagem',
@@ -95,7 +88,6 @@ class DiscordTransport extends transports.Stream {
         }
       };
 
-      // Adicionar informações da requisição se disponível
       if (store?.method && store?.path) {
         embed.fields.push({
           name: '📡 Request',
@@ -104,7 +96,6 @@ class DiscordTransport extends transports.Stream {
         });
       }
 
-      // Adicionar status code se disponível
       if (store?.statusCode) {
         embed.fields.push({
           name: '📊 Status Code',
@@ -113,7 +104,6 @@ class DiscordTransport extends transports.Stream {
         });
       }
 
-      // Adicionar informações do usuário se disponível
       if (store?.userId) {
         embed.fields.push({
           name: '👤 User ID',
@@ -122,7 +112,6 @@ class DiscordTransport extends transports.Stream {
         });
       }
 
-      // Adicionar stack trace para erros (limitado para não exceder limites do Discord)
       if (cleanLevel === 'error' && info.stack) {
         const stackTrace = info.stack.toString();
         embed.fields.push({
@@ -156,7 +145,6 @@ class DiscordTransport extends transports.Stream {
   }
 }
 
-// Classe personalizada para OpenSearch Transport
 class OpenSearchTransport extends transports.Stream {
   private client: Client;
   private index: string;
@@ -165,24 +153,23 @@ class OpenSearchTransport extends transports.Stream {
     super({ stream: process.stdout, ...options });
 
     this.client = new Client({
-      node: process.env.OPENSEARCH_URL || 'https://localhost:9200',
+      node: process.env.OPENSEARCH_URL,
       auth: {
-        username: process.env.OPENSEARCH_USERNAME || 'admin',
-        password: process.env.OPENSEARCH_PASSWORD || 'MyStrongPassword123!'
+        username: process.env.OPENSEARCH_USERNAME as string,
+        password: process.env.OPENSEARCH_PASSWORD as string
       },
       ssl: {
-        rejectUnauthorized: false // process.env.OPENSEARCH_SSL_VERIFY !== 'false'
+        rejectUnauthorized: false
       }
     });
 
-    this.index = process.env.OPENSEARCH_INDEX || 'gunno-logs';
+    this.index = process.env.OPENSEARCH_INDEX as string;
   }
 
   private sanitizeFieldForOpenSearch(
     key: string,
     value: unknown
   ): [string, string] {
-    // Lista de campos que causam conflitos de mapeamento
     const problematicFields = [
       'data',
       'criteria',
@@ -192,10 +179,8 @@ class OpenSearchTransport extends transports.Stream {
       'requestTxt'
     ];
 
-    // Se o campo é problemático, prefixar com 'raw_' para evitar conflitos
     const finalKey = problematicFields.includes(key) ? `raw_${key}` : key;
 
-    // Sempre converter para string para evitar qualquer conflito de tipo
     let finalValue: string;
 
     if (value === null || value === undefined) {
@@ -216,10 +201,8 @@ class OpenSearchTransport extends transports.Stream {
   log(info: Record<string, unknown>, callback: () => void) {
     setImmediate(() => this.emit('logged', info));
 
-    // Não bloquear o callback - chamá-lo imediatamente
     callback();
 
-    // Processar o log de forma assíncrona com timeout para evitar acúmulo
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => reject(new Error('OpenSearch timeout')), 5000);
     });
@@ -236,7 +219,6 @@ class OpenSearchTransport extends transports.Stream {
       const store = asyncLocalStorage.getStore();
       const requestId = store?.requestId || 'no-request-id';
 
-      // Achatar a estrutura para evitar conflitos de mapeamento
       const document = {
         '@timestamp': new Date().toISOString(),
         timestamp: info.timestamp,
@@ -245,7 +227,7 @@ class OpenSearchTransport extends transports.Stream {
         requestId,
         environment: process.env.NODE_ENV,
         service: 'track-okr-api',
-        // Informações da requisição (campos com nomes únicos)
+
         httpMethod: store?.method,
         httpUrl: store?.url,
         httpPath: store?.path,
@@ -254,18 +236,18 @@ class OpenSearchTransport extends transports.Stream {
         clientReferer: store?.referer,
         clientOrigin: store?.origin,
         requestBodySize: store?.requestSize,
-        // Informações da resposta (campos com nomes únicos)
+
         httpStatusCode: store?.statusCode,
         responseTimeMs: store?.responseTime,
         responseBodySize: store?.responseSize,
-        // Informações do usuário (campos com nomes únicos)
+
         userId: store?.userId,
         companyId: store?.companyId,
-        // Métricas de performance (campos com nomes únicos)
+
         performanceResponseTime: store?.responseTime,
         performanceRequestSize: store?.requestSize,
         performanceResponseSize: store?.responseSize,
-        // Outros campos do log - sanitizar para evitar conflitos de mapeamento
+
         ...Object.keys(info).reduce(
           (acc, key) => {
             if (!['timestamp', 'level', 'message'].includes(key)) {
@@ -295,11 +277,7 @@ class OpenSearchTransport extends transports.Stream {
   }
 }
 
-// Configuração do transport do Discord para logs de error e warn
 const createDiscordTransport = () => {
-  // Só ativar Discord logging em produção
-  console.log('------------------------------->');
-  console.log('isProduction:', isProduction);
   if (!isProduction) {
     console.log(
       '📝 Discord logging desabilitado em ambiente de desenvolvimento'
@@ -307,8 +285,7 @@ const createDiscordTransport = () => {
     return null;
   }
 
-  const webhookUrl =
-    'https://discord.com/api/webhooks/1418339674505609355/oYP7oVEDhsIl-HMncwKdSck1JaWo2QxIKuP7QeH5CgY_jpwB7HInsrvuLqsm4-vAh1dB';
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL as string;
 
   if (!webhookUrl) {
     console.warn('⚠️ Discord webhook URL não configurado');
@@ -318,7 +295,7 @@ const createDiscordTransport = () => {
   try {
     console.log('📱 Discord logging ativado para ambiente de produção');
     return new DiscordTransport({
-      level: 'warn', // Captura warn e error (error tem prioridade maior que warn)
+      level: 'warn',
       webhookUrl
     });
   } catch (error) {
@@ -327,7 +304,6 @@ const createDiscordTransport = () => {
   }
 };
 
-// Configuração do transport do OpenSearch para produção
 const createOpenSearchTransport = () => {
   if (!isProduction) return null;
 
@@ -341,13 +317,11 @@ const createOpenSearchTransport = () => {
   }
 };
 
-// Criar array de transports
 const createTransports = () => {
   const transportsList: transports.ConsoleTransportInstance[] = [
     new transports.Console()
   ];
 
-  // Adicionar Discord transport para error e warn
   const discordTransport = createDiscordTransport();
   if (discordTransport) {
     transportsList.push(
@@ -355,7 +329,6 @@ const createTransports = () => {
     );
   }
 
-  // Adicionar OpenSearch transport para produção
   const opensearchTransport = createOpenSearchTransport();
   if (opensearchTransport) {
     transportsList.push(

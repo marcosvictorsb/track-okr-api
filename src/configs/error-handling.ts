@@ -1,16 +1,12 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { logger } from './logger';
 
-/**
- * Middleware para tratamento seguro de erros
- */
 export const secureErrorHandler = (
   err: Error,
   req: Request,
   res: Response,
   _next: NextFunction
 ) => {
-  // Log do erro completo para monitoramento
   logger.error('Unhandled error:', {
     error: err.message,
     stack: err.stack,
@@ -21,7 +17,6 @@ export const secureErrorHandler = (
     userId: (req as Request & { user?: { id: number } }).user?.id || 'anonymous'
   });
 
-  // Em produção, não vazar informações sensíveis
   if (process.env.NODE_ENV === 'production') {
     res.status(500).json({
       success: false,
@@ -29,7 +24,6 @@ export const secureErrorHandler = (
       timestamp: new Date().toISOString()
     });
   } else {
-    // Em desenvolvimento, mostrar detalhes para debug
     res.status(500).json({
       success: false,
       message: err.message,

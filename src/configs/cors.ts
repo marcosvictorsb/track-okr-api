@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 const whitelist = (): RegExp[] => {
   const allowed: RegExp[] = [
@@ -22,37 +22,30 @@ export const corsMiddleware = (
 ): void => {
   const origin = request.header('origin') || request.header('Origin');
 
-  // Verificar se a origem está na whitelist
   if (origin && whitelist().some((domain) => domain.test(origin))) {
     response.set('Access-Control-Allow-Origin', origin);
     response.set('Access-Control-Allow-Credentials', 'true');
   } else if (!origin) {
-    // Permitir requests sem origin (ex: mobile apps, Postman)
     response.set('Access-Control-Allow-Origin', '*');
   }
 
-  // Métodos HTTP permitidos (mais restritivo)
   response.set(
     'Access-Control-Allow-Methods',
     'GET, POST, PUT, DELETE, OPTIONS'
   );
 
-  // Headers permitidos (mais restritivo)
   response.set(
     'Access-Control-Allow-Headers',
     'Content-Type, Authorization, X-Request-Id'
   );
 
-  // Headers expostos para o frontend
   response.set(
     'Access-Control-Expose-Headers',
     'X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset'
   );
 
-  // Tempo de cache para preflight requests
   response.set('Access-Control-Max-Age', '86400'); // 24 horas
 
-  // Responde a requisições OPTIONS com 204
   if (request.method === 'OPTIONS') {
     response.sendStatus(204);
     return;

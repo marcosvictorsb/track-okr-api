@@ -1,5 +1,3 @@
-import { Request, Response, Router } from 'express';
-// import routerMercadoPago from '@domains/webhooks/mercado-pago/routers';
 import authRoutes from '@domains/api/authentication/routes';
 import { backofficeRouter } from '@domains/api/backoffice/routes/backoffice.routes';
 import checkInsRouters from '@domains/api/checkins/routers';
@@ -19,6 +17,7 @@ import supportContactRoutes from '@domains/api/support-contact/routes';
 import teamRouter from '@domains/api/teams/routers';
 import routerUser from '@domains/api/users/routers';
 import caktoWebhookRouter from '@domains/webhooks/cakto/routers';
+import { Request, Response, Router } from 'express';
 
 const routers = Router();
 
@@ -27,7 +26,6 @@ routers.get('/health-check', (request: Request, response: Response) => {
 });
 routers.use('/api', healthRouter);
 routers.use('/webhook', caktoWebhookRouter);
-// routers.use('/webhook', efiWebhookRouter);
 routers.use('/users', routerUser);
 routers.use('/authenticate', authRoutes);
 routers.use('/planners', plannerRouter);

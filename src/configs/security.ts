@@ -1,5 +1,5 @@
+import { NextFunction, Request, Response } from 'express';
 import helmet from 'helmet';
-import { Request, Response, NextFunction } from 'express';
 
 // Configuração do Helmet para headers de segurança
 export const helmetConfig = helmet({
