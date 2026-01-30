@@ -1,22 +1,21 @@
+import { ModelStatic, Op, WhereOptions } from 'sequelize';
 import { SubscriptionHistoryEntity } from '../entity/subscription.history.entity';
-import { SubscriptionHistoryAction } from '../model/subscription.history.model';
 import {
   CreateSubscriptionHistoryCriteria,
   FindSubscriptionHistoryCriteria,
   ISubscriptionHistoryRepository,
-  SubscriptionHistoryRepositoryDependencies,
-  SubscriptionHistoryFilters,
-  SubscriptionHistorySort,
-  SubscriptionHistoryPagination,
   PaginatedSubscriptionHistory,
+  SubscriptionHistoryFilters,
+  SubscriptionHistoryPagination,
+  SubscriptionHistoryRepositoryDependencies,
+  SubscriptionHistorySort,
   SubscriptionHistoryStats
 } from '../interfaces/subscription.history.interfaces';
-import { ModelStatic, Op, WhereOptions } from 'sequelize';
-import SubscriptionHistoryModel from '../model/subscription.history.model';
+import SubscriptionHistoryModel, {
+  SubscriptionHistoryAction
+} from '../model/subscription.history.model';
 
-export class SubscriptionHistoryRepository
-  implements ISubscriptionHistoryRepository
-{
+export class SubscriptionHistoryRepository implements ISubscriptionHistoryRepository {
   protected model: ModelStatic<SubscriptionHistoryModel>;
 
   constructor(params: SubscriptionHistoryRepositoryDependencies) {

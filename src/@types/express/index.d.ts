@@ -1,5 +1,3 @@
-import { JwtPayload } from 'jsonwebtoken';
-
 declare global {
   namespace Express {
     interface Request {
@@ -12,4 +10,4 @@ declare global {
   }
 }
 
-export {}; // Isso é importante para transformar o arquivo em um módulo
+export {};

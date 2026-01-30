@@ -1,7 +1,8 @@
-import { TokenService, LoggerMixin, EmailService } from '../../../services';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { EmailService, LoggerMixin } from '../../../services';
 
 class BaseGateway {
-  constructor(...args: any[]) {}
+  constructor(...args: never[]) {}
 }
 export const MixRegisterPasswordResetGateway = LoggerMixin(
   EmailService(BaseGateway)

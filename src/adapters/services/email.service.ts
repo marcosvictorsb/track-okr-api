@@ -1,6 +1,6 @@
+import { logger } from '@configs/logger';
 import * as dotenv from 'dotenv';
 import { Resend } from 'resend';
-import { logger } from '@configs/logger';
 
 dotenv.config();
 

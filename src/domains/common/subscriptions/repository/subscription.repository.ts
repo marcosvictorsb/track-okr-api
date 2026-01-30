@@ -3,9 +3,9 @@ import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscri
 import {
   CreateSubscriptionCriteria,
   FindSubscriptionsCriteria,
-  UpdateSubscriptionCriteria,
   ISubscriptionRepository,
-  SubscriptionRepositoryDependencies
+  SubscriptionRepositoryDependencies,
+  UpdateSubscriptionCriteria
 } from '@domains/common/subscriptions/interfaces';
 import { ModelStatic } from 'sequelize';
 import SubscriptionModel from '../model/subscription.model';

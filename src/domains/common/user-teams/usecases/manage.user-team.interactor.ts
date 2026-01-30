@@ -1,11 +1,11 @@
-import {
-  ManageUserTeamInteractorDependencies,
-  InputManageUserTeam,
-  IManageUserTeamGateway,
-  ActionUserTeam
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { IPresenter } from '@protocols/presenter';
+import {
+  ActionUserTeam,
+  IManageUserTeamGateway,
+  InputManageUserTeam,
+  ManageUserTeamInteractorDependencies
+} from '../interfaces';
 
 export class ManageUserTeamInteractor {
   protected gateway: IManageUserTeamGateway;
@@ -150,8 +150,7 @@ export class ManageUserTeamInteractor {
   }
 
   private async removeUserFromTeam(
-    userId: number,
-    teamId?: number
+    userId: number
   ): Promise<{ action: string }> {
     this.gateway.loggerInfo('ID do time não informado para remoção', {
       data: JSON.stringify({ id_user: userId })

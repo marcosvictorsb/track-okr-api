@@ -1,5 +1,5 @@
-import { DataTypes, Model, Optional, Sequelize } from 'sequelize';
 import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 
 export interface WebhookModelAttributes {
   id?: number;

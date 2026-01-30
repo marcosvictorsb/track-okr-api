@@ -1,11 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
-  TokenService,
+  EncryptionService,
   LoggerMixin,
-  EncryptionService
+  TokenService
 } from '../../../services';
 
 class BaseGateway {
-  constructor(...args: any[]) {}
+  constructor(...args: never[]) {}
 }
 export const GetTokenMixed = TokenService(
   LoggerMixin(EncryptionService(BaseGateway))
