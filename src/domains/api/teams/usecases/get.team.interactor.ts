@@ -30,7 +30,6 @@ export class GetTeamInteractor {
       });
       const { id_user, limite, id_company, name } = input;
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company

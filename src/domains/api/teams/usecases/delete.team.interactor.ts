@@ -1,11 +1,11 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   DeleteTeamInteractorDependencies,
-  InputDeleteTeam,
-  IDeleteTeamGateway
+  IDeleteTeamGateway,
+  InputDeleteTeam
 } from '../interfaces/';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class DeleteTeamInteractor {
   protected gateway: IDeleteTeamGateway;
@@ -27,7 +27,6 @@ export class DeleteTeamInteractor {
         id_user
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -41,7 +40,6 @@ export class DeleteTeamInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Verificar se o time existe
       const existingTeam = await this.gateway.findTeam({
         id,
         id_company
@@ -51,7 +49,6 @@ export class DeleteTeamInteractor {
         return this.presenter.notFound('Time não encontrado');
       }
 
-      // Deletar o time logicamente
       const deleted = await this.gateway.deleteTeam({ id });
 
       if (!deleted) {

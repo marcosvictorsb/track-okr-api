@@ -1,20 +1,20 @@
-import { TeamEntity } from '../entity/team.entity';
+import { MixDeleteTeam } from '@adapters/gateways/api/teams';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
-  FindTeamCriteria,
-  ITeamRepository,
-  DeleteTeamCriteria
-} from '../interfaces';
-import {
-  IUserRepository,
-  FindUserCriteria
+  FindUserCriteria,
+  IUserRepository
 } from '@domains/api/users/interfaces/default.interfaces';
+import { TeamEntity } from '../entity/team.entity';
+import {
+  DeleteTeamCriteria,
+  FindTeamCriteria,
+  ITeamRepository
+} from '../interfaces';
 import {
   IDeleteTeamGateway,
   IDeleteTeamGatewayDependencies
 } from '../interfaces/delete.team.interface';
-import { MixDeleteTeam } from '@adapters/gateways/api/teams';
-import { logger } from '@configs/logger';
 
 export class DeleteTeamGateway
   extends MixDeleteTeam

@@ -1,8 +1,8 @@
-import { Response, Router } from 'express';
+import { createLimiter } from '@configs/rate-limit';
 import * as factories from '@domains/api/teams/factories';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { createLimiter } from '@configs/rate-limit';
+import { Response, Router } from 'express';
 import { createTeamSchema, updateTeamSchema } from '../schemas';
 
 const {

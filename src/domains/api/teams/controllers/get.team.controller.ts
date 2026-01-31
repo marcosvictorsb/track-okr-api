@@ -1,6 +1,6 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { GetTeamControllerDependencies, InputGetTeam } from '../interfaces';
 import { Response } from 'express';
+import { GetTeamControllerDependencies, InputGetTeam } from '../interfaces';
 
 export class GetTeamController {
   protected interactor: GetTeamControllerDependencies['interactor'];

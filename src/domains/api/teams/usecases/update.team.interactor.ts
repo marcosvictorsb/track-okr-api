@@ -1,11 +1,11 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  UpdateTeamInteractorDependencies,
-  InputUpdateTeam,
-  IUpdateTeamGateway
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  InputUpdateTeam,
+  IUpdateTeamGateway,
+  UpdateTeamInteractorDependencies
+} from '../interfaces';
 
 export class UpdateTeamInteractor {
   protected gateway: IUpdateTeamGateway;
@@ -33,7 +33,6 @@ export class UpdateTeamInteractor {
         })
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -47,7 +46,6 @@ export class UpdateTeamInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Verificar se o time existe
       const existingTeam = await this.gateway.findTeam({
         id,
         id_company
@@ -57,7 +55,6 @@ export class UpdateTeamInteractor {
         return this.presenter.notFound('Time não encontrado');
       }
 
-      // Atualizar o time
       const updateData = {
         name,
         description,

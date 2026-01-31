@@ -1,14 +1,14 @@
-import TeamModel from '@domains/api/teams/model/team.model';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { ModelStatic, Op } from 'sequelize';
 import {
   CreateTeamCriteria,
   DeleteTeamCriteria,
   FindTeamCriteria,
   ITeamRepository,
-  UpdateTeamCriteria,
-  TeamRepositoryDependencies
+  TeamRepositoryDependencies,
+  UpdateTeamCriteria
 } from '@domains/api/teams/interfaces';
+import TeamModel from '@domains/api/teams/model/team.model';
+import { ModelStatic, Op } from 'sequelize';
 
 export class TeamRepository implements ITeamRepository {
   protected model: ModelStatic<TeamModel>;

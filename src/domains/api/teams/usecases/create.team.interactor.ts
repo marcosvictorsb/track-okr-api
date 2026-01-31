@@ -1,16 +1,16 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  CreateTeamInteractorDependencies,
-  InputCreateTeam,
-  ICreateTeamGateway,
-  AMOUNT_USERS_DEFAULT
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import {
   FeatureType,
   ICheckCompanyFeatureLimitsInteractor
 } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  AMOUNT_USERS_DEFAULT,
+  CreateTeamInteractorDependencies,
+  ICreateTeamGateway,
+  InputCreateTeam
+} from '../interfaces';
 
 export class CreateTeamInteractor {
   protected gateway: ICreateTeamGateway;
@@ -36,7 +36,6 @@ export class CreateTeamInteractor {
         })
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company

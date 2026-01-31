@@ -1,6 +1,6 @@
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { ModelStatic } from 'sequelize';
 import TeamModel from '@domains/api/teams/model/team.model';
+import { ModelStatic } from 'sequelize';
 
 export type CreateTeamCriteria = {
   name: string;

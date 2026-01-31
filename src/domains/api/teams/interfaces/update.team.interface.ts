@@ -1,19 +1,19 @@
-import { IPresenter } from '@protocols/presenter';
-import { TeamEntity } from '../entity/team.entity';
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
-  ITeamRepository,
+  FindUserCriteria,
+  IUserRepository
+} from '@domains/api/users/interfaces/default.interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { TeamEntity } from '../entity/team.entity';
+import {
   FindTeamCriteria,
+  ITeamRepository,
   UpdateTeamCriteria
 } from './default.interfaces';
-import {
-  IUserRepository,
-  FindUserCriteria
-} from '@domains/api/users/interfaces/default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export type InputUpdateTeam = {
   id: number;

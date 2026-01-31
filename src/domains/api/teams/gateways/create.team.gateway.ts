@@ -1,3 +1,6 @@
+import { MixCreateTeam } from '@adapters/gateways/api/teams';
+import { logger } from '@configs/logger';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   FindUserCriteria,
   IUserRepository
@@ -12,9 +15,6 @@ import {
   ICreateTeamGateway,
   ICreateTeamGatewayDependencies
 } from '../interfaces/create.team.interface';
-import { MixCreateTeam } from '@adapters/gateways/api/teams';
-import { logger } from '@configs/logger';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
 
 export class CreateTeamGateway
   extends MixCreateTeam

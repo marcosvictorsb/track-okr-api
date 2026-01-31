@@ -1,15 +1,15 @@
-import { IPresenter } from '@protocols/presenter';
-import { FindTeamCriteria, ITeamRepository } from './default.interfaces';
 import { DataLogOutput } from '@adapters/services';
-import { TeamEntity } from '../entity/team.entity';
-import {
-  IUserRepository,
-  FindUserCriteria
-} from '@domains/api/users/interfaces';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { logger } from '@configs/logger';
-import { HttpResponse } from '@protocols/http';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import {
+  FindUserCriteria,
+  IUserRepository
+} from '@domains/api/users/interfaces';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { TeamEntity } from '../entity/team.entity';
+import { FindTeamCriteria, ITeamRepository } from './default.interfaces';
 
 export type InputGetTeam = {
   id_company: number;

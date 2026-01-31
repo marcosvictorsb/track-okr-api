@@ -1,16 +1,16 @@
 import { logger } from '@configs/logger';
-import { CreateTeamGateway } from '../gateways/create.team.gateway';
-import TeamModel from '../model/team.model';
-import { TeamRepository } from '../repository/team.repository';
-import { CreateTeamInteractor } from '../usecases';
-import { Presenter } from '@protocols/presenter';
-import { CreateTeamController } from '../controllers/create.team.controller';
-import { UserRepository } from '@domains/api/users/repository/user.repository';
 import UserModel from '@domains/api/users/model/user.model';
+import { UserRepository } from '@domains/api/users/repository/user.repository';
 import {
   makeCheckCompanyFeatureLimitsInteractor,
   makeUserCompanyValidationInteractor
 } from '@domains/common/validations/factories';
+import { Presenter } from '@protocols/presenter';
+import { CreateTeamController } from '../controllers/create.team.controller';
+import { CreateTeamGateway } from '../gateways/create.team.gateway';
+import TeamModel from '../model/team.model';
+import { TeamRepository } from '../repository/team.repository';
+import { CreateTeamInteractor } from '../usecases';
 
 const teamRepository = new TeamRepository({
   model: TeamModel

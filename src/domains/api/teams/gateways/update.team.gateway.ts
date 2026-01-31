@@ -1,20 +1,20 @@
-import { TeamEntity } from '../entity/team.entity';
+import { MixUpdateTeam } from '@adapters/gateways/api/teams';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
+import {
+  FindUserCriteria,
+  IUserRepository
+} from '@domains/api/users/interfaces/default.interfaces';
+import { TeamEntity } from '../entity/team.entity';
 import {
   FindTeamCriteria,
   ITeamRepository,
   UpdateTeamCriteria
 } from '../interfaces';
 import {
-  IUserRepository,
-  FindUserCriteria
-} from '@domains/api/users/interfaces/default.interfaces';
-import {
   IUpdateTeamGateway,
   IUpdateTeamGatewayDependencies
 } from '../interfaces/update.team.interface';
-import { MixUpdateTeam } from '@adapters/gateways/api/teams';
-import { logger } from '@configs/logger';
 
 export class UpdateTeamGateway
   extends MixUpdateTeam

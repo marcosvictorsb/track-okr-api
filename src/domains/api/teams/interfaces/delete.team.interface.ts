@@ -1,19 +1,19 @@
-import { IPresenter } from '@protocols/presenter';
-import { TeamEntity } from '../entity/team.entity';
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
-  ITeamRepository,
-  FindTeamCriteria,
-  DeleteTeamCriteria
-} from './default.interfaces';
-import {
-  IUserRepository,
-  FindUserCriteria
+  FindUserCriteria,
+  IUserRepository
 } from '@domains/api/users/interfaces/default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { TeamEntity } from '../entity/team.entity';
+import {
+  DeleteTeamCriteria,
+  FindTeamCriteria,
+  ITeamRepository
+} from './default.interfaces';
 
 export type InputDeleteTeam = {
   id: number;

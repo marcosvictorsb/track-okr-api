@@ -1,17 +1,17 @@
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { TeamEntity } from '../entity/team.entity';
-import {
-  IGetTeamGateway,
-  IGetTeamGatewayDependencies,
-  FindTeamCriteria,
-  ITeamRepository
-} from '../interfaces';
 import { MixGetTeam } from '@adapters/gateways/api/teams';
+import { logger } from '@configs/logger';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
-import { logger } from '@configs/logger';
+import { TeamEntity } from '../entity/team.entity';
+import {
+  FindTeamCriteria,
+  IGetTeamGateway,
+  IGetTeamGatewayDependencies,
+  ITeamRepository
+} from '../interfaces';
 
 export class GetTeamGateway extends MixGetTeam implements IGetTeamGateway {
   teamRepository: ITeamRepository;

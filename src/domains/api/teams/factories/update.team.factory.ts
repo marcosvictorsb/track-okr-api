@@ -1,13 +1,13 @@
 import { logger } from '@configs/logger';
-import { UpdateTeamGateway } from '../gateways/update.team.gateway';
-import TeamModel from '../model/team.model';
 import UserModel from '@domains/api/users/model/user.model';
-import { TeamRepository } from '../repository/team.repository';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
-import { UpdateTeamInteractor } from '../usecases';
+import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
 import { Presenter } from '@protocols/presenter';
 import { UpdateTeamController } from '../controllers/update.team.controller';
-import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
+import { UpdateTeamGateway } from '../gateways/update.team.gateway';
+import TeamModel from '../model/team.model';
+import { TeamRepository } from '../repository/team.repository';
+import { UpdateTeamInteractor } from '../usecases';
 
 const teamRepository = new TeamRepository({
   model: TeamModel
