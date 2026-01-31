@@ -8,12 +8,11 @@ export interface IResultKeyEntity {
   responsible_users?: number[] | null;
   responsible_team_id?: number | null;
   id_okr?: number | null;
-  status: string; //'active' | 'completed' | 'cancelled';
+  status: string;
   created_at?: Date;
   updated_at?: Date;
   deleted_at?: Date;
 
-  // Campos calculados/relacionados
   team_name?: string;
   objective_title?: string;
   progress_percentage?: number;
@@ -30,12 +29,11 @@ export class ResultKeyEntity implements IResultKeyEntity {
   readonly responsible_users?: number[] | null;
   readonly responsible_team_id?: number | null;
   readonly id_okr?: number | null;
-  readonly status: string; //'active' | 'completed' | 'cancelled';
+  readonly status: string;
   readonly created_at?: Date;
   readonly updated_at?: Date;
   readonly deleted_at?: Date;
 
-  // Campos calculados/relacionados
   team_name?: string;
   objective_title?: string;
   progress_percentage?: number;
@@ -56,7 +54,6 @@ export class ResultKeyEntity implements IResultKeyEntity {
     this.updated_at = data.updated_at;
     this.deleted_at = data.deleted_at;
 
-    // Campos calculados/relacionados
     this.team_name = data.team_name;
     this.objective_title = data.objective_title;
     this.progress_percentage = this.calculateProgress();

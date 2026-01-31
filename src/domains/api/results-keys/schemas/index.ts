@@ -22,7 +22,6 @@ export const createResultKeySchema = z.object({
           data.responsible_team_id !== undefined;
         const hasUsers = data.responsible_users.length > 0;
 
-        // Deve ter pelo menos um responsável (time ou usuários)
         return hasTeam || hasUsers;
       },
       {
@@ -37,7 +36,6 @@ export const createResultKeySchema = z.object({
           data.responsible_team_id !== undefined;
         const hasUsers = data.responsible_users.length > 0;
 
-        // Não pode ter ambos ao mesmo tempo
         return !(hasTeam && hasUsers);
       },
       {
@@ -47,7 +45,6 @@ export const createResultKeySchema = z.object({
     )
     .refine(
       (data) => {
-        // Target value deve ser maior que initial value
         return data.target_value > data.initial_value;
       },
       {
@@ -57,7 +54,6 @@ export const createResultKeySchema = z.object({
     )
     .refine(
       (data) => {
-        // Current value deve estar entre initial e target (ou pode ultrapassar)
         return data.current_value >= data.initial_value;
       },
       {
@@ -106,7 +102,6 @@ export const updateResultKeySchema = z.object({
     })
     .refine(
       (data) => {
-        // Se fornecidos ambos, não pode ter team e users ao mesmo tempo
         if (
           data.responsible_team_id !== undefined &&
           data.responsible_users !== undefined
@@ -124,7 +119,6 @@ export const updateResultKeySchema = z.object({
     )
     .refine(
       (data) => {
-        // Se target e initial são fornecidos, target deve ser maior
         if (
           data.target_value !== undefined &&
           data.initial_value !== undefined
@@ -140,7 +134,6 @@ export const updateResultKeySchema = z.object({
     )
     .refine(
       (data) => {
-        // Se current e initial são fornecidos, current deve ser >= inicial
         if (
           data.current_value !== undefined &&
           data.initial_value !== undefined

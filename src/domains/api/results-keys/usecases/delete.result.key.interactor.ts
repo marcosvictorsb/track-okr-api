@@ -1,6 +1,6 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 import {
   DeleteResultKeyInteractorDependencies,
   IDeleteResultKeyGateway,
@@ -25,7 +25,6 @@ export class DeleteResultKeyInteractor {
       });
       const { id, id_company, id_user } = input;
 
-      // Validar se o usuário pertence à empresa
       const userValidation = await this.userCompanyValidator.execute({
         id_user,
         id_company

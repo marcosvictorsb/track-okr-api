@@ -1,13 +1,13 @@
+import { LoggerMixin } from '@adapters/services';
 import { logger } from '@configs/logger';
 import { ResultKeyEntity } from '../entity/result-key.entity';
 import { IResultKeyRepository } from '../interfaces';
 import {
-  UpdateResultKeyGatewayDependencies,
   FindResultKeyCriteria,
+  IUpdateResultKeyGateway,
   UpdateResultKeyCriteria,
-  IUpdateResultKeyGateway
+  UpdateResultKeyGatewayDependencies
 } from '../interfaces/update.result.key.interface';
-import { LoggerMixin } from '@adapters/services';
 
 class BaseGateway {
   constructor(..._args: unknown[]) {}
@@ -42,7 +42,6 @@ export class UpdateResultKeyGateway
     this.logging.info('Updating result key', { data, criteria });
     const updateData: Record<string, unknown> = {};
 
-    // Mapear campos que podem ser atualizados
     if (data.name !== undefined) updateData.name = data.name;
     if (data.initial_value !== undefined)
       updateData.initial_value = data.initial_value;

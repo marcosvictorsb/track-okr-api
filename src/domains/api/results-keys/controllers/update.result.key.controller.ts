@@ -1,10 +1,10 @@
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { Response } from 'express';
 import {
   InputUpdateResultKey,
   UpdateResultKeyControllerDependencies,
   UpdateResultKeyInteractor
 } from '../interfaces/update.result.key.interface';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class UpdateResultKeyController {
   private interactor: UpdateResultKeyInteractor;

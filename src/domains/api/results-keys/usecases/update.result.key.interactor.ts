@@ -1,10 +1,10 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 import {
-  UpdateResultKeyInteractorDependencies,
   IUpdateResultKeyGateway,
-  InputUpdateResultKey
+  InputUpdateResultKey,
+  UpdateResultKeyInteractorDependencies
 } from '../interfaces/update.result.key.interface';
 
 export class UpdateResultKeyInteractor {
@@ -37,7 +37,6 @@ export class UpdateResultKeyInteractor {
         unit
       } = input;
 
-      // Validar se o usuário pertence à empresa
       const userValidation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -51,7 +50,6 @@ export class UpdateResultKeyInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Verificar se o resultado-chave existe
       const existingResultKey = await this.gateway.findResultKey({ id });
       if (!existingResultKey) {
         this.gateway.loggerInfo('Resultado-chave não encontrado', {

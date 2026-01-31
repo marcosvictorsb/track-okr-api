@@ -1,16 +1,16 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
+import {
+  FeatureType,
+  ICheckCompanyFeatureLimitsInteractor
+} from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
+import { ResultKeyStatus } from '../interfaces';
 import {
   CreateResultKeyInteractorDependencies,
   ICreateResultKeyGateway,
   InputCreateResultKey
 } from '../interfaces/create.result-key.interface';
-import { ResultKeyStatus } from '../interfaces';
-import {
-  FeatureType,
-  ICheckCompanyFeatureLimitsInteractor
-} from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export class CreateResultKeyInteractor {
   protected gateway: ICreateResultKeyGateway;
@@ -44,7 +44,6 @@ export class CreateResultKeyInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      // Validar se o usuário pertence à empresa
       const userValidation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -84,7 +83,6 @@ export class CreateResultKeyInteractor {
         );
       }
 
-      // Criar o resultado-chave
       const resultKey = await this.gateway.create({
         name,
         initial_value,
