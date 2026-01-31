@@ -1,10 +1,10 @@
-import { Response } from 'express';
 import {
-  IGetObjectiveController,
   GetObjectiveControllerDependencies,
+  IGetObjectiveController,
   InputGetObjective
 } from '@domains/api/objectives/interfaces/get.objective.interface';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 
 export class GetObjectiveController implements IGetObjectiveController {
   protected interactor: GetObjectiveControllerDependencies['interactor'];

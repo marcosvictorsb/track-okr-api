@@ -1,13 +1,13 @@
-import { Response, Router } from 'express';
+import { objectiveCreationLimiter } from '@configs/rate-limit';
 import * as factories from '@domains/api/objectives/factories';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { objectiveCreationLimiter } from '@configs/rate-limit';
+import { Response, Router } from 'express';
 import {
   createObjectiveSchema,
-  updateObjectiveSchema,
+  deleteObjectiveSchema,
   getObjectiveSchema,
-  deleteObjectiveSchema
+  updateObjectiveSchema
 } from '../schemas';
 
 const {
@@ -24,7 +24,6 @@ const deleteObjectiveController = makeDeleteObjectiveController();
 
 const router = Router();
 
-// Criar objetivo
 router.post(
   '/',
   authMiddleware,
@@ -34,7 +33,6 @@ router.post(
     createObjectiveController.createObjective(request, response)
 );
 
-// Buscar objetivos
 router.get(
   '/',
   authMiddleware,
@@ -43,12 +41,10 @@ router.get(
     getObjectiveController.getObjectives(request, response)
 );
 
-// Buscar objetivo por ID
 router.get('/:id', authMiddleware, (request: UserPayload, response: Response) =>
   getObjectiveController.getObjectives(request, response)
 );
 
-// Atualizar objetivo
 router.put(
   '/:id',
   authMiddleware,
@@ -57,7 +53,6 @@ router.put(
     updateObjectiveController.updateObjective(request, response)
 );
 
-// Deletar objetivo
 router.delete(
   '/:id',
   authMiddleware,

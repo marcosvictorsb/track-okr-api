@@ -1,8 +1,8 @@
-import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '@infra/database/connection/mysql';
-import TeamModel from '@domains/api/teams/model/team.model';
 import CompanyModel from '@domains/api/companies/model/company.model';
 import PlannerModel from '@domains/api/planners/model/planner.model';
+import TeamModel from '@domains/api/teams/model/team.model';
+import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 
 interface ObjectiveModelAttributes {
   id?: number;
@@ -111,7 +111,6 @@ ObjectiveModel.init(
   }
 );
 
-// Definindo associações
 ObjectiveModel.belongsTo(TeamModel, {
   foreignKey: 'id_team',
   as: 'team'

@@ -1,15 +1,15 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
+import {
+  FeatureType,
+  ICheckCompanyFeatureLimitsInteractor
+} from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 import {
   CreateObjectiveInteractorDependencies,
   ICreateObjectiveGateway,
   InputCreateObjective
 } from '../interfaces/create.objective.interface';
-import {
-  FeatureType,
-  ICheckCompanyFeatureLimitsInteractor
-} from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
 
 export class CreateObjectiveInteractor {
   protected gateway: ICreateObjectiveGateway;

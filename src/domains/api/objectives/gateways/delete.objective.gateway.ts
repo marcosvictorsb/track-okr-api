@@ -1,25 +1,25 @@
-import {
-  IObjectiveRepository,
-  IDeleteObjectiveGateway,
-  IDeleteObjectiveGatewayDependencies,
-  FindObjectiveCriteria
-} from '@domains/api/objectives/interfaces/';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { MixCreateObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
+import {
+  DeleteCheckinsCriteria,
+  FindCheckinsCriteria,
+  ICheckinsRepository
+} from '@domains/api/checkins/interfaces';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import {
+  FindObjectiveCriteria,
+  IDeleteObjectiveGateway,
+  IDeleteObjectiveGatewayDependencies,
+  IObjectiveRepository
+} from '@domains/api/objectives/interfaces/';
 import {
   DeleteResultKeyCriteria,
   FindResultKeyCriteria,
   IResultKeyRepository,
   ResultKeyEntity
 } from '@domains/api/results-keys';
-import {
-  DeleteCheckinsCriteria,
-  FindCheckinsCriteria,
-  ICheckinsRepository
-} from '@domains/api/checkins/interfaces';
-import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
 
 export class DeleteObjectiveGateway
   extends MixCreateObjectives
@@ -38,6 +38,11 @@ export class DeleteObjectiveGateway
     this.checkinsRepository = params.checkinsRepository;
     this.logging = params.logging;
   }
+  findObjective(
+    criteria: FindObjectiveCriteria
+  ): Promise<ObjectiveEntity | null> {
+    throw new Error('Method not implemented.');
+  }
 
   public async findObjetive(
     criteria: FindObjectiveCriteria
@@ -46,7 +51,7 @@ export class DeleteObjectiveGateway
     return this.objectiveRepository.findOne(criteria);
   }
 
-  public async findResultkeysByObjective(
+  public async findResultKeysByObjective(
     criteria: FindResultKeyCriteria
   ): Promise<ResultKeyEntity[]> {
     this.logging.info('Buscando resultados-chave do objetivo', { criteria });

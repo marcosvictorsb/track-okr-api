@@ -1,16 +1,16 @@
-import { UpdateObjectiveController } from '@domains/api/objectives/controllers';
-import { UpdateObjectiveInteractor } from '@domains/api/objectives/usecases';
-import { UpdateObjectiveGateway } from '@domains/api/objectives/gateways';
-import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
-import ObjectiveModel from '@domains/api/objectives/model/objective.model';
 import { logger } from '@configs/logger';
-import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import { UpdateObjectiveController } from '@domains/api/objectives/controllers';
+import { UpdateObjectiveGateway } from '@domains/api/objectives/gateways';
+import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
+import { UpdateObjectiveInteractor } from '@domains/api/objectives/usecases';
 import TeamModel from '@domains/api/teams/model/team.model';
-import { Presenter } from '@protocols/presenter';
+import { TeamRepository } from '@domains/api/teams/repository/team.repository';
 import {
   makeCheckCompanyFeatureLimitsInteractor,
   makeUserCompanyValidationInteractor
 } from '@domains/common/validations/factories';
+import { Presenter } from '@protocols/presenter';
 
 export const makeUpdateObjectiveController = () => {
   const objectiveRepository = new ObjectiveRepository({

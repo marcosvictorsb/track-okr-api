@@ -1,14 +1,14 @@
-import { CreateObjectiveController } from '@domains/api/objectives/controllers';
-import { CreateObjectiveInteractor } from '@domains/api/objectives/usecases';
-import { CreateObjectiveGateway } from '@domains/api/objectives/gateways';
-import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
-import ObjectiveModel from '@domains/api/objectives/model/objective.model';
-import { Presenter } from '@protocols/presenter';
-import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
 import { logger } from '@configs/logger';
-import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import { CreateObjectiveController } from '@domains/api/objectives/controllers';
+import { CreateObjectiveGateway } from '@domains/api/objectives/gateways';
+import ObjectiveModel from '@domains/api/objectives/model/objective.model';
+import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
+import { CreateObjectiveInteractor } from '@domains/api/objectives/usecases';
 import TeamModel from '@domains/api/teams/model/team.model';
+import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import { makeUserCompanyValidationInteractor } from '@domains/common/validations/factories';
 import { makeCheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/factories/check.company.feature.limits.factories';
+import { Presenter } from '@protocols/presenter';
 
 export const makeCreateObjectiveController = () => {
   const objectiveRepository = new ObjectiveRepository({

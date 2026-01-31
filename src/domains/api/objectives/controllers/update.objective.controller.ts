@@ -1,8 +1,8 @@
-import { Response } from 'express';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import {
-  UpdateObjectiveControllerDependencies,
-  InputUpdateObjective
+  InputUpdateObjective,
+  UpdateObjectiveControllerDependencies
 } from '../interfaces';
 
 export class UpdateObjectiveController {

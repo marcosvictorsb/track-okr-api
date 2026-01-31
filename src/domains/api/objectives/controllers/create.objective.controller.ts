@@ -1,5 +1,5 @@
-import { Response } from 'express';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import { CreateObjectiveControllerDependencies } from '../interfaces/create.objective.interface';
 
 export class CreateObjectiveController {

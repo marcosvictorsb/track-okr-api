@@ -1,18 +1,18 @@
-import {
-  UpdateObjectiveCriteria,
-  IObjectiveRepository,
-  IUpdateObjectiveGateway,
-  FindObjectiveCriteria
-} from '@domains/api/objectives/interfaces';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { MixUpdateObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import {
+  FindObjectiveCriteria,
+  IObjectiveRepository,
+  IUpdateObjectiveGateway,
+  UpdateObjectiveCriteria
+} from '@domains/api/objectives/interfaces';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import {
   FindTeamCriteria,
   ITeamRepository
 } from '@domains/api/teams/interfaces';
 import { ICreateObjectiveGatewayDependencies } from '../interfaces/create.objective.interface';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 
 export class UpdateObjectiveGateway
   extends MixUpdateObjectives

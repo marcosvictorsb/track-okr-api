@@ -1,7 +1,7 @@
 import {
-  IDeleteObjectiveGateway,
+  DeleteObjectiveInteractorDependencies,
   DeleteObjectiveRequest,
-  DeleteObjectiveInteractorDependencies
+  IDeleteObjectiveGateway
 } from '@domains/api/objectives/interfaces';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
@@ -30,7 +30,6 @@ export class DeleteObjectiveInteractor {
         id_user
       });
 
-      // 1. Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -44,8 +43,7 @@ export class DeleteObjectiveInteractor {
         return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
-      // Verificar se o objetivo existe
-      const existingObjective = await this.gateway.findObjetive({
+      const existingObjective = await this.gateway.findObjective({
         id,
         id_company
       });
@@ -56,7 +54,7 @@ export class DeleteObjectiveInteractor {
 
       await this.gateway.delete(id);
 
-      const resultkeys = await this.gateway.findResultkeysByObjective({
+      const resultkeys = await this.gateway.findResultKeysByObjective({
         id_okr: id
       });
 

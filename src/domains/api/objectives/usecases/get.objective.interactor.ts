@@ -1,11 +1,11 @@
-import { HttpResponse } from '@protocols/http';
 import {
   GetObjectiveInteractorDependencies,
-  InputGetObjective,
-  IGetObjectiveGateway
+  IGetObjectiveGateway,
+  InputGetObjective
 } from '@domains/api/objectives/interfaces/get.objective.interface';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import { ObjectiveEntity } from '../entity/objective.entity';
 
 export class GetObjectiveInteractor {
@@ -27,7 +27,6 @@ export class GetObjectiveInteractor {
 
       const { id, id_team, quarter, year, id_company, id_user, status } = input;
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -60,7 +59,6 @@ export class GetObjectiveInteractor {
           status
         );
       } else {
-        // Se não há critérios específicos, retornar erro
         return this.presenter.badRequest(
           'At least one search criteria must be provided (id, id_team, or quarter+year)'
         );
@@ -83,7 +81,6 @@ export class GetObjectiveInteractor {
         }
       });
 
-      // Buscar resultados-chaves para cada objetivo
       const objectiveIds = objectives
         .map((objective: ObjectiveEntity) => objective.id)
         .filter((id): id is number => id !== undefined);
@@ -92,7 +89,6 @@ export class GetObjectiveInteractor {
         const resultKeys =
           await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
 
-        // Agrupar result-keys por objetivo
         objectives.forEach((objective: ObjectiveEntity) => {
           objective.result_keys = resultKeys.filter(
             (resultKey) => resultKey.id_okr === objective.id
@@ -100,7 +96,6 @@ export class GetObjectiveInteractor {
         });
       }
 
-      // pegar os ids dos responsible_users e buscar os nomes do usuario
       const responsibleUserIds = objectives
         .flatMap(
           (objective: ObjectiveEntity) =>
@@ -119,7 +114,6 @@ export class GetObjectiveInteractor {
           ids: responsibleUserIds
         });
 
-        // Criar um Map para lookup O(1) dos profiles
         const profileMap = new Map(
           profileDetails.map((profile) => [
             profile.id_user,
@@ -130,7 +124,6 @@ export class GetObjectiveInteractor {
           ])
         );
 
-        // Mapear os usuários responsáveis para cada result-key
         objectives.forEach((objective: ObjectiveEntity) => {
           objective.result_keys?.forEach((resultKey) => {
             const responsibleUsersArray = this.parseResponsibleUsers(
@@ -172,7 +165,6 @@ export class GetObjectiveInteractor {
     }
   }
 
-  // Adicionar este método privado na classe
   private parseResponsibleUsers(responsibleUsers: any): number[] {
     if (!responsibleUsers) {
       return [];

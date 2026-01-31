@@ -1,7 +1,7 @@
-import { Response } from 'express';
-import { DeleteObjectiveInteractor } from '@domains/api/objectives/usecases';
 import { IDeleteObjectiveController } from '@domains/api/objectives/interfaces';
+import { DeleteObjectiveInteractor } from '@domains/api/objectives/usecases';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 
 export class DeleteObjectiveController implements IDeleteObjectiveController {
   constructor(

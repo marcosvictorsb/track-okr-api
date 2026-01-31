@@ -1,28 +1,28 @@
-import { Response } from 'express';
-import { IPresenter } from '@protocols/presenter';
-import { ObjectiveEntity } from '../entity/objective.entity';
-import { UserCompanyValidationInteractor } from '@domains/common';
-import { HttpResponse } from '@protocols/http';
 import { DataLogOutput } from '@adapters/services';
-import {
-  FindTeamCriteria,
-  ITeamRepository
-} from '@domains/api/teams/interfaces';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { logger } from '@configs/logger';
-import { IObjectiveRepository } from './default.interface';
-import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
-import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import {
-  FindUserCriteria,
-  IUserRepository
-} from '@domains/api/users/interfaces/default.interfaces';
+import { ProfileEntity } from '@domains/api/profile/entity';
 import {
   FindProfileCriteria,
   IProfileRepository
 } from '@domains/api/profile/interfaces';
-import { ProfileEntity } from '@domains/api/profile/entity';
+import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
+import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import {
+  FindTeamCriteria,
+  ITeamRepository
+} from '@domains/api/teams/interfaces';
+import {
+  FindUserCriteria,
+  IUserRepository
+} from '@domains/api/users/interfaces/default.interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { Response } from 'express';
+import { ObjectiveEntity } from '../entity/objective.entity';
+import { IObjectiveRepository } from './default.interface';
 
 export interface GetObjectiveRequest {
   id?: number;
@@ -39,7 +39,6 @@ export interface IGetObjectiveController {
   getObjectives(request: UserPayload, response: Response): Promise<Response>;
 }
 
-// Get Objective Interfaces
 export interface InputGetObjective {
   id?: number;
   id_team?: number;

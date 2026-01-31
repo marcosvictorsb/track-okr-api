@@ -1,31 +1,31 @@
-import {
-  CreateObjectiveCriteria,
-  UpdateObjectiveCriteria,
-  IObjectiveRepository
-} from '@domains/api/objectives/interfaces/';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { MixGetObjectives } from '@adapters/gateways/api/objectives';
 import { logger } from '@configs/logger';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import {
+  CreateObjectiveCriteria,
+  IObjectiveRepository,
+  UpdateObjectiveCriteria
+} from '@domains/api/objectives/interfaces/';
+import { ProfileEntity } from '@domains/api/profile/entity';
+import {
+  FindProfileCriteria,
+  IProfileRepository
+} from '@domains/api/profile/interfaces';
+import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
+import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import {
   FindTeamCriteria,
   ITeamRepository
 } from '@domains/api/teams/interfaces';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import {
-  IGetObjectiveGateway,
-  IGetObjectiveGatewayDependencies
-} from '../interfaces/get.objective.interface';
-import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
-import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
 import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces/default.interfaces';
 import {
-  FindProfileCriteria,
-  IProfileRepository
-} from '@domains/api/profile/interfaces';
-import { ProfileEntity } from '@domains/api/profile/entity';
+  IGetObjectiveGateway,
+  IGetObjectiveGatewayDependencies
+} from '../interfaces/get.objective.interface';
 
 export class GetObjectiveGateway
   extends MixGetObjectives

@@ -1,25 +1,25 @@
 import { logger } from '@configs/logger';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
 import {
-  FindObjectiveCriteria,
-  IObjectiveRepository
-} from './default.interface';
-import { ObjectiveEntity } from '../entity/objective.entity';
-import { Response } from 'express';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
+  DeleteCheckinsCriteria,
+  FindCheckinsCriteria,
+  ICheckinsRepository
+} from '@domains/api/checkins/interfaces';
 import {
   DeleteResultKeyCriteria,
   FindResultKeyCriteria,
   IResultKeyRepository,
   ResultKeyEntity
 } from '@domains/api/results-keys';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { IPresenter } from '@protocols/presenter';
+import { Response } from 'express';
+import { ObjectiveEntity } from '../entity/objective.entity';
 import {
-  DeleteCheckinsCriteria,
-  FindCheckinsCriteria,
-  ICheckinsRepository
-} from '@domains/api/checkins/interfaces';
-import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
+  FindObjectiveCriteria,
+  IObjectiveRepository
+} from './default.interface';
 
 export interface DeleteObjectiveRequest {
   id: number;
@@ -49,10 +49,10 @@ export interface IDeleteObjectiveController {
 }
 
 export interface IDeleteObjectiveGateway {
-  findObjetive(
+  findObjective(
     criteria: FindObjectiveCriteria
   ): Promise<ObjectiveEntity | null>;
-  findResultkeysByObjective(
+  findResultKeysByObjective(
     criteria: FindResultKeyCriteria
   ): Promise<ResultKeyEntity[]>;
   findCheckins(criteria: FindCheckinsCriteria): Promise<CheckinsEntity[]>;

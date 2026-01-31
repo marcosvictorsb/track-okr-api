@@ -1,16 +1,16 @@
-import { HttpResponse } from '@protocols/http';
 import {
-  UpdateObjectiveInteractorDependencies,
   InputUpdateObjective,
   IUpdateObjectiveGateway,
-  ObjectiveStatus
+  ObjectiveStatus,
+  UpdateObjectiveInteractorDependencies
 } from '@domains/api/objectives/interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import {
   FeatureType,
   ICheckCompanyFeatureLimitsInteractor
 } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 
 export class UpdateObjectiveInteractor {
   protected gateway: IUpdateObjectiveGateway;
@@ -49,7 +49,6 @@ export class UpdateObjectiveInteractor {
         id_user
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -63,7 +62,6 @@ export class UpdateObjectiveInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Verificar se o objetivo existe e pertence à empresa
       const existingObjective = await this.gateway.findObjective({
         id
       });
@@ -73,13 +71,11 @@ export class UpdateObjectiveInteractor {
         return this.presenter.notFound('Objetivo não encontrado');
       }
 
-      // Validar quarter se fornecido
       if (quarter !== undefined && (quarter < 1 || quarter > 4)) {
         this.gateway.loggerInfo('Quarter inválido', { year });
         return this.presenter.badRequest('Quarter deve estar entre 1 e 4');
       }
 
-      // Validar year se fornecido
       if (year !== undefined) {
         const currentYear = new Date().getFullYear();
         if (year < 2020 || year > currentYear + 10) {
