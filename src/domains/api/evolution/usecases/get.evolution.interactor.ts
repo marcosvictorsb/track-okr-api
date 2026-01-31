@@ -43,7 +43,6 @@ export class GetEvolutionInteractor {
         id_user
       } = input;
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -56,9 +55,6 @@ export class GetEvolutionInteractor {
         });
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
-
-      console.log('-----------------------> typeof teams');
-      console.log(typeof teams);
 
       const criteria: FindObjectiveCriteria = {
         year,
@@ -90,7 +86,6 @@ export class GetEvolutionInteractor {
         });
       }
 
-      // Buscar key results com check-ins
       const objectiveIds = objectives
         .map((obj) => obj.id)
         .filter((id): id is number => id !== undefined);
@@ -130,42 +125,25 @@ export class GetEvolutionInteractor {
         ids_result_key: idsResultKeys
       });
 
-      // Integrar check-ins nos key results
       keyResults.forEach((kr) => {
         kr.checkins = checkins.filter((ci) => ci.id_result_key === kr.id);
       });
 
-      // Agrupar key results por objetivo
       objectives.forEach((objective) => {
         objective.key_results = keyResults.filter(
           (kr) => kr.id_okr === objective.id
         );
       });
 
-      // Processar períodos para cada key result
       objectives.forEach((objective) => {
         objective.key_results.forEach((kr) => {
           kr.periods = this.processKeyResultPeriods(kr, granularity, year);
         });
       });
 
-      // Buscar filtros disponíveis
-      // const availableTeams = await this.gateway.findAvailableTeams(
-      //   id_company,
-      //   year
-      // );
-      // const availableResponsibles =
-      //   await this.gateway.findAvailableResponsibles(id_company, year);
-      // const availableYears = await this.gateway.findAvailableYears(id_company);
-
       const response: EvolutionResponse = {
         objectives,
         periods: this.generatePeriods(granularity),
-        // filters: {
-        //   available_teams: availableTeams,
-        //   available_responsibles: availableResponsibles,
-        //   available_years: availableYears
-        // },
         metadata: {
           total_objectives: objectives.length,
           total_key_results: keyResults.length,
@@ -221,28 +199,22 @@ export class GetEvolutionInteractor {
     const periods: PeriodData = {};
     const periodNames = this.generatePeriods(granularity);
 
-    // Inicializar todos os períodos como null
     periodNames.forEach((period) => {
       periods[period] = null;
     });
 
-    // Processar check-ins se existirem
     if (keyResult.checkins && keyResult.checkins.length > 0) {
       if (granularity === 'monthly') {
-        // Agrupar check-ins por mês
         const checkinsByMonth = this.groupCheckinsByMonth(
           keyResult.checkins,
           year
         );
-
-        // previousValue removed: não necessário quando não herdamos valores
 
         for (let monthIndex = 0; monthIndex < 12; monthIndex++) {
           const period = periodNames[monthIndex];
           const monthCheckins = checkinsByMonth[monthIndex];
 
           if (monthCheckins && monthCheckins.length > 0) {
-            // Selecionar o checkin com maior id do mês (mais confiável quando timestamps iguais/ordenados de forma inconsistente)
             let lastCheckin = monthCheckins[0];
             for (let i = 1; i < monthCheckins.length; i++) {
               const c = monthCheckins[i];
@@ -261,24 +233,9 @@ export class GetEvolutionInteractor {
               keyResult.target_value
             );
 
-            // Calcular delta em relação ao período anterior
-            // const delta =
-            //   monthIndex === 0
-            //     ? null
-            //     : this.calculateProgress(
-            //         currentValue,
-            //         keyResult.initial_value,
-            //         keyResult.target_value
-            //       ) -
-            //       this.calculateProgress(
-            //         previousValue,
-            //         keyResult.initial_value,
-            //         keyResult.target_value
-            //       );
-
             periods[period] = {
               progress: Math.min(Math.max(progress, 0), 100),
-              // delta,
+
               status: this.calculateStatus(progress, monthIndex + 1, 12),
               current_value: currentValue,
               updated_at:
@@ -287,13 +244,10 @@ export class GetEvolutionInteractor {
               update_count: monthCheckins.length,
               has_manual_update: true
             };
-
-            // previousValue is no longer used; state is tracked via previousProgress
           } else {
-            // Se não há check-ins no mês, deixar o período zerado
             periods[period] = {
               progress: 0,
-              // delta: null,
+
               status: 'no_data',
               current_value: 0,
               updated_at: new Date(year, monthIndex, 1).toISOString(),
@@ -303,8 +257,7 @@ export class GetEvolutionInteractor {
           }
         }
       } else if (granularity === 'weekly') {
-        // TODO: Implementar lógica para granularidade semanal
-        // Similar à mensal, mas agrupando por semanas
+        // Lógica para granularidade semanal - futuro
       }
     }
 
@@ -321,7 +274,6 @@ export class GetEvolutionInteractor {
       if (checkin.created_at) {
         const checkinDate = new Date(checkin.created_at);
 
-        // Verificar se o check-in é do ano correto
         if (checkinDate.getFullYear() === year) {
           const monthIndex = checkinDate.getMonth();
           months[monthIndex].push(checkin);
@@ -329,13 +281,11 @@ export class GetEvolutionInteractor {
       }
     });
 
-    // Ordenar check-ins de cada mês por data
     months.forEach((monthCheckins) => {
       monthCheckins.sort((a, b) => {
         const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;
         const dateB = b.created_at ? new Date(b.created_at).getTime() : 0;
         if (dateA !== dateB) return dateA - dateB;
-        // Se as datas forem iguais (ou ambas ausentes), desempatar por id
         const idA = typeof a.id === 'number' ? a.id : 0;
         const idB = typeof b.id === 'number' ? b.id : 0;
         return idA - idB;
@@ -353,12 +303,10 @@ export class GetEvolutionInteractor {
     if (targetValue === initialValue) return 0;
 
     if (targetValue > initialValue) {
-      // Crescimento
       return (
         ((currentValue - initialValue) / (targetValue - initialValue)) * 100
       );
     } else {
-      // Redução
       return (
         ((initialValue - currentValue) / (initialValue - targetValue)) * 100
       );

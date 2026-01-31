@@ -62,7 +62,6 @@ export class GetEvolutionGateway
 
     const objectives = await this.objectiveRepository.findMany(criteria);
 
-    // Buscar informações dos times
     const teamIds = objectives
       .map((obj) => obj.id_team)
       .filter((id): id is number => id !== undefined);
@@ -71,7 +70,6 @@ export class GetEvolutionGateway
 
     const teams = await this.teamRepository.findAll({ ids: uniqueTeamIds });
 
-    // Transformar para o formato esperado
     return objectives.map((obj) => {
       const team = teams.find((t) => t.id === obj.id_team);
       return {
@@ -103,12 +101,10 @@ export class GetEvolutionGateway
       ids_okr: objectiveIds
     });
 
-    // TODO: Implementar busca de check-ins baseado na granularidade
-    // Por enquanto retornando dados básicos
     return keyResults.map((kr) => ({
-      id: kr.id!, // Note: usando id_okr como referência ao objetivo
-      title: kr.name, // ResultKeyEntity usa 'name' ao invés de 'title'
-      description: '', // ResultKeyEntity não tem description
+      id: kr.id!,
+      title: kr.name,
+      description: '',
       unit: kr.unit || '',
       initial_value: kr.initial_value || 0,
       target_value: kr.target_value || 0,
@@ -116,9 +112,9 @@ export class GetEvolutionGateway
       progress: kr.progress_percentage || 0,
       id_okr: kr.id_okr as number,
       status: this.mapKeyResultStatus(kr.status),
-      responsible_id: kr.responsible_users?.[0]?.toString(), // Pega o primeiro responsável se existir
-      responsible_name: '', // Precisaria buscar o nome do usuário
-      periods: {}, // Será processado no interactor
+      responsible_id: kr.responsible_users?.[0]?.toString(),
+      responsible_name: '',
+      periods: {},
       created_at: kr.created_at?.toISOString() || new Date().toISOString(),
       updated_at: kr.updated_at?.toISOString() || new Date().toISOString(),
       last_update_at: kr.updated_at?.toISOString()
@@ -133,7 +129,6 @@ export class GetEvolutionGateway
       data: `Company: ${id_company}, Year: ${year}`
     });
 
-    // Buscar times que têm objetivos no ano especificado
     const objectives = await this.objectiveRepository.findMany({
       id_company,
       year
@@ -157,8 +152,6 @@ export class GetEvolutionGateway
       data: `Company: ${id_company}, Year: ${year}`
     });
 
-    // TODO: Implementar busca de responsáveis baseado em objetivos e key results
-    // Por enquanto retornando array vazio
     return [];
   }
 
@@ -167,7 +160,6 @@ export class GetEvolutionGateway
       data: `Company: ${id_company}`
     });
 
-    // TODO: Implementar busca de anos disponíveis baseado nos objetivos da empresa
     const currentYear = new Date().getFullYear();
     return [currentYear - 2, currentYear - 1, currentYear, currentYear + 1];
   }
@@ -187,8 +179,8 @@ export class GetEvolutionGateway
 
     return {
       id: kr_id,
-      title: keyResult.name, // ResultKeyEntity usa 'name' ao invés de 'title'
-      description: '', // ResultKeyEntity não tem description
+      title: keyResult.name,
+      description: '',
       unit: keyResult.unit || '',
       initial_value: keyResult.initial_value || 0,
       target_value: keyResult.target_value || 0,
@@ -196,8 +188,8 @@ export class GetEvolutionGateway
       progress: keyResult.progress_percentage || 0,
       status: this.mapKeyResultStatus(keyResult.status),
       responsible_id: keyResult.responsible_users?.[0]?.toString(),
-      responsible_name: '', // Precisaria buscar o nome do usuário
-      periods: {}, // TODO: Implementar busca de períodos
+      responsible_name: '',
+      periods: {},
       created_at:
         keyResult.created_at?.toISOString() || new Date().toISOString(),
       updated_at:
@@ -214,8 +206,6 @@ export class GetEvolutionGateway
       data: `Key Result ID: ${kr_id}, Period: ${period}`
     });
 
-    // TODO: Implementar busca de histórico baseado em check-ins
-    // Por enquanto retornando dados mockados
     return [
       {
         id: 1,
@@ -239,7 +229,6 @@ export class GetEvolutionGateway
   }
 
   private mapKeyResultStatus(status?: string): KeyResultStatus {
-    // Mapear status do banco para os tipos da API
     switch (status) {
       case 'completed':
         return 'completed';
@@ -255,7 +244,6 @@ export class GetEvolutionGateway
   }
 
   private mapObjectiveStatus(status: string): ObjectiveStatus {
-    // Mapear status do banco para os tipos da API
     switch (status) {
       case 'active':
         return 'active';

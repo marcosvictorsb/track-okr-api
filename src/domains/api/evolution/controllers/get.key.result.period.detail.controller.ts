@@ -6,9 +6,7 @@ import {
   InputGetKeyResultPeriodDetail
 } from '../interfaces/get.key.evolution.interface';
 
-export class GetKeyResultPeriodDetailController
-  implements IGetKeyResultPeriodDetailController
-{
+export class GetKeyResultPeriodDetailController implements IGetKeyResultPeriodDetailController {
   protected interactor: GetKeyResultPeriodDetailControllerDependencies['interactor'];
 
   constructor(params: GetKeyResultPeriodDetailControllerDependencies) {

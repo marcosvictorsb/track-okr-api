@@ -29,7 +29,6 @@ import {
   ObjectiveEvolution
 } from '../entity/evolution.entity';
 
-// Input types
 export interface InputGetEvolution {
   year: number;
   granularity: GranularityType;
@@ -40,12 +39,10 @@ export interface InputGetEvolution {
   id_user: number;
 }
 
-// Controller Interfaces
 export interface IGetEvolutionController {
   getEvolution(request: UserPayload, response: Response): Promise<Response>;
 }
 
-// Gateway Interfaces
 export interface IGetEvolutionGateway {
   findObjectivesByYear(
     criteria: FindObjectiveCriteria
@@ -82,14 +79,12 @@ export interface IGetEvolutionGatewayDependencies {
   logging: typeof logger;
 }
 
-// Interactor Dependencies
 export interface GetEvolutionInteractorDependencies {
   gateway: IGetEvolutionGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
 }
 
-// Controller Dependencies
 export interface GetEvolutionControllerDependencies {
   interactor: {
     execute(input: InputGetEvolution): Promise<HttpResponse>;

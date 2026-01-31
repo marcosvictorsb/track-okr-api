@@ -32,7 +32,6 @@ export class GetKeyResultPeriodDetailInteractor {
 
       const { kr_id, period, id_company, id_user, year } = input;
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -65,12 +64,6 @@ export class GetKeyResultPeriodDetailInteractor {
     }
   }
 
-  /**
-   * Converte o nome do período para o primeiro dia do mês
-   * @param period Nome do mês ('Jan', 'Fev', 'Mar', etc.)
-   * @returns Date representando o primeiro dia do mês às 00:00:00
-   * @example getStartPeriod('Mar') → 2025-03-01T00:00:00.000Z
-   */
   private getStartPeriod(period: string, year: number): Date {
     const currentYear = year;
     const monthMap: { [key: string]: number } = {
@@ -92,12 +85,6 @@ export class GetKeyResultPeriodDetailInteractor {
     return new Date(currentYear, month, 1, 0, 0, 0, 0);
   }
 
-  /**
-   * Converte o nome do período para o último dia do mês
-   * @param period Nome do mês ('Jan', 'Fev', 'Mar', etc.)
-   * @returns Date representando o último dia do mês às 23:59:59
-   * @example getEndPeriod('Mar') → 2025-03-31T23:59:59.999Z
-   */
   private getEndPeriod(period: string, year: number): Date {
     const currentYear = year;
     const monthMap: { [key: string]: number } = {
@@ -117,7 +104,6 @@ export class GetKeyResultPeriodDetailInteractor {
 
     const month = monthMap[period];
 
-    // Retorna o último dia do mês às 23:59:59
     return new Date(currentYear, month + 1, 0, 23, 59, 59, 999);
   }
 }

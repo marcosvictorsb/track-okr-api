@@ -17,7 +17,6 @@ const filtersEvolutionController = makeFiltersEvolutionController();
 
 const router = Router();
 
-// Buscar evolução de OKRs
 router.get(
   '/',
   authMiddleware,
@@ -26,7 +25,6 @@ router.get(
     getEvolutionController.getEvolution(request, response)
 );
 
-// Buscar detalhes de período de key result
 router.get(
   '/key-result/:kr_id/period/:period/year/:year',
   authMiddleware,

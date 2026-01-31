@@ -92,7 +92,6 @@ export interface EvolutionResponse {
   metadata?: EvolutionMetadata;
 }
 
-// Entities para o endpoint de detalhes
 export interface KeyResultDetail {
   id: number;
   title: string;
