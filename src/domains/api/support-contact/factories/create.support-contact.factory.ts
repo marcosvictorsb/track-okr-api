@@ -11,7 +11,6 @@ const supportContactRepository = new SupportContactRepository({
   model: SupportContactModel
 });
 
-// Instanciar o serviço Discord com a URL do webhook do suporte
 const discordWebhookUrl = process.env.DISCORD_SUPPORT_WEBHOOK_URL;
 
 const discordNotificationService = new DiscordNotificationService(

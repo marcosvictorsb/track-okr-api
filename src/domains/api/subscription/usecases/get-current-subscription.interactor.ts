@@ -35,7 +35,6 @@ export class GetCurrentSubscriptionInteractor {
 
       const { id_company, id_user } = input;
 
-      // Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
         id_user,
         id_company
@@ -45,7 +44,6 @@ export class GetCurrentSubscriptionInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Buscar subscription da empresa
       const subscription =
         await this.gateway.findSubscriptionByCompanyId(id_company);
 
@@ -63,23 +61,6 @@ export class GetCurrentSubscriptionInteractor {
 
       const plan = await this.gateway.findPlan({ id: subscription.plan_id });
 
-      // Calcular estatísticas de uso
-      // const usageStats = await this.gateway.calculateUsageStats(
-      //   id_company,
-      //   subscription
-      // );
-
-      // const response = {
-      //   subscription,
-      //   usage_stats: usageStats
-      // };
-
-      // this.gateway.loggerInfo('Subscription atual encontrada com sucesso', {
-      //   subscriptionId: subscription.id,
-      //   companyId: id_company
-      // });
-
-      // Buscar permissões para cada feature
       const usage_stats = {
         users: await this.checkFeaturePermission(
           id_company,

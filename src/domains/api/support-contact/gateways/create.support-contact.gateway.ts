@@ -32,7 +32,6 @@ export class CreateSupportContactGateway
     this.logging.info('Criando novo contato de suporte', { data });
     const supportContact = await this.supportContactRepository.create(data);
 
-    // Enviar notificação para Discord após criar o suporte
     await this.sendDiscordNotification(supportContact);
 
     return supportContact;
@@ -63,7 +62,6 @@ export class CreateSupportContactGateway
         error: (error as Error).message,
         support_id: supportData.id
       });
-      // Não quebrar o fluxo principal por erro de notificação
     }
   }
 }
