@@ -1,21 +1,21 @@
-import { PlannerEntity } from '../entity/planner.entity';
+import { MixDeletePlanner } from '@adapters/gateways/api/planners';
+import { logger } from '@configs/logger';
+import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
-  FindPlannerCriteria,
-  IPlannerRepository,
-  DeletePlannerCriteria
-} from '../interfaces';
-import {
-  IUserRepository,
-  FindUserCriteria
+  FindUserCriteria,
+  IUserRepository
 } from '@domains/api/users/interfaces/default.interfaces';
+import { PlannerEntity } from '../entity/planner.entity';
+import {
+  DeletePlannerCriteria,
+  FindPlannerCriteria,
+  IPlannerRepository
+} from '../interfaces';
 import {
   IDeletePlannerGateway,
   IDeletePlannerGatewayDependencies
 } from '../interfaces/delete.planner.interface';
-import { MixDeletePlanner } from '@adapters/gateways/api/planners';
-import { logger } from '@configs/logger';
-import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 
 export class DeletePlannerGateway
   extends MixDeletePlanner

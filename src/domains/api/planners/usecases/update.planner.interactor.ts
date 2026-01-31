@@ -1,11 +1,11 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  UpdatePlannerInteractorDependencies,
-  InputUpdatePlanner,
-  IUpdatePlannerGateway
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  InputUpdatePlanner,
+  IUpdatePlannerGateway,
+  UpdatePlannerInteractorDependencies
+} from '../interfaces';
 
 export class UpdatePlannerInteractor {
   protected gateway: IUpdatePlannerGateway;
@@ -30,7 +30,6 @@ export class UpdatePlannerInteractor {
         id_user
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -44,7 +43,6 @@ export class UpdatePlannerInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // 3. Verificar se o planner existe
       const existingPlanner = await this.gateway.findPlanner({
         id,
         id_company
@@ -54,7 +52,6 @@ export class UpdatePlannerInteractor {
         return this.presenter.notFound('Planner não encontrado');
       }
 
-      // 4. Atualizar o planner
       const updateData = { title, description, year, updated_at: new Date() };
       const updated = await this.gateway.updatePlanner(updateData, { id });
 

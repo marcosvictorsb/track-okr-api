@@ -1,10 +1,10 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import {
   CreatePlannerControllerDependencies,
   InputCreatePlanner
 } from '../interfaces';
 import { CreatePlannerInteractor } from '../usecases';
-import { Response } from 'express';
 
 export class CreatePlannerController {
   protected interactor: CreatePlannerInteractor;

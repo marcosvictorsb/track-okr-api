@@ -1,15 +1,15 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  CreatePlannerInteractorDependencies,
-  InputCreatePlanner
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { CreatePlannerGateway } from '../gateways/create.planner.gateway';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import {
   FeatureType,
   ICheckCompanyFeatureLimitsInteractor
 } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { CreatePlannerGateway } from '../gateways/create.planner.gateway';
+import {
+  CreatePlannerInteractorDependencies,
+  InputCreatePlanner
+} from '../interfaces';
 
 export class CreatePlannerInteractor {
   protected gateway: CreatePlannerGateway;

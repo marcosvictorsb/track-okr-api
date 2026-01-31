@@ -1,20 +1,20 @@
-import { PlannerEntity } from '../entity/planner.entity';
+import { MixUpdatePlanner } from '@adapters/gateways/api/planners';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
+import {
+  FindUserCriteria,
+  IUserRepository
+} from '@domains/api/users/interfaces/default.interfaces';
+import { PlannerEntity } from '../entity/planner.entity';
 import {
   FindPlannerCriteria,
   IPlannerRepository,
   UpdatePlannerCriteria
 } from '../interfaces';
 import {
-  IUserRepository,
-  FindUserCriteria
-} from '@domains/api/users/interfaces/default.interfaces';
-import {
   IUpdatePlannerGateway,
   IUpdatePlannerGatewayDependencies
 } from '../interfaces/update.planner.interface';
-import { MixUpdatePlanner } from '@adapters/gateways/api/planners';
-import { logger } from '@configs/logger';
 
 export class UpdatePlannerGateway
   extends MixUpdatePlanner

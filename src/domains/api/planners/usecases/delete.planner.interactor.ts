@@ -1,11 +1,11 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   DeletePlannerInteractorDependencies,
-  InputDeletePlanner,
-  IDeletePlannerGateway
+  IDeletePlannerGateway,
+  InputDeletePlanner
 } from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class DeletePlannerInteractor {
   protected gateway: IDeletePlannerGateway;
@@ -27,7 +27,6 @@ export class DeletePlannerInteractor {
         id_user
       });
 
-      // 1. Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -41,7 +40,6 @@ export class DeletePlannerInteractor {
         return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
-      // 3. Verificar se o planner existe
       const existingPlanner = await this.gateway.findPlanner({
         id,
         id_company
@@ -51,7 +49,6 @@ export class DeletePlannerInteractor {
         return this.presenter.notFound('Planner não encontrado');
       }
 
-      // verificar se o planner está relacionadom com algum objetivo. Caso estiver não pode deletar
       const hasRelatedObjectives = await this.gateway.hasRelatedObjectives(id);
       if (hasRelatedObjectives) {
         this.gateway.loggerInfo(
@@ -63,7 +60,6 @@ export class DeletePlannerInteractor {
         );
       }
 
-      // 4. Deletar o planner logicamente
       const deleted = await this.gateway.deletePlanner({ id });
 
       if (!deleted) {

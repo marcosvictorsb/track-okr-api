@@ -1,10 +1,10 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import {
   GetPlannerControllerDependencies,
   InputGetPlanner
 } from '../interfaces';
 import { GetPlannerInteractor } from '../usecases';
-import { Response } from 'express';
 
 export class GetPlannerController {
   protected interactor: GetPlannerInteractor;

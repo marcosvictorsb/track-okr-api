@@ -1,17 +1,17 @@
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { PlannerEntity } from '../entity/planner.entity';
-import {
-  IGetPlannerGateway,
-  IGetPlannerGatewayDependencies,
-  FindPlannerCriteria,
-  IPlannerRepository
-} from '../interfaces';
 import { MixGetPlanner } from '@adapters/gateways/api/planners';
+import { logger } from '@configs/logger';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
-import { logger } from '@configs/logger';
+import { PlannerEntity } from '../entity/planner.entity';
+import {
+  FindPlannerCriteria,
+  IGetPlannerGateway,
+  IGetPlannerGatewayDependencies,
+  IPlannerRepository
+} from '../interfaces';
 
 export class GetPlannerGateway
   extends MixGetPlanner

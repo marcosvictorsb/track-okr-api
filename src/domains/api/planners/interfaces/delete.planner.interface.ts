@@ -1,20 +1,20 @@
-import { IPresenter } from '@protocols/presenter';
-import { PlannerEntity } from '../entity/planner.entity';
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
-  IPlannerRepository,
-  FindPlannerCriteria,
-  DeletePlannerCriteria
-} from './default.interfaces';
-import {
-  IUserRepository,
-  FindUserCriteria
+  FindUserCriteria,
+  IUserRepository
 } from '@domains/api/users/interfaces/default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { PlannerEntity } from '../entity/planner.entity';
+import {
+  DeletePlannerCriteria,
+  FindPlannerCriteria,
+  IPlannerRepository
+} from './default.interfaces';
 
 export type InputDeletePlanner = {
   id: number;
@@ -52,7 +52,6 @@ export interface IDeletePlannerGatewayDependencies {
   logging: typeof logger;
 }
 
-// Forward declaration to avoid circular dependency
 export declare class DeletePlannerInteractor {
   execute(input: InputDeletePlanner): Promise<HttpResponse>;
 }

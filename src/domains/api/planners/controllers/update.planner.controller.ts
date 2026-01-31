@@ -1,9 +1,9 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import {
-  UpdatePlannerControllerDependencies,
-  InputUpdatePlanner
-} from '../interfaces';
 import { Response } from 'express';
+import {
+  InputUpdatePlanner,
+  UpdatePlannerControllerDependencies
+} from '../interfaces';
 
 export class UpdatePlannerController {
   protected interactor: UpdatePlannerControllerDependencies['interactor'];
