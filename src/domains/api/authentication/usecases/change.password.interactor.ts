@@ -47,16 +47,13 @@ export class ChangePasswordInteractor {
         return this.presenter.badRequest('Usuário não encontrado');
       }
 
-      // Hash da nova senha
       const hashedPassword = this.gateway.hashPassword(password);
 
-      // Atualizar senha do usuário
       await this.gateway.updateUser(
         { password_hash: hashedPassword },
         { id: user.id }
       );
 
-      // Marcar token como usado
       const tokenMarked = await this.gateway.markTokenAsUsed(token);
       if (!tokenMarked) {
         this.gateway.loggerError('Erro ao marcar token como usado', { token });

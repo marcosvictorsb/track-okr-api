@@ -23,31 +23,23 @@ export class RequestPasswordResetInteractor {
         email
       });
 
-      // Verificar se o usuário existe
       const user = await this.gateway.findUserByEmail(email);
       if (!user) {
         this.gateway.loggerInfo('Usuário não encontrado para reset de senha', {
           email
         });
-        // Por segurança, sempre retornamos sucesso mesmo se o email não existir
-        // para não revelar se um email está cadastrado no sistema
         return this.presenter.ok({
           message:
             'Se o email existir em nossa base de dados, você receberá as instruções para redefinir sua senha.'
         });
       }
-
-      // Remover tokens existentes para este email
       await this.gateway.deleteExistingTokens(email);
 
-      // Gerar novo token
       const resetToken = this.gateway.generateResetToken();
 
-      // Definir expiração em 24 horas
       const expiresAt = new Date();
       expiresAt.setHours(expiresAt.getHours() + 24);
 
-      // Salvar token no banco
       const tokenSaved = await this.gateway.saveResetToken(
         email,
         resetToken,
@@ -58,14 +50,12 @@ export class RequestPasswordResetInteractor {
         return this.presenter.serverError('Erro interno do servidor');
       }
 
-      // Criar link de reset
       const isProduction = process.env.NODE_ENV === 'production';
       const baseUrl = isProduction
         ? process.env.PRODUCTION_BASE_URL
-        : 'http://localhost:5173';
+        : process.env.DEVELOPMENT_BASE_URL;
       const resetLink = `${baseUrl}/auth/reset-password?token=${resetToken}`;
 
-      // Formatar data de expiração para exibição
       const expiryDate = expiresAt.toLocaleString('pt-BR', {
         day: '2-digit',
         month: '2-digit',
@@ -75,7 +65,6 @@ export class RequestPasswordResetInteractor {
         timeZone: 'America/Sao_Paulo'
       });
 
-      // Enviar email
       const emailSent = await this.gateway.sendPasswordResetEmail(
         email,
         resetLink,

@@ -30,14 +30,12 @@ export class RegisterBetaInteractor {
         data: JSON.stringify(input)
       });
 
-      // 1. Verificar se o email já existe
       const existingUser = await this.gateway.findUserByEmail(email);
       if (existingUser) {
         this.gateway.loggerInfo('Email já cadastrado', { email });
         return this.presenter.badRequest('Email já está em uso');
       }
 
-      // 2. Verificar se o plano existe
       const planFound = await this.gateway.findPlanByName({
         name: 'Plano Beta'
       });
@@ -64,7 +62,6 @@ export class RegisterBetaInteractor {
         company_name
       });
 
-      // 4. Criar o usuário administrador sem senha (beta tester)
       const userData = {
         name,
         email,
@@ -81,19 +78,16 @@ export class RegisterBetaInteractor {
         role: 'admin'
       });
 
-      // 5. Criar a assinatura beta (3 meses)
       const inputCreateBetaSubscription: CreateFreeSubscriptionInput = {
         id_company: company.id as number,
         isBeta: true,
         name: 'Plano Beta'
       };
 
-      // Usando CreateTrialSubscriptionInteractor com isBeta=true para 3 meses
       await this.interactorCreateTrialSubscription.execute(
         inputCreateBetaSubscription
       );
 
-      // 6. Preparar resposta de sucesso
       const response = {
         message: 'Registro beta realizado com sucesso',
         data: {
@@ -116,11 +110,6 @@ export class RegisterBetaInteractor {
         id_user: user.id,
         id_company: company.id
       });
-
-      // 7. Gerar token de ativação
-      const _activationToken = await this.gateway.generateActivationToken(
-        user.id!
-      );
 
       const templateName = 'activate-after-subscription.template.html';
       const token = this.gateway.signToken({

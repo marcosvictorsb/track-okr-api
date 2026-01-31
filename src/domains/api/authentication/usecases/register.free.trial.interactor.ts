@@ -30,14 +30,12 @@ export class RegisterFreeTrialInteractor {
         data: JSON.stringify(input)
       });
 
-      // 1. Verificar se o email já existe
       const existingUser = await this.gateway.findUserByEmail(email);
       if (existingUser) {
         this.gateway.loggerInfo('Email já cadastrado', { email });
         return this.presenter.badRequest('Email já está em uso');
       }
 
-      // 2. Verificar se o plano existe
       const planFound = await this.gateway.findPlanByName(plan);
       if (!planFound) {
         this.gateway.loggerInfo('Plano não encontrado', { plan });
@@ -49,10 +47,8 @@ export class RegisterFreeTrialInteractor {
         plan_name: planFound.name
       });
 
-      // 3. Criar a empresa com CNPJ zerado inicialmente
       const companyData = {
         name: company_name,
-        cnpj: `${new Date()}`, // CNPJ zerado conforme solicitado
         created_at: new Date(),
         updated_at: new Date()
       };
@@ -63,7 +59,6 @@ export class RegisterFreeTrialInteractor {
         company_name
       });
 
-      // 4. Criar o usuário administrador
       const hashedPassword = await bcrypt.hash(password, 10);
       const userData = {
         name,
@@ -82,7 +77,6 @@ export class RegisterFreeTrialInteractor {
         email,
         role: 'admin'
       });
-      // 5. Criar a assinatura de teste (trial) de 14 dias
       const inputCreateTrialSubscription: CreateFreeSubscriptionInput = {
         id_company: company.id as number
       };
@@ -90,7 +84,6 @@ export class RegisterFreeTrialInteractor {
         inputCreateTrialSubscription
       );
 
-      // 6. Preparar resposta de sucesso (sem dados sensíveis)
       const response = {
         message: 'Registro realizado com sucesso',
         data: {
@@ -105,25 +98,13 @@ export class RegisterFreeTrialInteractor {
             id: company.id,
             name: company.name
           }
-          // subscription: {
-          //   id: subscription.id,
-          //   status: subscription.status,
-          //   trial_end_date: trialEndDate,
-          //   plan: planFound.name
-          // }
         }
       };
 
       this.gateway.loggerInfo('Registro concluído com sucesso', {
         id_user: user.id,
-        id_company: company.id,
-        subscription_id: 1 // subscription.id
+        id_company: company.id
       });
-
-      // Gerar token de ativação
-      const _activationToken = await this.gateway.generateActivationToken(
-        user.id!
-      );
 
       const templateName = 'activate-after-subscription.template.html';
       const token = this.gateway.signToken({
@@ -152,7 +133,6 @@ export class RegisterFreeTrialInteractor {
 
       if (!emailSent) {
         this.gateway.loggerError('Erro ao enviar email de convite', { email });
-        // return this.presenter.serverError('Erro ao enviar email de convite');
       }
 
       this.gateway.loggerInfo('Convite enviado com sucesso', {
