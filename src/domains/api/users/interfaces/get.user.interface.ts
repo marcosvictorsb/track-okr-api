@@ -1,14 +1,14 @@
-import { IPresenter } from '@protocols/presenter';
-import { FindUserCriteria, IUserRepository } from './default.interfaces';
 import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { IProfileRepository } from '@domains/api/profile/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { IUserTeamRepository } from '@domains/common/user-teams/interfaces/default.interfaces';
+import { GetUserTeamInteractor } from '@domains/common/user-teams/usecases';
+import { IPresenter } from '@protocols/presenter';
 import { UserEntity } from '../entity/user.entity';
 import { GetUserGateway } from '../gateways/get.user.gateway';
 import { GetUserInteractor } from '../usecases/get.user.interactor';
-import { GetUserTeamInteractor } from '@domains/common/user-teams/usecases';
-import { logger } from '@configs/logger';
-import { IUserTeamRepository } from '@domains/common/user-teams/interfaces/default.interfaces';
-import { IProfileRepository } from '@domains/api/profile/interfaces';
-import { UserCompanyValidationInteractor } from '@domains/common';
+import { FindUserCriteria, IUserRepository } from './default.interfaces';
 
 export type InputGetUser = {
   id_company: number;

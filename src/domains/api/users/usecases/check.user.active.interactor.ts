@@ -25,7 +25,6 @@ export class CheckUserActiveInteractor {
 
       const { id_user, id_company } = input;
 
-      // Buscar o usuário
       const user = await this.gateway.findUser({ id: id_user });
 
       if (!user) {
@@ -40,7 +39,6 @@ export class CheckUserActiveInteractor {
         return this.presenter.ok(output);
       }
 
-      // Verificar se o usuário pertence à empresa
       if (user.id_company !== id_company) {
         this.gateway.loggerInfo('Usuário não pertence à empresa informada', {
           id_user: id_user,
@@ -53,7 +51,6 @@ export class CheckUserActiveInteractor {
         );
       }
 
-      // Verificar se o usuário está ativo
       const isActive = user.status === 'active';
 
       this.gateway.loggerInfo('Status do usuário verificado', {

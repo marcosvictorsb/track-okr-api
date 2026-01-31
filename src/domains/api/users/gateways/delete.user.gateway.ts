@@ -1,13 +1,13 @@
-import { UserEntity } from '../entity/user.entity';
-import {
-  IDeleteUserGateway,
-  IDeleteUserGatewayDependencies,
-  FindUserCriteria,
-  DeleteUserCriteria,
-  IUserRepository
-} from '../interfaces';
 import { MixDeleteUser } from '@adapters/gateways/api/users';
 import { logger } from '@configs/logger';
+import { UserEntity } from '../entity/user.entity';
+import {
+  DeleteUserCriteria,
+  FindUserCriteria,
+  IDeleteUserGateway,
+  IDeleteUserGatewayDependencies,
+  IUserRepository
+} from '../interfaces';
 
 export class DeleteUserGateway
   extends MixDeleteUser
@@ -36,7 +36,6 @@ export class DeleteUserGateway
     userToDelete: UserEntity,
     requestingUser: UserEntity
   ): Promise<{ canDeleteUser: boolean; message?: string }> {
-    // 1. Não pode deletar a si mesmo
     if (userToDelete.id === requestingUser.id) {
       this.logging.warn('Usuário tentando deletar a si mesmo', {
         userToDelete: userToDelete.id,
@@ -48,7 +47,6 @@ export class DeleteUserGateway
       };
     }
 
-    // 2. Usuários devem pertencer à mesma empresa
     if (userToDelete.id_company !== requestingUser.id_company) {
       this.logging.warn('Tentativa de deletar usuário de empresa diferente', {
         userToDeleteCompany: userToDelete.id_company,
@@ -57,7 +55,6 @@ export class DeleteUserGateway
       return { canDeleteUser: false };
     }
 
-    // 3. Apenas admins podem deletar outros usuários
     if (requestingUser.role !== 'admin') {
       this.logging.warn(
         'Usuário sem permissão de admin tentando deletar outro usuário',
@@ -71,17 +68,6 @@ export class DeleteUserGateway
         message: 'Apenas administradores podem deletar usuários'
       };
     }
-
-    // if (userToDelete.role === 'admin') {
-    //   this.logging.warn('Tentativa de deletar outro admin', {
-    //     userToDeleteRole: userToDelete.role,
-    //     userToDeleteId: userToDelete.id
-    //   });
-    //   return {
-    //     canDeleteUser: false,
-    //     message: 'Você não pode deletar outro administrador'
-    //   };
-    // }
 
     return { canDeleteUser: true };
   }

@@ -1,11 +1,11 @@
+import { MixCheckUserActive } from '@adapters/gateways/api/users/check.user.active.gateway';
+import { logger } from '@configs/logger';
+import { UserEntity } from '../entity/user.entity';
+import { FindUserCriteria, IUserRepository } from '../interfaces';
 import {
   ICheckUserActiveGateway,
   ICheckUserActiveGatewayDependencies
 } from '../interfaces/check.user.active.interface';
-import { UserEntity } from '../entity/user.entity';
-import { FindUserCriteria, IUserRepository } from '../interfaces';
-import { MixCheckUserActive } from '@adapters/gateways/api/users/check.user.active.gateway';
-import { logger } from '@configs/logger';
 
 export interface CheckUserActiveGatewayDependencies {
   userRepository: IUserRepository;

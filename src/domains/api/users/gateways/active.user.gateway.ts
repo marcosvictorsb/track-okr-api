@@ -1,3 +1,4 @@
+import { MixActiveUser } from '@adapters/gateways/api/users';
 import { UserEntity } from '../entity/user.entity';
 import {
   FindUserCriteria,
@@ -8,7 +9,6 @@ import {
   IActiveUserGateway,
   IActiveUserGatewayDependencies
 } from '../interfaces/active.user.interface';
-import { MixActiveUser } from '@adapters/gateways/api/users';
 
 export class ActiveUserGateway
   extends MixActiveUser

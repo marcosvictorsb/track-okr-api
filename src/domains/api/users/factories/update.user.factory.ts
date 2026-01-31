@@ -1,19 +1,18 @@
+import { logger } from '@configs/logger';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { makeManageUserTeamInteractor } from '@domains/common/user-teams/factories';
+import { UserCompanyValidationGateway } from '@domains/common/validations/gateways/user.company.validation.gateway';
 import { Presenter } from '@protocols/presenter';
 import { UpdateUserController } from '../controllers/update.user.controller';
 import { UpdateUserGateway } from '../gateways/update.user.gateway';
-import { UpdateUserInteractor } from '../usecases/update.user.interactor';
-import { UserCompanyValidationInteractor } from '@domains/common';
-import { UserCompanyValidationGateway } from '@domains/common/validations/gateways/user.company.validation.gateway';
-import { logger } from '@configs/logger';
-import { UserRepository } from '../repository/user.repository';
 import UserModel from '../model/user.model';
-import { makeManageUserTeamInteractor } from '@domains/common/user-teams/factories';
+import { UserRepository } from '../repository/user.repository';
+import { UpdateUserInteractor } from '../usecases/update.user.interactor';
 
 export const makeUpdateUserController = (): UpdateUserController => {
   const userRepository = new UserRepository({ model: UserModel });
   const presenter = new Presenter();
 
-  // Criar o gateway para validação
   const validationGateway = new UserCompanyValidationGateway({
     userRepository,
     logging: logger
@@ -23,7 +22,6 @@ export const makeUpdateUserController = (): UpdateUserController => {
     gateway: validationGateway
   });
 
-  // Criar o gateway para update de usuário
   const gateway = new UpdateUserGateway({
     userRepository,
     logging: logger

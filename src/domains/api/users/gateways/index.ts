@@ -1,6 +1,6 @@
-export * from './active.user.gateway';
 export * from './activate.user.gateway';
 export * from './activate.user.purchase.gateway';
+export * from './active.user.gateway';
 export * from './check.user.active.gateway';
 export * from './deactivate.user.gateway';
 export * from './delete.user.gateway';

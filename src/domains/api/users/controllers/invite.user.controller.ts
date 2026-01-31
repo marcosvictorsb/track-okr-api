@@ -1,9 +1,9 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import {
-  InviteUserControllerDependencies,
-  InputInviteUser
-} from '../interfaces';
 import { Response } from 'express';
+import {
+  InputInviteUser,
+  InviteUserControllerDependencies
+} from '../interfaces';
 
 export class InviteUserController {
   protected interactor: InviteUserControllerDependencies['interactor'];

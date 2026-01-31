@@ -1,9 +1,9 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import {
   ActivateUserPurchaseControllerDependencies,
   InputActivateUserPurchase
 } from '../interfaces/activate.user.purchase.interface';
-import { Response } from 'express';
 
 export class ActivateUserPurchaseController {
   protected interactor: ActivateUserPurchaseControllerDependencies['interactor'];

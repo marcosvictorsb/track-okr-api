@@ -32,7 +32,6 @@ export class InviteUserInteractor {
         data: JSON.stringify({ email, name, role, teamId, id_company })
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -46,7 +45,6 @@ export class InviteUserInteractor {
         return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
-      // Verificar se o usuário já existe
       const existingUser = await this.gateway.findUser({ email, id_company });
       if (existingUser) {
         this.gateway.loggerInfo('Usuário já existe', { email });
@@ -55,7 +53,6 @@ export class InviteUserInteractor {
         );
       }
 
-      // Gerar senha temporária
       const tempPassword = crypto.randomBytes(12).toString('hex');
 
       const userData = {
@@ -70,7 +67,6 @@ export class InviteUserInteractor {
 
       const newUser = await this.gateway.createUser(userData);
 
-      // Se teamId foi fornecido, incrementar a contagem de usuários do time
       if (teamId) {
         const teamUpdated = await this.gateway.updateTeamUserCount(
           teamId,
@@ -93,10 +89,6 @@ export class InviteUserInteractor {
         });
       }
 
-      // Gerar token de ativação
-      const activationToken = await this.gateway.generateActivationToken(
-        newUser.id!
-      );
       const templateName = 'convite-user.template.html';
       const token = this.gateway.signToken({
         email: newUser.email as string,
@@ -125,7 +117,6 @@ export class InviteUserInteractor {
         data: `userId: ${newUser.id}, teamId: ${teamId}`
       });
 
-      // Retornar resposta sem dados sensíveis
       return this.presenter.created({
         id: newUser.id,
         name: newUser.name,

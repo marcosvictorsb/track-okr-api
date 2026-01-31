@@ -1,16 +1,16 @@
+import { MixActivateUser } from '@adapters/gateways/api/users';
+import { logger } from '@configs/logger';
 import { UserEntity } from '../entity/user.entity';
+import {
+  FindUserCriteria,
+  IUserRepository,
+  UpdateUserCriteria,
+  UserStatus
+} from '../interfaces';
 import {
   IActivateUserGateway,
   IActivateUserGatewayDependencies
 } from '../interfaces/activate.user.interface';
-import {
-  FindUserCriteria,
-  UpdateUserCriteria,
-  IUserRepository,
-  UserStatus
-} from '../interfaces';
-import { MixActivateUser } from '@adapters/gateways/api/users';
-import { logger } from '@configs/logger';
 
 export class ActivateUserGateway
   extends MixActivateUser
@@ -42,7 +42,6 @@ export class ActivateUserGateway
     userToActivate: UserEntity,
     requestingUser: UserEntity
   ): Promise<{ canActivateUser: boolean; message?: string }> {
-    // 1. Não pode ativar a si mesmo
     if (userToActivate.id === requestingUser.id) {
       this.logging.warn('Usuário tentando ativar a si mesmo', {
         userToActivate: userToActivate.id,
@@ -54,7 +53,6 @@ export class ActivateUserGateway
       };
     }
 
-    // 2. Usuários devem pertencer à mesma empresa
     if (userToActivate.id_company !== requestingUser.id_company) {
       this.logging.warn('Tentativa de ativar usuário de empresa diferente', {
         userToActivateCompany: userToActivate.id_company,
@@ -63,7 +61,6 @@ export class ActivateUserGateway
       return { canActivateUser: false };
     }
 
-    // 3. Apenas admins podem ativar outros usuários
     if (requestingUser.role !== 'admin') {
       this.logging.warn(
         'Usuário sem permissão de admin tentando ativar outro usuário',
@@ -78,7 +75,6 @@ export class ActivateUserGateway
       };
     }
 
-    // 4. Verificar se usuário já está ativo
     if (userToActivate.status === UserStatus.ACTIVE) {
       this.logging.warn('Tentativa de ativar usuário já ativo', {
         userToActivateId: userToActivate.id,

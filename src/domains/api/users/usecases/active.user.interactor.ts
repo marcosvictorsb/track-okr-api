@@ -1,11 +1,11 @@
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { ActiveUserGateway } from '../gateways/active.user.gateway';
+import { UpdateUserCriteria, UserStatus } from '../interfaces';
 import {
   ActiveUserInteractorDependencies,
   InputActiveUser
 } from '../interfaces/active.user.interface';
-import { IPresenter } from '@protocols/presenter';
-import { ActiveUserGateway } from '../gateways/active.user.gateway';
-import { UpdateUserCriteria, UserStatus } from '../interfaces';
 
 export class ActiveUserInteractor {
   protected gateway: ActiveUserGateway;
@@ -53,7 +53,6 @@ export class ActiveUserInteractor {
         return this.presenter.badRequest('Failed to activate user');
       }
 
-      // Gerar token JWT com id do usuário e id da empresa
       const tokenPayload = {
         id: user.id,
         id_company: user.id_company,

@@ -1,13 +1,13 @@
+import { DataLogOutput } from '@adapters/services';
 import { IPresenter } from '@protocols/presenter';
+import { UserEntity } from '../entity/user.entity';
+import { ActiveUserGateway } from '../gateways/active.user.gateway';
+import { ActiveUserInteractor } from '../usecases';
 import {
   CreateUserCriteria,
   IUserRepository,
   UpdateUserCriteria
 } from './default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { UserEntity } from '../entity/user.entity';
-import { ActiveUserGateway } from '../gateways/active.user.gateway';
-import { ActiveUserInteractor } from '../usecases';
 
 export type InputActiveUser = {
   idUser: number;

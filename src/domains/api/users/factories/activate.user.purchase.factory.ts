@@ -1,22 +1,21 @@
-import { Presenter } from '@protocols/presenter';
-import { ActivateUserPurchaseController } from '../controllers/activate.user.purchase.controller';
-import { ActivateUserPurchaseGateway } from '../gateways/activate.user.purchase.gateway';
-import { ActivateUserPurchaseInteractor } from '../usecases/activate.user.purchase.interactor';
+import { logger } from '@configs/logger';
+import Company from '@domains/api/companies/model/company.model';
+import { CompanyRepository } from '@domains/api/companies/repository/company.repository';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserCompanyValidationGateway } from '@domains/common/validations/gateways/user.company.validation.gateway';
-import { logger } from '@configs/logger';
-import { UserRepository } from '../repository/user.repository';
-import UserModel from '../model/user.model';
+import { Presenter } from '@protocols/presenter';
 import bcrypt from 'bcryptjs';
-import { CompanyRepository } from '@domains/api/companies/repository/company.repository';
-import Company from '@domains/api/companies/model/company.model';
+import { ActivateUserPurchaseController } from '../controllers/activate.user.purchase.controller';
+import { ActivateUserPurchaseGateway } from '../gateways/activate.user.purchase.gateway';
+import UserModel from '../model/user.model';
+import { UserRepository } from '../repository/user.repository';
+import { ActivateUserPurchaseInteractor } from '../usecases/activate.user.purchase.interactor';
 
 export const makeActivateUserPurchaseController =
   (): ActivateUserPurchaseController => {
     const userRepository = new UserRepository({ model: UserModel });
     const presenter = new Presenter();
 
-    // Criar o gateway para validação
     const validationGateway = new UserCompanyValidationGateway({
       userRepository,
       logging: logger

@@ -1,15 +1,15 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { GetUserTeamInteractor } from '@domains/common/user-teams/usecases';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { UserEntity } from '../entity/user.entity';
+import { GetUserGateway } from '../gateways/get.user.gateway';
 import {
   FindUserCriteria,
   GetUserInteractorDependencies,
   InputGetUser,
   UserStatus
 } from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { GetUserGateway } from '../gateways/get.user.gateway';
-import { UserEntity } from '../entity/user.entity';
-import { GetUserTeamInteractor } from '@domains/common/user-teams/usecases';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class GetUserInteractor {
   protected gateway: GetUserGateway;
@@ -31,7 +31,6 @@ export class GetUserInteractor {
       });
       const { id_user, id_company } = input;
 
-      // 1. Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -72,7 +71,6 @@ export class GetUserInteractor {
         );
       });
 
-      // Filtrar IDs válidos e criar Map para lookup eficiente
       const idsUser = users
         .map((user: UserEntity) => user.id)
         .filter((id): id is number => id !== undefined && id !== null);
@@ -81,7 +79,6 @@ export class GetUserInteractor {
         ids_users: idsUser
       });
 
-      // Criar um Map para lookup O(1) em vez de find O(n)
       const userTeamMap = new Map(
         userTeams
           .filter((ut) => !ut.deleted_at)
@@ -97,7 +94,6 @@ export class GetUserInteractor {
         id_users: idsUser
       });
 
-      // Criar um Map para lookup O(1) dos profiles
       const profileMap = new Map(
         getProfiles.map((profile) => [
           profile.id_user,
@@ -108,7 +104,6 @@ export class GetUserInteractor {
         ])
       );
 
-      // Incluir no userWithTeam o profile.position and profile.photo_url
       const usersWithTeamAndProfile = usersWithTeam.map((user: UserEntity) => ({
         ...user,
         position: profileMap.get(user.id as number)?.position || null,

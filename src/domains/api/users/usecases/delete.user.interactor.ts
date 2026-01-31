@@ -1,11 +1,11 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   DeleteUserInteractorDependencies,
-  InputDeleteUser,
-  IDeleteUserGateway
+  IDeleteUserGateway,
+  InputDeleteUser
 } from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserModelAttributes } from '../model/user.model';
 
 export class DeleteUserInteractor {
@@ -27,7 +27,6 @@ export class DeleteUserInteractor {
         data: JSON.stringify({ id_user_to_delete, id_company, id_user })
       });
 
-      // 1. Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -43,7 +42,6 @@ export class DeleteUserInteractor {
 
       const requestingUser = validation?.user;
 
-      // 3. Buscar o usuário a ser deletado
       const userToDelete = await this.gateway.findUser({
         id: id_user_to_delete,
         id_company
@@ -55,7 +53,6 @@ export class DeleteUserInteractor {
         return this.presenter.notFound('Usuário a ser deletado não encontrado');
       }
 
-      // 4. Verificar se pode deletar o usuário
       const { canDeleteUser, message } = await this.gateway.canDeleteUser(
         userToDelete,
         requestingUser as UserModelAttributes
@@ -69,7 +66,6 @@ export class DeleteUserInteractor {
         );
       }
 
-      // 5. Deletar o usuário
       const deleted = await this.gateway.deleteUser({ id: id_user_to_delete });
 
       if (!deleted) {

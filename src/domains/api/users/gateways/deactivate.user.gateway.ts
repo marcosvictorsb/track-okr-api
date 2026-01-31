@@ -1,14 +1,14 @@
-import { UserEntity } from '../entity/user.entity';
-import {
-  IDeactivateUserGateway,
-  IDeactivateUserGatewayDependencies,
-  FindUserCriteria,
-  UpdateUserCriteria,
-  IUserRepository,
-  UserStatus
-} from '../interfaces';
 import { MixDeactivateUser } from '@adapters/gateways/api/users';
 import { logger } from '@configs/logger';
+import { UserEntity } from '../entity/user.entity';
+import {
+  FindUserCriteria,
+  IDeactivateUserGateway,
+  IDeactivateUserGatewayDependencies,
+  IUserRepository,
+  UpdateUserCriteria,
+  UserStatus
+} from '../interfaces';
 
 export class DeactivateUserGateway
   extends MixDeactivateUser
@@ -40,7 +40,6 @@ export class DeactivateUserGateway
     userToDeactivate: UserEntity,
     requestingUser: UserEntity
   ): Promise<{ canDeactivateUser: boolean; message?: string }> {
-    // 1. Não pode desativar a si mesmo
     if (userToDeactivate.id === requestingUser.id) {
       this.logging.warn('Usuário tentando desativar a si mesmo', {
         userToDeactivate: userToDeactivate.id,
@@ -52,7 +51,6 @@ export class DeactivateUserGateway
       };
     }
 
-    // 2. Usuários devem pertencer à mesma empresa
     if (userToDeactivate.id_company !== requestingUser.id_company) {
       this.logging.warn('Tentativa de desativar usuário de empresa diferente', {
         userToDeactivateCompany: userToDeactivate.id_company,
@@ -61,7 +59,6 @@ export class DeactivateUserGateway
       return { canDeactivateUser: false };
     }
 
-    // 3. Apenas admins podem desativar outros usuários
     if (requestingUser.role !== 'admin') {
       this.logging.warn(
         'Usuário sem permissão de admin tentando desativar outro usuário',
@@ -76,7 +73,6 @@ export class DeactivateUserGateway
       };
     }
 
-    // 4. Verificar se usuário já está inativo
     if (userToDeactivate.status === UserStatus.INACTIVE) {
       this.logging.warn('Tentativa de desativar usuário já inativo', {
         userToDeactivateId: userToDeactivate.id,

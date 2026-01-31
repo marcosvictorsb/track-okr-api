@@ -1,9 +1,9 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import {
   DeleteUserControllerDependencies,
   InputDeleteUser
 } from '../interfaces';
-import { Response } from 'express';
 
 export class DeleteUserController {
   protected interactor: DeleteUserControllerDependencies['interactor'];

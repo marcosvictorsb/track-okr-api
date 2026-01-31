@@ -1,9 +1,9 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import {
   ActivateUserControllerDependencies,
   InputActivateUser
 } from '../interfaces/activate.user.interface';
-import { Response } from 'express';
 
 export class ActivateUserController {
   protected interactor: ActivateUserControllerDependencies['interactor'];

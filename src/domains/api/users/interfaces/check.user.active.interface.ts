@@ -1,9 +1,9 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
 import { IPresenter } from '@protocols/presenter';
 import { UserEntity } from '../entity/user.entity';
-import { DataLogOutput } from '@adapters/services';
-import { FindUserCriteria, IUserRepository } from './default.interfaces';
 import { CheckUserActiveInteractor } from '../usecases/check.user.active.interactor';
-import { logger } from '@configs/logger';
+import { FindUserCriteria, IUserRepository } from './default.interfaces';
 
 export interface InputCheckUserActive {
   id_user: number;

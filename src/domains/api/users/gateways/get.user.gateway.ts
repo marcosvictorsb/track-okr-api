@@ -1,22 +1,22 @@
+import { MixGetUser } from '@adapters/gateways/api/users';
+import { logger } from '@configs/logger';
+import { ProfileEntity } from '@domains/api/profile/entity';
+import {
+  FindProfileCriteria,
+  IProfileRepository
+} from '@domains/api/profile/interfaces';
+import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
 import {
   FindUserTeamCriteria,
   IUserTeamRepository
 } from '@domains/common/user-teams/interfaces';
 import { UserEntity } from '../entity/user.entity';
 import {
+  FindUserCriteria,
   IGetUserGateway,
   IGetUserGatewayDependencies,
-  FindUserCriteria,
   IUserRepository
 } from '../interfaces';
-import { MixGetUser } from '@adapters/gateways/api/users';
-import { logger } from '@configs/logger';
-import { UserTeamEntity } from '@domains/common/user-teams/entity/user-team.entity';
-import {
-  FindProfileCriteria,
-  IProfileRepository
-} from '@domains/api/profile/interfaces';
-import { ProfileEntity } from '@domains/api/profile/entity';
 
 export class GetUserGateway extends MixGetUser implements IGetUserGateway {
   userRepository: IUserRepository;

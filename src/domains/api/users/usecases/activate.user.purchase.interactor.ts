@@ -34,7 +34,6 @@ export class ActivateUserPurchaseInteractor {
         data: JSON.stringify({ id_company, id_user, company_name })
       });
 
-      // 1. Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company

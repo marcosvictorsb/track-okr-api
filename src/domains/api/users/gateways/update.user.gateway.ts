@@ -1,14 +1,14 @@
-import { UserEntity } from '../entity/user.entity';
-import {
-  IUpdateUserGateway,
-  IUpdateUserGatewayDependencies,
-  FindUserCriteria,
-  UpdateUserCriteria,
-  IUserRepository,
-  InputUpdateUser
-} from '../interfaces';
 import { MixUpdateUser } from '@adapters/gateways/api/users';
 import { logger } from '@configs/logger';
+import { UserEntity } from '../entity/user.entity';
+import {
+  FindUserCriteria,
+  IUpdateUserGateway,
+  IUpdateUserGatewayDependencies,
+  IUserRepository,
+  InputUpdateUser,
+  UpdateUserCriteria
+} from '../interfaces';
 
 export class UpdateUserGateway
   extends MixUpdateUser
@@ -41,7 +41,6 @@ export class UpdateUserGateway
     requestingUser: UserEntity,
     updateData: Partial<InputUpdateUser>
   ): Promise<{ canUpdateUser: boolean; message?: string }> {
-    // 1. Usuários devem pertencer à mesma empresa
     if (userToUpdate.id_company !== requestingUser.id_company) {
       this.logging.warn('Tentativa de atualizar usuário de empresa diferente', {
         userToUpdateCompany: userToUpdate.id_company,
@@ -50,7 +49,6 @@ export class UpdateUserGateway
       return { canUpdateUser: false };
     }
 
-    // 2. Apenas admins podem editar outros usuários
     if (
       userToUpdate.id !== requestingUser.id &&
       requestingUser.role !== 'admin'
@@ -69,7 +67,6 @@ export class UpdateUserGateway
       };
     }
 
-    // 3. Não pode alterar role se não for admin
     if (updateData.role && requestingUser.role !== 'admin') {
       this.logging.warn('Usuário tentando alterar role sem ser admin', {
         requestingUserRole: requestingUser.role,
@@ -81,7 +78,6 @@ export class UpdateUserGateway
       };
     }
 
-    // 4. Não pode promover a admin se não for admin
     if (updateData.role === 'admin' && requestingUser.role !== 'admin') {
       this.logging.warn('Usuário tentando promover a admin sem ser admin', {
         requestingUserRole: requestingUser.role,
@@ -93,7 +89,6 @@ export class UpdateUserGateway
       };
     }
 
-    // 5. Verificar se email já existe (se estiver sendo alterado)
     if (updateData.email && updateData.email !== userToUpdate.email) {
       const existingUser = await this.findUser({
         email: updateData.email,

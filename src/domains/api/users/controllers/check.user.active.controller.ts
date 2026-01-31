@@ -1,11 +1,11 @@
-import { Response } from 'express';
-import { HttpResponse } from '@protocols/http';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { CheckUserActiveInteractor } from '../usecases/check.user.active.interactor';
+import { HttpResponse } from '@protocols/http';
+import { Response } from 'express';
 import {
   CheckUserActiveControllerDependencies,
   InputCheckUserActive
 } from '../interfaces';
+import { CheckUserActiveInteractor } from '../usecases/check.user.active.interactor';
 
 export class CheckUserActiveController {
   protected interactor: CheckUserActiveInteractor;

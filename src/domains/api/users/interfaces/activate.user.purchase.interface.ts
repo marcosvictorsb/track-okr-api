@@ -1,20 +1,20 @@
-import { IPresenter } from '@protocols/presenter';
-import { UserEntity } from '../entity/user.entity';
-import {
-  IUserRepository,
-  FindUserCriteria,
-  UpdateUserCriteria
-} from './default.interfaces';
 import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
 import { logger } from '@configs/logger';
-import { UserCompanyValidationInteractor } from '@domains/common';
-import bcrypt from 'bcryptjs';
+import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import {
   FindCompanyCriteria,
   ICompanyRepository
 } from '@domains/api/companies/interfaces';
-import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import bcrypt from 'bcryptjs';
+import { UserEntity } from '../entity/user.entity';
+import {
+  FindUserCriteria,
+  IUserRepository,
+  UpdateUserCriteria
+} from './default.interfaces';
 
 export type InputActivateUserPurchase = {
   id_company: number;

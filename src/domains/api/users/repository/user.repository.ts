@@ -1,8 +1,5 @@
-import UserModel, {
-  UserModelAttributes
-} from '@domains/api/users/model/user.model';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { ModelStatic, Op } from 'sequelize';
 import {
   CreateUserCriteria,
   DeleteUserCriteria,
@@ -11,6 +8,10 @@ import {
   UpdateUserCriteria,
   UserRepositoryDependencies
 } from '@domains/api/users/interfaces';
+import UserModel, {
+  UserModelAttributes
+} from '@domains/api/users/model/user.model';
+import { ModelStatic, Op } from 'sequelize';
 
 export class UserRepository implements IUserRepository {
   protected model: ModelStatic<UserModel>;

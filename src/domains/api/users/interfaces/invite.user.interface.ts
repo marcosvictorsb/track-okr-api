@@ -1,16 +1,16 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { UpsertUserTeamInteractor } from '@domains/common/user-teams/usecases';
+import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { UserEntity } from '../entity/user.entity';
 import {
-  IUserRepository,
   CreateUserCriteria,
-  FindUserCriteria
+  FindUserCriteria,
+  IUserRepository
 } from './default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
-import { UserCompanyValidationInteractor } from '@domains/common';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
-import { UpsertUserTeamInteractor } from '@domains/common/user-teams/usecases';
 
 export type InputInviteUser = {
   email: string;
@@ -18,7 +18,7 @@ export type InputInviteUser = {
   role?: string;
   teamId?: number;
   id_company: number;
-  id_user: number; // Usuário que está fazendo o convite
+  id_user: number;
 };
 
 export type InviteUserInteractorDependencies = {

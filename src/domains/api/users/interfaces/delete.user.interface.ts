@@ -1,14 +1,14 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { UserEntity } from '../entity/user.entity';
 import {
-  IUserRepository,
+  DeleteUserCriteria,
   FindUserCriteria,
-  DeleteUserCriteria
+  IUserRepository
 } from './default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export type InputDeleteUser = {
   id_user_to_delete: number;

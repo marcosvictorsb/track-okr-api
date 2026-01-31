@@ -26,7 +26,6 @@ export class ActivateUserInteractor {
         data: JSON.stringify({ id_user_to_activate, id_company, id_user })
       });
 
-      // 1. Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -40,7 +39,6 @@ export class ActivateUserInteractor {
         return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
-      // 2. Buscar o usuário que está fazendo a requisição
       const requestingUser = await this.gateway.findUser({ id: id_user });
       if (!requestingUser) {
         this.gateway.loggerInfo('Usuário solicitante não encontrado', {
@@ -49,7 +47,6 @@ export class ActivateUserInteractor {
         return this.presenter.notFound('Usuário não encontrado');
       }
 
-      // 3. Buscar o usuário a ser ativado
       const userToActivate = await this.gateway.findUser({
         id: id_user_to_activate,
         id_company
@@ -61,7 +58,6 @@ export class ActivateUserInteractor {
         return this.presenter.notFound('Usuário a ser ativado não encontrado');
       }
 
-      // 4. Verificar se pode ativar o usuário
       const canActivate = await this.gateway.canActivateUser(
         userToActivate,
         requestingUser
@@ -79,7 +75,6 @@ export class ActivateUserInteractor {
         );
       }
 
-      // 5. Ativar o usuário
       const activated = await this.gateway.activateUser({
         id: id_user_to_activate
       });

@@ -1,11 +1,11 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   DeactivateUserInteractorDependencies,
-  InputDeactivateUser,
-  IDeactivateUserGateway
+  IDeactivateUserGateway,
+  InputDeactivateUser
 } from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class DeactivateUserInteractor {
   protected gateway: IDeactivateUserGateway;
@@ -26,7 +26,6 @@ export class DeactivateUserInteractor {
         data: JSON.stringify({ id_user_to_deactivate, id_company, id_user })
       });
 
-      // 1. Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -40,7 +39,6 @@ export class DeactivateUserInteractor {
         return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
-      // 2. Buscar o usuário que está fazendo a requisição
       const requestingUser = await this.gateway.findUser({ id: id_user });
       if (!requestingUser) {
         this.gateway.loggerInfo('Usuário solicitante não encontrado', {
@@ -49,7 +47,6 @@ export class DeactivateUserInteractor {
         return this.presenter.notFound('Usuário não encontrado');
       }
 
-      // 3. Buscar o usuário a ser desativado
       const userToDeactivate = await this.gateway.findUser({
         id: id_user_to_deactivate,
         id_company
@@ -63,7 +60,6 @@ export class DeactivateUserInteractor {
         );
       }
 
-      // 4. Verificar se pode desativar o usuário
       const canDeactivate = await this.gateway.canDeactivateUser(
         userToDeactivate,
         requestingUser
@@ -81,7 +77,6 @@ export class DeactivateUserInteractor {
         );
       }
 
-      // 5. Desativar o usuário
       const deactivated = await this.gateway.deactivateUser({
         id: id_user_to_deactivate
       });

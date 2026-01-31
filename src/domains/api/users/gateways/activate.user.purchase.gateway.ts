@@ -1,20 +1,20 @@
-import { UserEntity } from '../entity/user.entity';
-import {
-  IActivateUserPurchaseGateway,
-  IActivateUserPurchaseGatewayDependencies
-} from '../interfaces/activate.user.purchase.interface';
-import {
-  FindUserCriteria,
-  UpdateUserCriteria,
-  IUserRepository
-} from '../interfaces';
 import { MixActivateUserPurchase } from '@adapters/gateways/api/users';
 import { logger } from '@configs/logger';
+import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import {
   FindCompanyCriteria,
   ICompanyRepository
 } from '@domains/api/companies/interfaces';
-import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
+import { UserEntity } from '../entity/user.entity';
+import {
+  FindUserCriteria,
+  IUserRepository,
+  UpdateUserCriteria
+} from '../interfaces';
+import {
+  IActivateUserPurchaseGateway,
+  IActivateUserPurchaseGatewayDependencies
+} from '../interfaces/activate.user.purchase.interface';
 
 export class ActivateUserPurchaseGateway
   extends MixActivateUserPurchase

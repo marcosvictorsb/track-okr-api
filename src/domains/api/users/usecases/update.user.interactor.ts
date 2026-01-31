@@ -1,13 +1,13 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  UpdateUserInteractorDependencies,
-  InputUpdateUser,
-  IUpdateUserGateway
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { UserModelAttributes } from '../model/user.model';
 import { ManageUserTeamInteractor } from '@domains/common/user-teams/usecases';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  InputUpdateUser,
+  IUpdateUserGateway,
+  UpdateUserInteractorDependencies
+} from '../interfaces';
+import { UserModelAttributes } from '../model/user.model';
 
 export class UpdateUserInteractor {
   protected gateway: IUpdateUserGateway;
@@ -30,7 +30,6 @@ export class UpdateUserInteractor {
         data: JSON.stringify(input)
       });
 
-      // 1. Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -44,7 +43,6 @@ export class UpdateUserInteractor {
         return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
-      // 3. Buscar o usuário a ser atualizado
       const userToUpdate = await this.gateway.findUser({
         id,
         id_company
@@ -89,7 +87,6 @@ export class UpdateUserInteractor {
         );
       }
 
-      // 6. Atualizar o usuário
       const updateCriteria = {
         ...updateData
       };
@@ -103,7 +100,6 @@ export class UpdateUserInteractor {
         return this.presenter.serverError('Erro ao atualizar o usuário');
       }
 
-      // Gerenciar relacionamento user-team apenas se teamId foi fornecido nos dados de atualização
       const { action } = await this.manageUserTeamInteractor.execute({
         id_user_to_manage: id,
         id_team: teamId,

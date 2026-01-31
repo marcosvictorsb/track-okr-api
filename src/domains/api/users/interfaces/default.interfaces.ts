@@ -1,6 +1,6 @@
 import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { ModelStatic } from 'sequelize';
 import UserModel from '@domains/api/users/model/user.model';
+import { ModelStatic } from 'sequelize';
 
 export enum UserStatus {
   ACTIVE = 'active',

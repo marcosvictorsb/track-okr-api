@@ -1,17 +1,17 @@
+import { MixInviteUser } from '@adapters/gateways/api/users';
+import { logger } from '@configs/logger';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import crypto from 'crypto';
 import { UserEntity } from '../entity/user.entity';
 import {
-  IUserRepository,
   CreateUserCriteria,
-  FindUserCriteria
+  FindUserCriteria,
+  IUserRepository
 } from '../interfaces';
 import {
   IInviteUserGateway,
   IInviteUserGatewayDependencies
 } from '../interfaces/invite.user.interface';
-import { MixInviteUser } from '@adapters/gateways/api/users';
-import { logger } from '@configs/logger';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
-import crypto from 'crypto';
 
 export class InviteUserGateway
   extends MixInviteUser
@@ -55,19 +55,16 @@ export class InviteUserGateway
         { teamId }
       );
 
-      // Buscar o time atual
       const team = await this.teamRepository.find({ id: teamId });
       if (!team) {
         this.logging.error('Time não encontrado', { teamId });
         return false;
       }
 
-      // Calcular nova quantidade
       const newAmount = increment
         ? team.amount_users + 1
         : Math.max(0, team.amount_users - 1);
 
-      // Atualizar o time
       return await this.teamRepository.update(
         { amount_users: newAmount },
         { id: teamId }
@@ -83,7 +80,6 @@ export class InviteUserGateway
   }
 
   async generateActivationToken(userId: number): Promise<string> {
-    // Gerar um token seguro para ativação
     const token = crypto.randomBytes(32).toString('hex');
     this.logging.info('Token de ativação gerado', { userId, token });
 

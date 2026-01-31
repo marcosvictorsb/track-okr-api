@@ -4,7 +4,7 @@ export class UserEntity {
   public readonly email: string;
   public readonly password_hash: string;
   public readonly role: string;
-  public readonly status: string; // 'pending_activation' | 'active';
+  public readonly status: string;
   public readonly id_company: number;
   public current_team_id?: number | null;
   public readonly created_at?: Date;
@@ -17,7 +17,7 @@ export class UserEntity {
     email: string;
     password_hash: string;
     role: string;
-    status: string; //'pending_activation' | 'active';
+    status: string;
     id_company: number;
     current_team_id?: number | null;
     created_at?: Date;

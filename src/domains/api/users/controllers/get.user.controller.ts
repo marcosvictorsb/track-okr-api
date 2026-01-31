@@ -1,7 +1,7 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import { GetUserControllerDependencies, InputGetUser } from '../interfaces';
 import { GetUserInteractor } from '../usecases';
-import { Response } from 'express';
 
 export class GetUserController {
   protected interactor: GetUserInteractor;
