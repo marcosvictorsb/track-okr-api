@@ -2,12 +2,10 @@ import { Request, Response, Router } from 'express';
 
 const router = Router();
 
-// Endpoint para forçar garbage collection e monitorar memória
 router.get('/memory', (req: Request, res: Response) => {
   try {
     const beforeGC = process.memoryUsage();
 
-    // Forçar garbage collection se disponível
     if (global.gc) {
       global.gc();
     }
@@ -58,7 +56,6 @@ router.get('/memory', (req: Request, res: Response) => {
   }
 });
 
-// Endpoint para forçar garbage collection
 router.post('/gc', (req: Request, res: Response) => {
   try {
     const before = process.memoryUsage();

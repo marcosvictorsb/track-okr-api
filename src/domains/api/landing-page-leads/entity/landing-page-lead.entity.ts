@@ -81,7 +81,6 @@ export class LandingPageLeadEntity {
     this.deleted_at = params.deleted_at;
   }
 
-  // Métodos de validação
   public isValidEmail(): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(this.email);
@@ -99,7 +98,6 @@ export class LandingPageLeadEntity {
     return !!(this.utm_source || this.utm_medium || this.utm_campaign);
   }
 
-  // Métodos de status
   public isNew(): boolean {
     return this.status === 'new';
   }
@@ -120,7 +118,6 @@ export class LandingPageLeadEntity {
     return this.status === 'lost';
   }
 
-  // Métodos de formatação
   public getDisplayName(): string {
     return this.name;
   }
@@ -143,7 +140,6 @@ export class LandingPageLeadEntity {
     return utmParts.join(', ') || 'Sem tracking UTM';
   }
 
-  // Método para criar dados de tracking
   public static fromLandingPageData(data: {
     name: string;
     email: string;

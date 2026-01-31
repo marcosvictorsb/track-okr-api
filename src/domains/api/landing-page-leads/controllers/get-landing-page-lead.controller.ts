@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { LandingPageLeadRepository } from '../repository/landing-page-lead.repository';
-import { FindLandingPageLeadCriteria } from '../interfaces/landing-page-lead.repository.interface';
 import { logger } from '@configs/logger';
+import { Request, Response } from 'express';
+import { FindLandingPageLeadCriteria } from '../interfaces/landing-page-lead.repository.interface';
+import { LandingPageLeadRepository } from '../repository/landing-page-lead.repository';
 
 export class GetLandingPageLeadController {
   private leadRepository: LandingPageLeadRepository;
@@ -111,7 +111,6 @@ export class GetLandingPageLeadController {
         });
       }
 
-      // Validar formato do email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return res.status(400).json({
@@ -148,7 +147,6 @@ export class GetLandingPageLeadController {
 
   async getLeadsStats(req: Request, res: Response): Promise<Response> {
     try {
-      // Buscar estatísticas dos leads
       const totalLeads = await this.leadRepository.count();
       const newLeads = await this.leadRepository.count({ status: 'new' });
       const contactedLeads = await this.leadRepository.count({
@@ -162,14 +160,12 @@ export class GetLandingPageLeadController {
       });
       const lostLeads = await this.leadRepository.count({ status: 'lost' });
 
-      // Buscar leads dos últimos 30 dias
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
       const recentLeads = await this.leadRepository.count({
         created_after: thirtyDaysAgo
       });
 
-      // Buscar leads de hoje
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const todayLeads = await this.leadRepository.count({

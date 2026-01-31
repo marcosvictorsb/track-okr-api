@@ -1,12 +1,12 @@
 import { Op, WhereOptions } from 'sequelize';
 import { LandingPageLeadEntity } from '../entity/landing-page-lead.entity';
-import LandingPageLeadModel from '../model/landing-page-lead.model';
 import {
-  ILandingPageLeadRepository,
   CreateLandingPageLeadData,
-  UpdateLandingPageLeadData,
-  FindLandingPageLeadCriteria
+  FindLandingPageLeadCriteria,
+  ILandingPageLeadRepository,
+  UpdateLandingPageLeadData
 } from '../interfaces/landing-page-lead.repository.interface';
+import LandingPageLeadModel from '../model/landing-page-lead.model';
 
 export class LandingPageLeadRepository implements ILandingPageLeadRepository {
   private modelToEntity(model: LandingPageLeadModel): LandingPageLeadEntity {

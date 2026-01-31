@@ -50,7 +50,6 @@ export class CreateLandingPageLeadController {
         site
       } = req.body;
 
-      // Validação básica
       if (!name || !email) {
         return res.status(400).json({
           success: false,
@@ -58,7 +57,6 @@ export class CreateLandingPageLeadController {
         });
       }
 
-      // Validar formato do email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         return res.status(400).json({
@@ -67,11 +65,10 @@ export class CreateLandingPageLeadController {
         });
       }
 
-      // Capturar IP do usuário
       const ip_address = req.ip || req.connection.remoteAddress || undefined;
 
       // Verificar se já existe um lead com o mesmo email
-      const existingLead = await this.leadRepository.findByEmail(email);
+      // const existingLead = await this.leadRepository.findByEmail(email);
       // if (existingLead) {
       //   logger.info('Lead já existe, atualizando informações', {
       //     email,
@@ -92,7 +89,6 @@ export class CreateLandingPageLeadController {
       //   });
       // }
 
-      // Criar novo lead
       const leadData = {
         name: name.trim(),
         email: email.trim().toLowerCase(),

@@ -1,7 +1,7 @@
-import { Request, Response } from 'express';
-import { LandingPageLeadRepository } from '../repository/landing-page-lead.repository';
-import { UpdateLandingPageLeadData } from '../interfaces/landing-page-lead.repository.interface';
 import { logger } from '@configs/logger';
+import { Request, Response } from 'express';
+import { UpdateLandingPageLeadData } from '../interfaces/landing-page-lead.repository.interface';
+import { LandingPageLeadRepository } from '../repository/landing-page-lead.repository';
 
 export interface UpdateLeadRequest extends Request {
   params: {
@@ -28,7 +28,6 @@ export class UpdateLandingPageLeadController {
       const { id } = req.params;
       const { status, notes } = req.body;
 
-      // Validação do ID
       if (!id || isNaN(parseInt(id))) {
         return res.status(400).json({
           success: false,
@@ -36,7 +35,6 @@ export class UpdateLandingPageLeadController {
         });
       }
 
-      // Validação do status
       if (status) {
         const validStatuses = [
           'new',
@@ -54,7 +52,6 @@ export class UpdateLandingPageLeadController {
         }
       }
 
-      // Verificar se o lead existe
       const existingLead = await this.leadRepository.findById(parseInt(id));
       if (!existingLead) {
         return res.status(404).json({
@@ -63,13 +60,11 @@ export class UpdateLandingPageLeadController {
         });
       }
 
-      // Preparar dados para atualização
       const updateData: UpdateLandingPageLeadData = {};
 
       if (status) {
         updateData.status = status;
 
-        // Definir timestamps específicos baseado no status
         if (status === 'contacted' && existingLead.status === 'new') {
           updateData.contacted_at = new Date();
         } else if (status === 'converted') {
@@ -84,7 +79,6 @@ export class UpdateLandingPageLeadController {
         updateData.notes = notes;
       }
 
-      // Atualizar o lead
       const updatedLead = await this.leadRepository.update(
         parseInt(id),
         updateData
@@ -198,7 +192,6 @@ export class UpdateLandingPageLeadController {
         converted_at: new Date()
       };
 
-      // Se ainda não foi marcado como contatado, marcar também
       if (!existingLead.contacted_at) {
         updateData.contacted_at = new Date();
       }
