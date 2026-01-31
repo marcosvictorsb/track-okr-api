@@ -1,7 +1,7 @@
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { Response } from 'express';
 import { GetCompanyPermissionsControllerDependencies } from '../interfaces/get.company.permissions.interface';
 import { GetCompanyPermissionsInteractor } from '../usecases/get.company.permissions.interactor';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class GetCompanyPermissionsController {
   protected interactor: GetCompanyPermissionsInteractor;

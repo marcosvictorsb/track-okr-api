@@ -1,6 +1,6 @@
+import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { Response, Router } from 'express';
 import * as factories from '../factories/';
-import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 const { makeGetCompanyPermissionsController } = factories;
 

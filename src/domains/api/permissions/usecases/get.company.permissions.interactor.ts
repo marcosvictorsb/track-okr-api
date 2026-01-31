@@ -1,17 +1,17 @@
-import { HttpResponse } from '@protocols/http';
-import { IPresenter } from '@protocols/presenter';
-import {
-  InputGetCompanyPermissions,
-  GetCompanyPermissionsInteractorDependencies,
-  CompanyPermissionsResponse,
-  FeaturePermission
-} from '../interfaces/get.company.permissions.interface';
-import { GetCompanyPermissionsGateway } from '../gateways/get.company.permissions.gateway';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import {
-  ICheckCompanyFeatureLimitsInteractor,
-  FeatureType
+  FeatureType,
+  ICheckCompanyFeatureLimitsInteractor
 } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { GetCompanyPermissionsGateway } from '../gateways/get.company.permissions.gateway';
+import {
+  CompanyPermissionsResponse,
+  FeaturePermission,
+  GetCompanyPermissionsInteractorDependencies,
+  InputGetCompanyPermissions
+} from '../interfaces/get.company.permissions.interface';
 
 export class GetCompanyPermissionsInteractor {
   protected gateway: GetCompanyPermissionsGateway;
@@ -35,7 +35,6 @@ export class GetCompanyPermissionsInteractor {
         id_user
       });
 
-      // Validar se o usuário pertence à empresa
       const userValidation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -49,7 +48,6 @@ export class GetCompanyPermissionsInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Buscar permissões para cada feature
       const permissions = {
         users: await this.checkFeaturePermission(
           id_company,
@@ -67,22 +65,7 @@ export class GetCompanyPermissionsInteractor {
           id_company,
           FeatureType.MAX_OBJECTIVES_PER_QUARTER
         )
-        // key_results: await this.checkFeaturePermission(
-        //   id_company,
-        //   FeatureType.MAX_KEY_RESULTS_PER_OBJECTIVE
-        // )
       };
-
-      // TODO: Buscar informações da empresa e assinatura
-      // const companyInfo = {
-      //   id: id_company,
-      //   name: 'Empresa Exemplo', // Será substituído pela busca real
-      //   subscription: {
-      //     plan_name: 'Pro',
-      //     status: 'active',
-      //     trial_end_date: null
-      //   }
-      // };
 
       const response: CompanyPermissionsResponse = {
         permissions

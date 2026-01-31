@@ -1,9 +1,9 @@
 import { MixGetCompanyPermissions } from '@adapters/gateways/api/permissions/get.company.permissions.gateway';
+import { logger } from '@configs/logger';
 import {
   GetCompanyPermissionsGatewayDependencies,
   IGetCompanyPermissionsGateway
 } from '../interfaces/get.company.permissions.interface';
-import { logger } from '@configs/logger';
 
 export class GetCompanyPermissionsGateway
   extends MixGetCompanyPermissions

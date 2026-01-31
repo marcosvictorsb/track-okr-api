@@ -1,10 +1,10 @@
-import { IPresenter } from '@protocols/presenter';
 import { DataLogOutput } from '@adapters/services';
-import { GetCompanyPermissionsGateway } from '../gateways/get.company.permissions.gateway';
-import { GetCompanyPermissionsInteractor } from '../usecases/get.company.permissions.interactor';
+import { logger } from '@configs/logger';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { ICheckCompanyFeatureLimitsInteractor } from '@domains/common/validations/interfaces/check.company.feature.limits.interface';
-import { logger } from '@configs/logger';
+import { IPresenter } from '@protocols/presenter';
+import { GetCompanyPermissionsGateway } from '../gateways/get.company.permissions.gateway';
+import { GetCompanyPermissionsInteractor } from '../usecases/get.company.permissions.interactor';
 
 export type InputGetCompanyPermissions = {
   id_company: number;
@@ -29,13 +29,8 @@ export interface CompanyInfo {
 }
 
 export interface CompanyPermissionsResponse {
-  // company: CompanyInfo;
   permissions: {
     users: FeaturePermission;
-    // planners: FeaturePermission;
-    // teams: FeaturePermission;
-    // objectives: FeaturePermission;
-    // key_results: FeaturePermission;
   };
 }
 
