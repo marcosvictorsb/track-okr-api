@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 
 export interface BackofficeAuthRequest extends Request {
   backoffice_user?: {
@@ -8,10 +8,6 @@ export interface BackofficeAuthRequest extends Request {
   };
 }
 
-/**
- * Middleware simples de autenticação para backoffice
- * Em produção, implementar com JWT e roles adequados
- */
 export const backofficeAuth = (
   req: BackofficeAuthRequest,
   res: Response,
@@ -30,10 +26,8 @@ export const backofficeAuth = (
 
     const token = authHeader.replace('Bearer ', '');
 
-    // Validação simples com token fixo para desenvolvimento
-    // Em produção, usar JWT e validação adequada
     const validTokens = [
-      process.env.BACKOFFICE_TOKEN || 'backoffice_dev_token_2025',
+      process.env.BACKOFFICE_TOKEN as string,
       'admin_master_key_dev'
     ];
 
@@ -45,7 +39,6 @@ export const backofficeAuth = (
       return;
     }
 
-    // Simular usuário autenticado
     req.backoffice_user = {
       id: 'admin_1',
       email: 'admin@trackokr.com',
@@ -61,9 +54,6 @@ export const backofficeAuth = (
   }
 };
 
-/**
- * Middleware de log para auditoria do backoffice
- */
 export const backofficeAuditLog = (
   req: BackofficeAuthRequest,
   res: Response,
@@ -71,7 +61,6 @@ export const backofficeAuditLog = (
 ): void => {
   const startTime = Date.now();
 
-  // Log da requisição
   console.log(`[BACKOFFICE] ${req.method} ${req.path}`, {
     user: req.backoffice_user?.email || 'unknown',
     ip: req.ip,
@@ -81,7 +70,6 @@ export const backofficeAuditLog = (
     timestamp: new Date().toISOString()
   });
 
-  // Override do res.json para logar a resposta
   const originalJson = res.json;
   res.json = function (data) {
     const duration = Date.now() - startTime;

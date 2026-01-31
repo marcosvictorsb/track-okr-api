@@ -1,11 +1,10 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import {
-  BackofficeJWTService,
-  BackofficeJWTPayload
+  BackofficeJWTPayload,
+  BackofficeJWTService
 } from '../adapters/services/backoffice-jwt.service';
 import { BackofficeUserRepository } from '../domains/api/backoffice/repository/backoffice-user.repository';
 
-// Estender interface Request para incluir dados do usuário
 export interface BackofficeRequest extends Request {
   backofficeUser?: BackofficeJWTPayload;
 }
@@ -19,9 +18,6 @@ export interface BackofficeAuthOptions {
 export class BackofficeAuthMiddleware {
   private static userRepository = new BackofficeUserRepository();
 
-  /**
-   * Middleware principal de autenticação
-   */
   static authenticate(options: BackofficeAuthOptions = {}) {
     return async (
       req: BackofficeRequest,
@@ -40,7 +36,6 @@ export class BackofficeAuthMiddleware {
           });
         }
 
-        // Verificar token
         const payload = BackofficeJWTService.verifyAccessToken(token);
         if (!payload) {
           return res.status(401).json({
@@ -50,7 +45,6 @@ export class BackofficeAuthMiddleware {
           });
         }
 
-        // Buscar usuário no banco para verificar se ainda está ativo
         const user = await this.userRepository.findById(payload.id);
         if (!user) {
           return res.status(401).json({
@@ -60,7 +54,6 @@ export class BackofficeAuthMiddleware {
           });
         }
 
-        // Verificar se usuário está ativo (exceto se explicitamente permitido)
         if (!options.allowInactive && !user.is_active) {
           return res.status(401).json({
             success: false,
@@ -69,7 +62,6 @@ export class BackofficeAuthMiddleware {
           });
         }
 
-        // Verificar role mínima necessária
         if (
           options.requiredRole &&
           !this.hasRequiredRole(user.role, options.requiredRole)
@@ -81,7 +73,6 @@ export class BackofficeAuthMiddleware {
           });
         }
 
-        // Verificar permissão específica
         if (
           options.requiredPermission &&
           !user.hasPermission!(options.requiredPermission)
@@ -93,10 +84,9 @@ export class BackofficeAuthMiddleware {
           });
         }
 
-        // Anexar dados do usuário à requisição
         req.backofficeUser = {
           ...payload,
-          role: user.role, // Usar role atual do banco
+          role: user.role,
           permissions: user.permissions
         };
 
@@ -112,44 +102,26 @@ export class BackofficeAuthMiddleware {
     };
   }
 
-  /**
-   * Middleware apenas para admin
-   */
   static requireAdmin() {
     return this.authenticate({ requiredRole: 'admin' });
   }
 
-  /**
-   * Middleware para manager ou superior
-   */
   static requireManager() {
     return this.authenticate({ requiredRole: 'manager' });
   }
 
-  /**
-   * Middleware para analyst ou superior
-   */
   static requireAnalyst() {
     return this.authenticate({ requiredRole: 'analyst' });
   }
 
-  /**
-   * Middleware básico (qualquer usuário autenticado)
-   */
   static requireAuth() {
     return this.authenticate();
   }
 
-  /**
-   * Middleware para permissão específica
-   */
   static requirePermission(permission: string) {
     return this.authenticate({ requiredPermission: permission });
   }
 
-  /**
-   * Verifica se a role do usuário é suficiente
-   */
   private static hasRequiredRole(
     userRole: string,
     requiredRole: string
@@ -169,9 +141,6 @@ export class BackofficeAuthMiddleware {
     return userLevel >= requiredLevel;
   }
 
-  /**
-   * Middleware opcional - não retorna erro se não autenticado
-   */
   static optional() {
     return async (
       req: BackofficeRequest,
@@ -198,14 +167,12 @@ export class BackofficeAuthMiddleware {
 
         next();
       } catch {
-        // Em caso de erro, apenas continua sem autenticar
         next();
       }
     };
   }
 }
 
-// Exports para compatibilidade
 export const backofficeAuth = BackofficeAuthMiddleware.requireAuth();
 export const backofficeAdmin = BackofficeAuthMiddleware.requireAdmin();
 export const backofficeManager = BackofficeAuthMiddleware.requireManager();
