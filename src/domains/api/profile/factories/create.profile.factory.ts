@@ -11,7 +11,6 @@ import { ProfileRepository } from '../repository/profile.repository';
 import { CreateProfileInteractor } from '../usecases/create.profile.interactor';
 
 export function makeCreateProfileFactory(): CreateProfileController {
-  // Repositórios
   const profileRepository = new ProfileRepository({
     model: ProfileModel
   });
@@ -20,11 +19,9 @@ export function makeCreateProfileFactory(): CreateProfileController {
     model: UserModel
   });
 
-  // Serviços
   const imageProcessingService = new ImageProcessingService();
   const presenter = new Presenter();
 
-  // Gateway
   const gateway = new CreateProfileGateway({
     profileRepository,
     userRepository,
@@ -32,14 +29,12 @@ export function makeCreateProfileFactory(): CreateProfileController {
     logging: logger
   });
 
-  // Interactor
   const interactor = new CreateProfileInteractor({
     gateway,
     presenter,
     userCompanyValidator: makeUserCompanyValidationInteractor()
   });
 
-  // Controller
   const controller = new CreateProfileController({
     interactor
   });

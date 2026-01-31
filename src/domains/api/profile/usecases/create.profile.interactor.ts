@@ -29,7 +29,6 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         requestTxt: `user_id: ${id_user}, company_id: ${id_company}, has_name: ${!!name}, has_position: ${!!position}, has_file: ${!!file}`
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -44,13 +43,11 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Verificar se usuário existe
       const user = await this.gateway.findUser(id_user);
       if (!user) {
         return this.presenter.notFound('Usuário não encontrado');
       }
 
-      // Verificar se há perfil existente para deletar avatar antigo
       const existingProfile = await this.gateway.findUserProfile(id_user);
       let oldAvatarPath: string | null = null;
 
@@ -58,7 +55,6 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         oldAvatarPath = existingProfile.photo_url;
       }
 
-      // Processar avatar se fornecido
       let avatarPath: string | undefined;
       if (file) {
         this.gateway.loggerInfo('Iniciando processamento de avatar', {
@@ -67,7 +63,7 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
           mimetype: file.mimetype,
           requestTxt: `Arquivo: ${file.originalname}, tamanho: ${file.size} bytes, tipo: ${file.mimetype}`
         });
-        const maxSize = 5 * 1024 * 1024; // 5MB
+        const maxSize = 5 * 1024 * 1024;
         if (file.size > maxSize) {
           this.gateway.loggerInfo('Arquivo excede limite de tamanho', {
             id_user,
@@ -124,7 +120,6 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         }
       }
 
-      // Atualizar nome do usuário se fornecido
       if (name && name.length > 0) {
         this.gateway.loggerInfo('Atualizando nome do usuário', {
           id_user,
@@ -146,7 +141,6 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
         });
       }
 
-      // Criar ou atualizar perfil
       this.gateway.loggerInfo(
         'Preparando dados do perfil para criação/atualização',
         {
@@ -173,7 +167,6 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
 
       const profile = await this.gateway.createOrUpdateProfile(profileData);
 
-      // Deletar avatar antigo se um novo foi carregado
       if (oldAvatarPath && avatarPath) {
         try {
           await this.gateway.deleteOldAvatar(oldAvatarPath);
@@ -182,7 +175,6 @@ export class CreateProfileInteractor implements ICreateProfileInteractor {
             requestTxt: `Avatar antigo removido: ${oldAvatarPath}. Novo avatar: ${avatarPath}`
           });
         } catch (error) {
-          // Log mas não falha a operação
           this.gateway.loggerInfo(
             'Falha ao remover avatar antigo (operação continua)',
             {

@@ -7,7 +7,6 @@ export class ProfileEntity {
   public readonly updated_at?: Date | null;
   public readonly deleted_at?: Date | null;
 
-  // Campos relacionados vindos de joins
   public readonly user_name?: string;
   public readonly user_email?: string;
 
@@ -33,7 +32,6 @@ export class ProfileEntity {
     this.user_email = params.user_email;
   }
 
-  // Métodos auxiliares
   public hasPhoto(): boolean {
     return !!(this.photo_url && this.photo_url.trim().length > 0);
   }
@@ -56,7 +54,7 @@ export class ProfileEntity {
 
   public getCompletionPercentage(): number {
     let completed = 0;
-    const total = 2; // photo_url e position
+    const total = 2;
 
     if (this.hasPhoto()) completed++;
     if (this.hasPosition()) completed++;

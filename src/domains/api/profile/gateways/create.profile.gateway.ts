@@ -70,11 +70,9 @@ export class CreateProfileGateway
       hasPosition: !!data.position
     });
 
-    // Verificar se já existe perfil
     const existingProfile = await this.findUserProfile(data.id_user);
 
     if (existingProfile) {
-      // Atualizar perfil existente - preparar apenas campos não undefined
       const updateData: { photo_url?: string; position?: string } = {};
 
       if (data.photo_url !== undefined) {
@@ -107,7 +105,6 @@ export class CreateProfileGateway
         throw new Error('Falha ao atualizar perfil');
       }
 
-      // Buscar o perfil atualizado com dados do usuário
       const updatedProfile = await this.profileRepository.findByUserId(
         data.id_user
       );
@@ -124,7 +121,6 @@ export class CreateProfileGateway
 
       return updatedProfile;
     } else {
-      // Criar novo perfil
       this.logging.info('Criando novo perfil', {
         userId: data.id_user,
         data

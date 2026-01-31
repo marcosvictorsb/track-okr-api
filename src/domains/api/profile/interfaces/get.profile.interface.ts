@@ -1,13 +1,13 @@
-import { IPresenter } from '@protocols/presenter';
-import { HttpResponse } from '@protocols/http';
 import { DataLogOutput } from '@adapters/services';
-import { ProfileEntity } from '../entity/profile.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { IProfileRepository } from './default.interfaces';
-import { IUserRepository } from '@domains/api/users/interfaces';
 import { logger } from '@configs/logger';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import { Response } from 'express';
+import { ProfileEntity } from '../entity/profile.entity';
+import { IProfileRepository } from './default.interfaces';
 
 export type InputGetProfile = {
   id_company: number;

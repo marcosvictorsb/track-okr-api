@@ -39,7 +39,6 @@ router.post(
     createProfileController.createProfile(request, response)
 );
 
-// Rota para deletar avatar
 router.delete(
   '/avatar',
   authMiddleware,

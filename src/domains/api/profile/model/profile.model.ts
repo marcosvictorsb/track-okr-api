@@ -1,6 +1,6 @@
-import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '@infra/database/connection/mysql';
 import UserModel from '@domains/api/users/model/user.model';
+import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 
 export interface ProfileModelAttributes {
   id?: number;
@@ -24,7 +24,6 @@ class ProfileModel
   declare updated_at?: Date;
   declare deleted_at?: Date;
 
-  // Métodos auxiliares
   public hasPhoto(): boolean {
     return !!(this.photo_url && this.photo_url.trim().length > 0);
   }
@@ -98,13 +97,11 @@ ProfileModel.init(
   }
 );
 
-// Definindo associações
 ProfileModel.belongsTo(UserModel, {
   foreignKey: 'id_user',
   as: 'user'
 });
 
-// Associação inversa - Um usuário tem um perfil
 UserModel.hasOne(ProfileModel, {
   foreignKey: 'id_user',
   as: 'profile'

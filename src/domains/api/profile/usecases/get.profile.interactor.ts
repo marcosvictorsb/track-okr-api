@@ -1,11 +1,11 @@
 import { HttpResponse } from '@protocols/http';
-import {
-  IGetProfileInteractor,
-  InputGetProfile,
-  GetProfileInteractorDependencies,
-  IGetProfileGateway
-} from '../interfaces/get.profile.interface';
 import { IPresenter } from '@protocols/presenter';
+import {
+  GetProfileInteractorDependencies,
+  IGetProfileGateway,
+  IGetProfileInteractor,
+  InputGetProfile
+} from '../interfaces/get.profile.interface';
 
 export class GetProfileInteractor implements IGetProfileInteractor {
   protected gateway: IGetProfileGateway;
@@ -25,14 +25,12 @@ export class GetProfileInteractor implements IGetProfileInteractor {
         id_company
       });
 
-      // Verificar se usuário existe
       const user = await this.gateway.findUser(id_user);
       if (!user) {
         this.gateway.loggerInfo('Usuário não encontrado', { id_user });
         return this.presenter.notFound('Usuário não encontrado');
       }
 
-      // Verificar se o usuário pertence à empresa
       if (user.id_company !== id_company) {
         this.gateway.loggerInfo('Usuário não pertence à empresa informada', {
           id_user,
@@ -43,10 +41,8 @@ export class GetProfileInteractor implements IGetProfileInteractor {
         );
       }
 
-      // Buscar perfil do usuário
       const profile = await this.gateway.findUserProfile(id_user);
 
-      // Montar resposta no formato esperado pelo frontend
       const profileResponse = {
         name: user.name,
         email: user.email,

@@ -26,7 +26,6 @@ export class CreateProfileController implements ICreateProfileController {
     const { name, position } = request.body;
     const file = multerRequest.file;
 
-    // Preparar dados do arquivo se existir
     let fileData;
     if (file) {
       fileData = {

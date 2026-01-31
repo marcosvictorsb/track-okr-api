@@ -1,11 +1,11 @@
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { Response } from 'express';
 import {
+  GetProfileControllerDependencies,
   IGetProfileController,
   IGetProfileInteractor,
-  InputGetProfile,
-  GetProfileControllerDependencies
+  InputGetProfile
 } from '../interfaces/get.profile.interface';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class GetProfileController implements IGetProfileController {
   protected interactor: IGetProfileInteractor;

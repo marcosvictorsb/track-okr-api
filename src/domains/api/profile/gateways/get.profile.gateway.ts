@@ -1,13 +1,13 @@
+import { MixGetProfile } from '@adapters/gateways/api/profile';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
 import { ProfileEntity } from '../entity/profile.entity';
+import { IProfileRepository } from '../interfaces/default.interfaces';
 import {
   IGetProfileGateway,
   IGetProfileGatewayDependencies
 } from '../interfaces/get.profile.interface';
-import { MixGetProfile } from '@adapters/gateways/api/profile';
-import { IProfileRepository } from '../interfaces/default.interfaces';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { logger } from '@configs/logger';
 
 export class GetProfileGateway
   extends MixGetProfile

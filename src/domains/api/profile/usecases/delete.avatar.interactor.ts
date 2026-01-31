@@ -28,7 +28,6 @@ export class DeleteAvatarInteractor implements IDeleteAvatarInteractor {
         requestTxt: 'Usuário solicitou remoção do avatar'
       });
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -53,7 +52,6 @@ export class DeleteAvatarInteractor implements IDeleteAvatarInteractor {
         return this.presenter.notFound('Perfil não encontrado');
       }
 
-      // Verificar se existe avatar para deletar
       if (!profile.photo_url || profile.photo_url.trim() === '') {
         this.gateway.loggerInfo('Usuário não possui avatar para deletar', {
           id_user,
@@ -66,7 +64,6 @@ export class DeleteAvatarInteractor implements IDeleteAvatarInteractor {
 
       const avatarPath = profile.photo_url;
 
-      // Remover photo_url do banco de dados
       const databaseUpdateSuccess =
         await this.gateway.removeAvatarFromProfile(id_user);
 
@@ -79,7 +76,6 @@ export class DeleteAvatarInteractor implements IDeleteAvatarInteractor {
         return this.presenter.serverError('Erro ao remover avatar do perfil');
       }
 
-      // Tentar deletar arquivo físico
       try {
         await this.gateway.deleteAvatarFile(avatarPath);
         this.gateway.loggerInfo(
@@ -91,7 +87,6 @@ export class DeleteAvatarInteractor implements IDeleteAvatarInteractor {
           }
         );
       } catch (fileError) {
-        // Log do erro mas não falha a operação (arquivo pode não existir)
         this.gateway.loggerWarn(
           'Erro ao deletar arquivo físico do avatar (operação continua)',
           {

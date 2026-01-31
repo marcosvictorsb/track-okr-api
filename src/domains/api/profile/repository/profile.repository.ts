@@ -71,7 +71,6 @@ export class ProfileRepository implements IProfileRepository {
   private mapToEntity(profile: ProfileModel): ProfileEntity {
     const data = profile.dataValues;
 
-    // Adicionar informações do usuário se existirem
     const profileWithUser = profile as unknown as {
       user?: { name: string; email: string };
     };
@@ -100,7 +99,6 @@ export class ProfileRepository implements IProfileRepository {
       position: profile.position
     });
 
-    // Buscar o perfil criado com as associações
     const profileWithUser = await this.model.findByPk(profile.id, {
       include: this.getIncludeOptions()
     });
@@ -181,11 +179,9 @@ export class ProfileRepository implements IProfileRepository {
   }
 
   public async upsert(criteria: CreateProfileCriteria): Promise<ProfileEntity> {
-    // Verificar se já existe perfil para o usuário
     const existingProfile = await this.findByUserId(criteria.id_user);
 
     if (existingProfile) {
-      // Atualizar perfil existente
       const updateData: Record<string, unknown> = {};
 
       if (criteria.photo_url !== undefined) {
@@ -207,7 +203,6 @@ export class ProfileRepository implements IProfileRepository {
 
       return (await this.findByUserId(criteria.id_user))!;
     } else {
-      // Criar novo perfil
       return await this.create(criteria);
     }
   }
