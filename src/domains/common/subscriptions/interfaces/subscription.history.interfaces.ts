@@ -1,9 +1,9 @@
-import { SubscriptionHistoryEntity } from '../entity/subscription.history.entity';
-import { SubscriptionHistoryAction } from '../model/subscription.history.model';
 import { ModelStatic } from 'sequelize';
-import SubscriptionHistoryModel from '../model/subscription.history.model';
+import { SubscriptionHistoryEntity } from '../entity/subscription.history.entity';
+import SubscriptionHistoryModel, {
+  SubscriptionHistoryAction
+} from '../model/subscription.history.model';
 
-// Enum para as ações do histórico
 export enum SubscriptionHistoryActions {
   CREATED = 'created',
   ACTIVATED = 'activated',
@@ -21,15 +21,12 @@ export enum SubscriptionHistoryActions {
   LIMITS_UPDATED = 'limits_updated'
 }
 
-// Type helper para uso em interfaces
 export type SubscriptionHistoryActionType = `${SubscriptionHistoryActions}`;
 
-// Array com todos os valores (útil para validações)
 export const SUBSCRIPTION_HISTORY_ACTION_VALUES = Object.values(
   SubscriptionHistoryActions
 ) as SubscriptionHistoryActionType[];
 
-// Função helper para verificar se um valor é uma ação válida
 export function isValidSubscriptionHistoryAction(
   action: string
 ): action is SubscriptionHistoryActionType {
@@ -38,7 +35,6 @@ export function isValidSubscriptionHistoryAction(
   );
 }
 
-// Mapeamento para descrições em português
 export const SUBSCRIPTION_HISTORY_ACTION_DESCRIPTIONS: Record<
   SubscriptionHistoryActions,
   string
@@ -59,7 +55,6 @@ export const SUBSCRIPTION_HISTORY_ACTION_DESCRIPTIONS: Record<
   [SubscriptionHistoryActions.LIMITS_UPDATED]: 'Limites atualizados'
 };
 
-// Interface para criar um novo registro de histórico
 export interface CreateSubscriptionHistoryCriteria {
   subscription_id: number;
   action: SubscriptionHistoryAction;
@@ -76,7 +71,6 @@ export interface CreateSubscriptionHistoryCriteria {
   notes?: string;
 }
 
-// Interface para buscar registros de histórico
 export interface FindSubscriptionHistoryCriteria {
   id?: number;
   subscription_id?: number;
@@ -89,7 +83,6 @@ export interface FindSubscriptionHistoryCriteria {
   offset?: number;
 }
 
-// Interface para filtros avançados de busca
 export interface SubscriptionHistoryFilters {
   subscription_ids?: number[];
   actions?: SubscriptionHistoryAction[];
@@ -102,19 +95,16 @@ export interface SubscriptionHistoryFilters {
   trial_actions_only?: boolean;
 }
 
-// Interface para ordenação
 export interface SubscriptionHistorySort {
   field: 'created_at' | 'action' | 'subscription_id';
   direction: 'ASC' | 'DESC';
 }
 
-// Interface para paginação
 export interface SubscriptionHistoryPagination {
   page: number;
   limit: number;
 }
 
-// Interface para resultado paginado
 export interface PaginatedSubscriptionHistory {
   data: SubscriptionHistoryEntity[];
   pagination: {
@@ -127,7 +117,6 @@ export interface PaginatedSubscriptionHistory {
   };
 }
 
-// Interface para estatísticas do histórico
 export interface SubscriptionHistoryStats {
   total_records: number;
   automated_actions: number;
@@ -140,14 +129,11 @@ export interface SubscriptionHistoryStats {
   }[];
 }
 
-// Dependencies para o repository
 export type SubscriptionHistoryRepositoryDependencies = {
   model: ModelStatic<SubscriptionHistoryModel>;
 };
 
-// Interface principal do repository
 export interface ISubscriptionHistoryRepository {
-  // Operações básicas
   create(
     data: CreateSubscriptionHistoryCriteria
   ): Promise<SubscriptionHistoryEntity>;
@@ -159,7 +145,6 @@ export interface ISubscriptionHistoryRepository {
   ): Promise<SubscriptionHistoryEntity[]>;
   delete(id: number): Promise<boolean>;
 
-  // Operações específicas do domínio
   findBySubscription(
     subscriptionId: number,
     options?: {
@@ -241,7 +226,6 @@ export interface ISubscriptionHistoryRepository {
     dateTo?: Date
   ): Promise<SubscriptionHistoryEntity[]>;
 
-  // Método utilitário para registrar ações automaticamente
   logAction(data: {
     subscription_id: number;
     action: SubscriptionHistoryAction;

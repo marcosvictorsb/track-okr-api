@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ModelStatic, Op, WhereOptions } from 'sequelize';
 import { SubscriptionHistoryEntity } from '../entity/subscription.history.entity';
 import {
@@ -51,7 +52,6 @@ export class SubscriptionHistoryRepository implements ISubscriptionHistoryReposi
       whereConditions['automated'] = criteria.automated;
     }
 
-    // Filtros de data
     if (criteria.date_from || criteria.date_to) {
       const dateConditions: Record<symbol, Date> = {};
       if (criteria.date_from) {
@@ -496,7 +496,6 @@ export class SubscriptionHistoryRepository implements ISubscriptionHistoryReposi
       whereConditions['created_at'] = dateConditions;
     }
 
-    // Buscar todos os registros para calcular estatísticas
     const histories = await this.model.findAll({
       where: whereConditions,
       raw: true,
@@ -507,31 +506,26 @@ export class SubscriptionHistoryRepository implements ISubscriptionHistoryReposi
     const automatedActions = histories.filter((h) => h.automated).length;
     const manualActions = totalRecords - automatedActions;
 
-    // Contar ações por tipo
     const actionCounts: Record<string, number> = {};
     histories.forEach((history) => {
       actionCounts[history.action] = (actionCounts[history.action] || 0) + 1;
     });
 
-    // Encontrar ação mais comum
     const mostCommonAction = Object.entries(actionCounts).reduce((a, b) =>
       actionCounts[a[0]] > actionCounts[b[0]] ? a : b
     )?.[0] as SubscriptionHistoryAction;
 
-    // Timeline por dia (últimos 30 dias se não especificado)
     const timelineData: { date: string; count: number }[] = [];
     const endDate = dateTo || new Date();
     const startDate =
       dateFrom || new Date(endDate.getTime() - 30 * 24 * 60 * 60 * 1000);
 
-    // Agrupar por data
     const dailyCounts: Record<string, number> = {};
     histories.forEach((history) => {
       const date = new Date(history.created_at).toISOString().split('T')[0];
       dailyCounts[date] = (dailyCounts[date] || 0) + 1;
     });
 
-    // Preencher timeline
     for (
       let d = new Date(startDate);
       d <= endDate;
@@ -577,7 +571,7 @@ export class SubscriptionHistoryRepository implements ISubscriptionHistoryReposi
 
     const histories = await this.model.findAll({
       where: whereConditions,
-      order: [['created_at', 'ASC']], // Timeline em ordem cronológica
+      order: [['created_at', 'ASC']],
       raw: true
     });
 

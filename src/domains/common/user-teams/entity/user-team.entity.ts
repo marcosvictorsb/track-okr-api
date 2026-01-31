@@ -25,17 +25,14 @@ export class UserTeamEntity {
     this.deleted_at = data.deleted_at;
   }
 
-  // Método para verificar se o usuário está ativo no time
   public isActiveInTeam(): boolean {
     return this.deleted_at === null || this.deleted_at === undefined;
   }
 
-  // Método para verificar se o usuário é líder do time
   public isTeamLeader(): boolean {
     return this.role_in_team === 'leader';
   }
 
-  // Método para obter dados para serialização (sem campos sensíveis)
   public toJSON() {
     return {
       id: this.id,

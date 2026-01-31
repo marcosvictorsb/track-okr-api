@@ -1,17 +1,17 @@
-import { UserTeamEntity } from '../entity/user-team.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import {
-  IDeleteUserTeamGateway,
-  IDeleteUserTeamGatewayDependencies,
-  FindUserTeamCriteria,
-  DeleteUserTeamCriteria,
-  IUserTeamRepository
-} from '../interfaces';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { MixDeleteUserTeam } from '@adapters/gateways/api/user-teams';
 import { logger } from '@configs/logger';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { UserTeamEntity } from '../entity/user-team.entity';
+import {
+  DeleteUserTeamCriteria,
+  FindUserTeamCriteria,
+  IDeleteUserTeamGateway,
+  IDeleteUserTeamGatewayDependencies,
+  IUserTeamRepository
+} from '../interfaces';
 
 export class DeleteUserTeamGateway
   extends MixDeleteUserTeam
@@ -49,7 +49,6 @@ export class DeleteUserTeamGateway
       id_user,
       id_team
     });
-    //  return await this.userTeamRepository.leaveTeam(id_user, id_team);
     return false;
   }
 
@@ -78,12 +77,10 @@ export class DeleteUserTeamGateway
       teamId: team.id
     });
 
-    // Verificar se o usuário é admin ou owner da empresa
     if (requestingUser.role === 'admin' || requestingUser.role === 'owner') {
       return { canManage: true };
     }
 
-    // Verificar se o usuário é manager do time
     const userTeamRelation = await this.userTeamRepository.find({
       id_user: requestingUser.id,
       id_team: team.id
@@ -108,12 +105,10 @@ export class DeleteUserTeamGateway
       requestingUserId: requestingUser.id
     });
 
-    // Verificar se o usuário é admin ou owner da empresa
     if (requestingUser.role === 'admin' || requestingUser.role === 'owner') {
       return { canRemove: true };
     }
 
-    // Buscar o time para verificar permissões
     const team = await this.teamRepository.find({
       id: userTeamToRemove.id_team
     });
@@ -124,14 +119,12 @@ export class DeleteUserTeamGateway
       };
     }
 
-    // Verificar se o usuário é manager do time
     const managerRelation = await this.userTeamRepository.find({
       id_user: requestingUser.id,
       id_team: team.id
     });
 
     if (managerRelation && managerRelation.role_in_team === 'manager') {
-      // Manager não pode remover outro manager (exceto a si mesmo)
       if (
         userTeamToRemove.role_in_team === 'manager' &&
         userTeamToRemove.id_user !== requestingUser.id
@@ -144,7 +137,6 @@ export class DeleteUserTeamGateway
       return { canRemove: true };
     }
 
-    // Usuário pode sair do time (remover a si mesmo)
     if (userTeamToRemove.id_user === requestingUser.id) {
       return { canRemove: true };
     }

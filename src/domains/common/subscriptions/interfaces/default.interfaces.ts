@@ -11,22 +11,18 @@ export enum SubscriptionStatus {
   PENDING_ACTIVATION = 'pending_activation'
 }
 
-// Type helper para uso em interfaces
 export type SubscriptionStatusType = `${SubscriptionStatus}`;
 
-// Array com todos os valores (útil para validações)
 export const SUBSCRIPTION_STATUS_VALUES = Object.values(
   SubscriptionStatus
 ) as SubscriptionStatusType[];
 
-// Função helper para verificar se um valor é um status válido
 export function isValidSubscriptionStatus(
   status: string
 ): status is SubscriptionStatusType {
   return SUBSCRIPTION_STATUS_VALUES.includes(status as SubscriptionStatusType);
 }
 
-// Mapeamento para descrições em português
 export const SUBSCRIPTION_STATUS_DESCRIPTIONS: Record<
   SubscriptionStatus,
   string

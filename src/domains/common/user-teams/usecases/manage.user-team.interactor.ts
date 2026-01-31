@@ -68,7 +68,6 @@ export class ManageUserTeamInteractor {
       };
     }
 
-    // Adicionando usuário em um time
     if (!currentUserTeam) {
       const { action, team_id } = await this.addUserToTeam(
         id_user_to_manage,
@@ -86,7 +85,6 @@ export class ManageUserTeamInteractor {
       return { action, team_id };
     }
 
-    // alterando o usuário de time
     if (currentUserTeam.id_team !== id_team) {
       await this.changeUserTeam({
         userId: id_user_to_manage,
@@ -182,13 +180,11 @@ export class ManageUserTeamInteractor {
       })
     });
 
-    // Primeiro, remover do time atual
     const leftSuccess = await this.gateway.leaveCurrentTeam(userId, fromTeamId);
     if (!leftSuccess) {
       throw new Error('Falha ao remover usuário do time atual');
     }
 
-    // Depois, adicionar ao novo time
     const newUserTeam = await this.gateway.createUserTeam({
       id_user: userId,
       id_team: toTeamId,

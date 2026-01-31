@@ -6,9 +6,7 @@ import {
   ICheckCompanyFeatureLimitsInteractor
 } from '../interfaces/check.company.feature.limits.interface';
 
-export class CheckCompanyFeatureLimitsInteractor
-  implements ICheckCompanyFeatureLimitsInteractor
-{
+export class CheckCompanyFeatureLimitsInteractor implements ICheckCompanyFeatureLimitsInteractor {
   protected gateway: ICheckCompanyFeatureLimitsGateway;
   protected presenter: IPresenter;
 
@@ -27,7 +25,6 @@ export class CheckCompanyFeatureLimitsInteractor
       input: JSON.stringify(input)
     });
 
-    // 1. Buscar assinatura ativa da empresa
     const subscription = await this.gateway.findActiveSubscriptionByCompany({
       company_id: id_company
     });
@@ -35,13 +32,11 @@ export class CheckCompanyFeatureLimitsInteractor
       throw 'Empresa sem assinatura ativa';
     }
 
-    // 2. Buscar plano da assinatura
     const plan = await this.gateway.findPlan({ id: subscription.plan_id });
     if (!plan) {
       throw 'Plano não encontrado';
     }
 
-    // 3. Obter limite do plano para a feature
     const limit = plan[feature];
     if (typeof limit !== 'number') {
       throw this.presenter.serverError(
@@ -49,7 +44,6 @@ export class CheckCompanyFeatureLimitsInteractor
       );
     }
 
-    // 4. Buscar uso atual da feature
     const criteriaCurrenteUsage = {
       id_company,
       feature,

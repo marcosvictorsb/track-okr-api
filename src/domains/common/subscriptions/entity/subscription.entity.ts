@@ -63,7 +63,6 @@ export class SubscriptionEntity {
     this.updated_at = data.updated_at;
   }
 
-  // Métodos de negócio
   public isActive(): boolean {
     return this.status === 'active';
   }

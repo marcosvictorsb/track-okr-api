@@ -1,34 +1,34 @@
 import { MixPurchaseApproved } from '@adapters/gateways/webhook/cakto';
-import {
-  IPurchaseApprovedGateway,
-  PurchaseApprovedGatewayDependencies,
-  CreateUserData,
-  CreateCompanyData,
-  CreateSubscriptionData,
-  UpdateSubscriptionData,
-  CreatePaymentHistoryData
-} from '../interfaces/purchase.approved.interfaces';
 import { logger } from '@configs/logger';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
-import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ICompanyRepository } from '@domains/api/companies/interfaces';
 import {
   FindPlansCriteria,
   IPlanRepository
 } from '@domains/api/backoffice/interfaces/default.interfaces';
-import {
-  ISubscriptionRepository,
-  SubscriptionStatus,
-  ISubscriptionHistoryRepository
-} from '@domains/common/subscriptions/interfaces';
-import { CreateSettingCriteria } from '@domains/common/settings';
-import { ISettingRepository } from '@domains/api/settings/interfaces/default.interfaces';
-import crypto from 'crypto';
+import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
+import { ICompanyRepository } from '@domains/api/companies/interfaces';
 import { SettingEntity } from '@domains/api/settings';
+import { ISettingRepository } from '@domains/api/settings/interfaces/default.interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
 import { CreateWebhookCriteria, IWebhookRepository } from '@domains/common';
+import { CreateSettingCriteria } from '@domains/common/settings';
+import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
+import {
+  ISubscriptionHistoryRepository,
+  ISubscriptionRepository,
+  SubscriptionStatus
+} from '@domains/common/subscriptions/interfaces';
+import crypto from 'crypto';
+import {
+  CreateCompanyData,
+  CreatePaymentHistoryData,
+  CreateSubscriptionData,
+  CreateUserData,
+  IPurchaseApprovedGateway,
+  PurchaseApprovedGatewayDependencies,
+  UpdateSubscriptionData
+} from '../interfaces/purchase.approved.interfaces';
 
 export class PurchaseApprovedGateway
   extends MixPurchaseApproved
@@ -65,7 +65,6 @@ export class PurchaseApprovedGateway
     this.webhookRepository = params.webhookRepository;
   }
 
-  // User operations
   async findUserByEmail(email: string): Promise<UserEntity | undefined> {
     this.logging.info('Buscando usuário por email', { email });
     return await this.userRepository.find({ email });
@@ -78,7 +77,6 @@ export class PurchaseApprovedGateway
       id_company: data.id_company
     });
 
-    // Gerar senha temporária
     const tempPassword = crypto.randomBytes(16).toString('hex');
     const password_hash = crypto
       .createHash('sha256')
@@ -94,7 +92,6 @@ export class PurchaseApprovedGateway
     return await this.userRepository.create(userData);
   }
 
-  // Company operations
   async findCompanyByUserId(
     userId: number
   ): Promise<CompanyEntity | undefined> {
@@ -111,13 +108,11 @@ export class PurchaseApprovedGateway
     return await this.companyRepository.create(data);
   }
 
-  // Plan operations
   async findPlanByProductId(
     productId: string
   ): Promise<PlanEntity | undefined> {
     this.logging.info('Buscando plano por ID do produto', { productId });
-    // Aqui você pode mapear o productId do Cakto para os planos internos
-    // Por exemplo: productId "2" = "Plano Pro"
+
     const planMap: Record<string, string> = {
       '1': 'Gratuito',
       '2': 'Pro',
@@ -137,7 +132,6 @@ export class PurchaseApprovedGateway
     return await this.planRepository.find(criteria);
   }
 
-  // Subscription operations
   async findActiveSubscriptionByCompany(
     companyId: number
   ): Promise<SubscriptionEntity | undefined> {
@@ -202,7 +196,6 @@ export class PurchaseApprovedGateway
 
     await this.subscriptionRepository.update(updateData, updateData);
 
-    // Buscar e retornar a subscription atualizada
     const updatedSubscription = await this.subscriptionRepository.find({ id });
     if (!updatedSubscription) {
       throw new Error('Subscription não encontrada após atualização');
@@ -211,14 +204,12 @@ export class PurchaseApprovedGateway
     return updatedSubscription;
   }
 
-  // Email operations
   async generateActivationToken(userId: number): Promise<string> {
     const token = crypto.randomBytes(32).toString('hex');
     this.logging.info('Token de ativação gerado', { userId, token });
     return token;
   }
 
-  // Payment history
   async createPaymentHistory(
     data: CreatePaymentHistoryData
   ): Promise<{ id: number; created_at: Date } & CreatePaymentHistoryData> {
@@ -228,8 +219,6 @@ export class PurchaseApprovedGateway
       amount: data.amount
     });
 
-    // Aqui você criaria uma tabela de histórico de pagamentos se necessário
-    // Por enquanto, apenas retorna os dados
     return {
       id: Date.now(),
       ...data,
@@ -237,7 +226,6 @@ export class PurchaseApprovedGateway
     };
   }
 
-  // Subscription history
   async createSubscriptionHistory(data: {
     subscription_id: number;
     action:
@@ -281,12 +269,11 @@ export class PurchaseApprovedGateway
       reason: data.reason,
       metadata: data.metadata,
       created_by: data.created_by,
-      automated: data.automated || true, // Default to automated for webhook actions
+      automated: data.automated || true,
       notes: data.notes
     });
   }
 
-  // Settings operations
   async createCompanySettings(
     data: CreateSettingCriteria
   ): Promise<SettingEntity> {
@@ -303,7 +290,6 @@ export class PurchaseApprovedGateway
       status: data.status
     });
 
-    // Aqui você pode usar o repositório de webhooks para salvar os dados
     await this.webhookRepository.create(data);
   }
 }

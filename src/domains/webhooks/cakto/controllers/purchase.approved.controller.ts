@@ -1,6 +1,6 @@
-import { Response, Request } from 'express';
-import { PurchaseApprovedInteractor } from '../usecases/purchase.approved.interactor';
+import { Request, Response } from 'express';
 import { PurchaseApprovedControllerDependencies } from '../interfaces';
+import { PurchaseApprovedInteractor } from '../usecases/purchase.approved.interactor';
 
 export class PurchaseApprovedController {
   protected interactor: PurchaseApprovedInteractor;

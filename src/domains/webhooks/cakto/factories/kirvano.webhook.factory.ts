@@ -1,25 +1,25 @@
-import { Presenter } from '@protocols/presenter';
 import { logger } from '@configs/logger';
-import { WebhookRepository } from '@domains/common';
-import WebhookModel from '@domains/common/webhooks/model/webhook.model';
-import { KirvanoWebhookGatewayDependencies } from '../interfaces';
-import { KirvanoWebhookGateway } from '../gateways';
-import { KirvanoWebhookInteractor } from '../usecases';
-import { KirvanoWebhookController } from '../controllers/kirvano.webhook.controller';
-import { CompanyRepository } from '@domains/api/companies/repository/company.repository';
+import { PlanModel } from '@domains/api/backoffice/models/plan.model';
 import { PlanRepository } from '@domains/api/backoffice/repository/plan.repository';
 import Company from '@domains/api/companies/model/company.model';
-import { PlanModel } from '@domains/api/backoffice/models/plan.model';
-import { UserRepository } from '@domains/api/users/repository/user.repository';
-import UserModel from '@domains/api/users/model/user.model';
+import { CompanyRepository } from '@domains/api/companies/repository/company.repository';
 import { SettingRepository } from '@domains/api/settings';
 import SettingModel from '@domains/api/settings/model';
-import { SubscriptionRepository } from '@domains/common/subscriptions/repository/subscription.repository';
+import UserModel from '@domains/api/users/model/user.model';
+import { UserRepository } from '@domains/api/users/repository/user.repository';
+import { WebhookRepository } from '@domains/common';
+import SubscriptionHistoryModel from '@domains/common/subscriptions/model/subscription.history.model';
 import SubscriptionModel from '@domains/common/subscriptions/model/subscription.model';
 import { SubscriptionHistoryRepository } from '@domains/common/subscriptions/repository/subscription.history.repository';
-import SubscriptionHistoryModel from '@domains/common/subscriptions/model/subscription.history.model';
+import { SubscriptionRepository } from '@domains/common/subscriptions/repository/subscription.repository';
+import WebhookModel from '@domains/common/webhooks/model/webhook.model';
+import { Presenter } from '@protocols/presenter';
 import * as dotenv from 'dotenv';
 import { Resend } from 'resend';
+import { KirvanoWebhookController } from '../controllers/kirvano.webhook.controller';
+import { KirvanoWebhookGateway } from '../gateways';
+import { KirvanoWebhookGatewayDependencies } from '../interfaces';
+import { KirvanoWebhookInteractor } from '../usecases';
 dotenv.config();
 
 export const makeKirvanoWebhookController = () => {

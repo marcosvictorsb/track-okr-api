@@ -1,27 +1,27 @@
-import { PurchaseApprovedInteractor } from '../usecases/purchase.approved.interactor';
-import { IPresenter } from '@protocols/presenter';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
+import { DataLogOutput } from '@adapters/services';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
-import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
-import {
-  ISubscriptionRepository,
-  SubscriptionStatusType
-} from '@domains/common/subscriptions/interfaces/default.interfaces';
-import { ICompanyRepository } from '@domains/api/companies/interfaces';
 import {
   FindPlansCriteria,
   IPlanRepository
 } from '@domains/api/backoffice/interfaces/default.interfaces';
+import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
+import { ICompanyRepository } from '@domains/api/companies/interfaces';
+import { ISettingRepository, SettingEntity } from '@domains/api/settings';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { IUserRepository } from '@domains/api/users/interfaces';
-import { DataLogOutput } from '@adapters/services';
 import {
   CreateSettingCriteria,
   CreateWebhookCriteria,
   IWebhookRepository
 } from '@domains/common';
-import { ISettingRepository, SettingEntity } from '@domains/api/settings';
+import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
 import { ISubscriptionHistoryRepository } from '@domains/common/subscriptions/interfaces';
+import {
+  ISubscriptionRepository,
+  SubscriptionStatusType
+} from '@domains/common/subscriptions/interfaces/default.interfaces';
+import { IPresenter } from '@protocols/presenter';
+import { PurchaseApprovedInteractor } from '../usecases/purchase.approved.interactor';
 
 export type IPurchaseApprovedInteractorDependencies = {
   gateway: IPurchaseApprovedGateway;
@@ -195,19 +195,15 @@ export interface EmailVariables {
 }
 
 export interface IPurchaseApprovedGateway {
-  // User operations
   findUserByEmail(email: string): Promise<UserEntity | undefined>;
   createUser(data: CreateUserData): Promise<UserEntity>;
 
-  // Company operations
   findCompanyByUserId(userId: number): Promise<CompanyEntity | undefined>;
   createCompany(data: CreateCompanyData): Promise<CompanyEntity>;
 
-  // Plan operations
   findPlanByProductId(productId: string): Promise<PlanEntity | undefined>;
   findPlan(criteria: FindPlansCriteria): Promise<PlanEntity | undefined>;
 
-  // Subscription operations
   findActiveSubscriptionByCompany(
     companyId: number
   ): Promise<SubscriptionEntity | undefined>;
@@ -217,7 +213,6 @@ export interface IPurchaseApprovedGateway {
     data: UpdateSubscriptionData
   ): Promise<SubscriptionEntity>;
 
-  // Email operations
   generateActivationToken(userId: number): Promise<string>;
   signToken(data: {
     name: string;
@@ -227,12 +222,10 @@ export interface IPurchaseApprovedGateway {
   }): string;
   sendInviteEmail(email: string, activationLink: string): Promise<boolean>;
 
-  // Payment history
   createPaymentHistory(
     data: CreatePaymentHistoryData
   ): Promise<{ id: number; created_at: Date } & CreatePaymentHistoryData>;
 
-  // Subscription history
   createSubscriptionHistory(data: {
     subscription_id: number;
     action:
@@ -261,15 +254,12 @@ export interface IPurchaseApprovedGateway {
     notes?: string;
   }): Promise<void>;
 
-  // Settings operations
   createCompanySettings(
     criteria: CreateSettingCriteria
   ): Promise<SettingEntity>;
 
-  // Webhook operations
   saveWebhook(data: CreateWebhookCriteria): Promise<void>;
 
-  // Logs methods
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

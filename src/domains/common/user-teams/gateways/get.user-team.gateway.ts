@@ -1,16 +1,16 @@
-import { UserTeamEntity } from '../entity/user-team.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import {
-  IGetUserTeamGateway,
-  IGetUserTeamGatewayDependencies,
-  FindUserTeamCriteria,
-  IUserTeamRepository
-} from '../interfaces';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { MixGetUserTeam } from '@adapters/gateways/api/user-teams';
 import { logger } from '@configs/logger';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { UserTeamEntity } from '../entity/user-team.entity';
+import {
+  FindUserTeamCriteria,
+  IGetUserTeamGateway,
+  IGetUserTeamGatewayDependencies,
+  IUserTeamRepository
+} from '../interfaces';
 
 export class GetUserTeamGateway
   extends MixGetUserTeam
@@ -70,17 +70,14 @@ export class GetUserTeamGateway
       teamId: team?.id
     });
 
-    // Verificar se o usuário é admin ou owner da empresa
     if (requestingUser.role === 'admin' || requestingUser.role === 'owner') {
       return { canView: true };
     }
 
-    // Se não especificou um time, pode ver apenas seus próprios relacionamentos
     if (!team) {
       return { canView: true };
     }
 
-    // Verificar se o usuário faz parte do time
     const userTeamRelation = await this.userTeamRepository.find({
       id_user: requestingUser.id,
       id_team: team.id

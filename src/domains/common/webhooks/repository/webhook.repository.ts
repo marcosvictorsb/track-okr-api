@@ -1,11 +1,11 @@
-import WebhookModel from '../model/webhook.model';
-import { WebhookEntity } from '../entity/webhook.entity';
 import { ModelStatic, Op } from 'sequelize';
+import { WebhookEntity } from '../entity/webhook.entity';
 import {
   CreateWebhookCriteria,
   FindWebhookCriteria,
   IWebhookRepository
 } from '../interfaces/default.interfaces';
+import WebhookModel from '../model/webhook.model';
 
 export type WebhookRepositoryDependencies = {
   model: ModelStatic<WebhookModel>;

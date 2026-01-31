@@ -1,7 +1,7 @@
-import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '@infra/database/connection/mysql';
-import UserModel from '@domains/api/users/model/user.model';
 import TeamModel from '@domains/api/teams/model/team.model';
+import UserModel from '@domains/api/users/model/user.model';
+import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 
 export interface UserTeamModelAttributes {
   id?: number;
@@ -75,7 +75,6 @@ UserTeamModel.init(
   }
 );
 
-// Definir associações
 UserTeamModel.belongsTo(UserModel, {
   foreignKey: 'id_user',
   as: 'user'
@@ -86,7 +85,6 @@ UserTeamModel.belongsTo(TeamModel, {
   as: 'team'
 });
 
-// Associações inversas
 UserModel.hasMany(UserTeamModel, {
   foreignKey: 'id_user',
   as: 'userTeams'

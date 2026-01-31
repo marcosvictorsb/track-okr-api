@@ -1,3 +1,6 @@
+import { MixUserCompanyValidation } from '@adapters/gateways/common/user.company.validation.gateway';
+import { logger } from '@configs/logger';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   FindUserCriteria,
   IUserRepository
@@ -6,9 +9,6 @@ import {
   IUserCompanyValidationGateway,
   UserCompanyValidationGatewayDependencies
 } from '../interfaces';
-import { logger } from '@configs/logger';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { MixUserCompanyValidation } from '@adapters/gateways/common/user.company.validation.gateway';
 
 export class UserCompanyValidationGateway
   extends MixUserCompanyValidation

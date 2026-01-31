@@ -1,11 +1,11 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   DeleteUserTeamInteractorDependencies,
-  InputDeleteUserTeam,
-  IDeleteUserTeamGateway
+  IDeleteUserTeamGateway,
+  InputDeleteUserTeam
 } from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class DeleteUserTeamInteractor {
   protected gateway: IDeleteUserTeamGateway;
@@ -33,7 +33,6 @@ export class DeleteUserTeamInteractor {
         force_delete
       } = input;
 
-      // Validar se o usuário requisitante pertence à empresa
       const validationResult = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -51,7 +50,6 @@ export class DeleteUserTeamInteractor {
 
       const requestingUser = validationResult.user!;
 
-      // Buscar o relacionamento user-team a ser removido
       let userTeamToRemove;
 
       if (id) {
@@ -79,7 +77,6 @@ export class DeleteUserTeamInteractor {
         );
       }
 
-      // Buscar o time para verificar se pertence à empresa
       const team = await this.gateway.findTeam({
         id: userTeamToRemove.id_team,
         id_company
@@ -95,7 +92,6 @@ export class DeleteUserTeamInteractor {
         return this.presenter.notFound('Time não encontrado');
       }
 
-      // Verificar permissões
       const canRemove = await this.gateway.canRemoveUserFromTeam(
         userTeamToRemove,
         requestingUser
@@ -112,12 +108,10 @@ export class DeleteUserTeamInteractor {
 
       let success = false;
 
-      // Decidir entre soft delete (leave team) ou hard delete
       if (
         force_delete &&
         (requestingUser.role === 'admin' || requestingUser.role === 'owner')
       ) {
-        // Delete físico (apenas admin/owner)
         success = await this.gateway.deleteUserTeam({
           id: userTeamToRemove.id
         });
@@ -125,7 +119,6 @@ export class DeleteUserTeamInteractor {
           'Relacionamento user-team removido fisicamente'
         );
       } else {
-        // Soft delete (leave team)
         success = await this.gateway.leaveTeam(
           userTeamToRemove.id_user,
           userTeamToRemove.id_team

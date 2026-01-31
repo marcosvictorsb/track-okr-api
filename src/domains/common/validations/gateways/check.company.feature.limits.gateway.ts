@@ -1,26 +1,26 @@
 import { MixCheckCompanyFeatureLimits } from '@adapters/gateways/common/check.company.feature.limits.gateway';
+import { logger } from '@configs/logger';
+import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
+import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
+import {
+  IObjectiveRepository,
+  ObjectiveStatus
+} from '@domains/api/objectives/interfaces';
+import { IPlannerRepository } from '@domains/api/planners/interfaces';
+import { IResultKeyRepository } from '@domains/api/results-keys';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { IUserRepository, UserStatus } from '@domains/api/users/interfaces';
+import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
+import {
+  FindSubscriptionsCriteria,
+  ISubscriptionRepository
+} from '@domains/common/subscriptions/interfaces';
 import {
   CheckCompanyFeatureLimitsGatewayDependencies,
   FeatureType,
   ICheckCompanyFeatureLimitsGateway,
   InputGetCurrentUsage
 } from '../interfaces/check.company.feature.limits.interface';
-import {
-  FindSubscriptionsCriteria,
-  ISubscriptionRepository
-} from '@domains/common/subscriptions/interfaces';
-import { logger } from '@configs/logger';
-import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
-import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
-import { IPlanRepository } from '@domains/api/backoffice/interfaces/default.interfaces';
-import { IPlannerRepository } from '@domains/api/planners/interfaces';
-import {
-  IObjectiveRepository,
-  ObjectiveStatus
-} from '@domains/api/objectives/interfaces';
-import { IResultKeyRepository } from '@domains/api/results-keys';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
-import { IUserRepository, UserStatus } from '@domains/api/users/interfaces';
 
 export class CheckCompanyFeatureLimitsGateway
   extends MixCheckCompanyFeatureLimits

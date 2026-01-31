@@ -1,27 +1,26 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { UserTeamEntity } from '../entity/user-team.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
 import {
-  IUserTeamRepository,
+  DeleteUserTeamCriteria,
   FindUserTeamCriteria,
-  DeleteUserTeamCriteria
+  IUserTeamRepository
 } from './default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
-// DELETE/LEAVE USER TEAM
 export type InputDeleteUserTeam = {
   id?: number;
   id_user_to_remove?: number;
   id_team?: number;
   id_company: number;
-  id_user: number; // usuário que está fazendo a requisição
-  force_delete?: boolean; // força delete físico ao invés de soft delete
+  id_user: number;
+  force_delete?: boolean;
 };
 
 export type DeleteUserTeamInteractorDependencies = {

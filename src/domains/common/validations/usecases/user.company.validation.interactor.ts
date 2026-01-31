@@ -1,8 +1,8 @@
 import {
   InputUserCompanyValidation,
-  UserCompanyValidationResult,
+  IUserCompanyValidationGateway,
   UserCompanyValidationInteractorDependencies,
-  IUserCompanyValidationGateway
+  UserCompanyValidationResult
 } from '../interfaces';
 
 export class UserCompanyValidationInteractor {

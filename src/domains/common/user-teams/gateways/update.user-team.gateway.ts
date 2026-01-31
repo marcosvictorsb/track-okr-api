@@ -1,18 +1,17 @@
-import { UserTeamEntity } from '../entity/user-team.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import {
-  IUpdateUserTeamGateway,
-  IUpdateUserTeamGatewayDependencies,
-  FindUserTeamCriteria,
-  UpdateUserTeamCriteria,
-  InputUpdateUserTeam,
-  IUserTeamRepository
-} from '../interfaces';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { MixUpdateUserTeam } from '@adapters/gateways/api/user-teams';
 import { logger } from '@configs/logger';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { UserTeamEntity } from '../entity/user-team.entity';
+import {
+  FindUserTeamCriteria,
+  IUpdateUserTeamGateway,
+  IUpdateUserTeamGatewayDependencies,
+  IUserTeamRepository,
+  UpdateUserTeamCriteria
+} from '../interfaces';
 
 export class UpdateUserTeamGateway
   extends MixUpdateUserTeam
@@ -74,12 +73,10 @@ export class UpdateUserTeamGateway
       teamId: team.id
     });
 
-    // Verificar se o usuário é admin ou owner da empresa
     if (requestingUser.role === 'admin' || requestingUser.role === 'owner') {
       return { canManage: true };
     }
 
-    // Verificar se o usuário é manager do time
     const userTeamRelation = await this.userTeamRepository.find({
       id_user: requestingUser.id,
       id_team: team.id
@@ -98,7 +95,7 @@ export class UpdateUserTeamGateway
   async canUpdateUserTeam(
     userTeamToUpdate: UserTeamEntity,
     requestingUser: UserEntity,
-    updateData: Partial<InputUpdateUserTeam>
+    updateData: Partial<UpdateUserTeamCriteria>
   ): Promise<{ canUpdate: boolean; message?: string }> {
     this.logging.info(
       'Verificando permissões para atualizar relacionamento user-team',
@@ -109,12 +106,10 @@ export class UpdateUserTeamGateway
       }
     );
 
-    // Verificar se o usuário é admin ou owner da empresa
     if (requestingUser.role === 'admin' || requestingUser.role === 'owner') {
       return { canUpdate: true };
     }
 
-    // Buscar o time para verificar permissões
     const team = await this.teamRepository.find({
       id: userTeamToUpdate.id_team
     });
@@ -125,14 +120,12 @@ export class UpdateUserTeamGateway
       };
     }
 
-    // Verificar se o usuário é manager do time
     const managerRelation = await this.userTeamRepository.find({
       id_user: requestingUser.id,
       id_team: team.id
     });
 
     if (managerRelation && managerRelation.role_in_team === 'manager') {
-      // Manager pode atualizar outros membros, mas não pode se rebaixar
       if (
         userTeamToUpdate.id_user === requestingUser.id &&
         updateData.role_in_team &&
@@ -146,9 +139,7 @@ export class UpdateUserTeamGateway
       return { canUpdate: true };
     }
 
-    // Usuário só pode atualizar a si mesmo (dados limitados)
     if (userTeamToUpdate.id_user === requestingUser.id) {
-      // Verificar se está tentando alterar role (não permitido)
       if (updateData.role_in_team) {
         return {
           canUpdate: false,

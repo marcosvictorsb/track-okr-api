@@ -33,15 +33,12 @@ export class CreateTrialSubscriptionInteractor {
       }
     );
 
-    // 5. Criar a subscription com trial baseado no tipo
     const now = new Date();
     const trialEndDate = new Date();
 
     if (isBeta) {
-      // Beta: 3 meses
       trialEndDate.setMonth(now.getMonth() + 3);
     } else {
-      // Trial normal: 14 dias
       trialEndDate.setDate(now.getDate() + 14);
     }
 

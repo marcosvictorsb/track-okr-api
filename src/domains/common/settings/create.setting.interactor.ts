@@ -1,7 +1,7 @@
 import {
   CreateSettingInteractorDependencies,
-  InputCreateSetting,
-  ICreateSettingGateway
+  ICreateSettingGateway,
+  InputCreateSetting
 } from './interfaces/create.setting.interface';
 
 export class CreateSettingInteractor {
@@ -28,7 +28,6 @@ export class CreateSettingInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      // Verificar se já existe configuração para a empresa
       const existingSetting = await this.gateway.findSetting({ id_company });
       if (existingSetting) {
         this.gateway.loggerInfo('Configuração já existe para esta empresa', {
@@ -38,8 +37,6 @@ export class CreateSettingInteractor {
         return false;
       }
 
-      // Criar configuração com valores padrão se não informados
-      // Para novos usuários, iniciar com tudo bloqueado (true)
       const settingData = {
         block_okr_creation: block_okr_creation ?? true,
         block_key_result_creation: block_key_result_creation ?? true,

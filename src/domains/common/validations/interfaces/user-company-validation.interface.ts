@@ -1,11 +1,11 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
-import { DataLogOutput } from '@adapters/services';
 import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
 
 export type InputUserCompanyValidation = {
   id_user: number;

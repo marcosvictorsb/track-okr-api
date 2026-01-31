@@ -1,14 +1,14 @@
-import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '@infra/database/connection/mysql';
 import Company from '@domains/api/companies/model/company.model';
 import PlannerModel from '@domains/api/planners/model/planner.model';
+import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 import { SubscriptionStatus } from '../interfaces';
 
 export interface SubscriptionAttributes {
   id?: number;
   company_id: number;
   plan_id: number;
-  status: SubscriptionStatus; //    | 'trial' | 'active' | 'canceled' | 'expired' | 'suspended' | 'pending_activation';
+  status: SubscriptionStatus;
   trial_start_date?: Date;
   trial_end_date?: Date;
   started_at: Date;
@@ -31,7 +31,7 @@ class SubscriptionModel
   declare id: number;
   declare company_id: number;
   declare plan_id: number;
-  declare status: SubscriptionStatus; //    | 'trial' | 'active' | 'canceled' | 'expired' | 'suspended' | 'pending_activation';
+  declare status: SubscriptionStatus;
   declare trial_start_date?: Date;
   declare trial_end_date?: Date;
   declare started_at: Date;

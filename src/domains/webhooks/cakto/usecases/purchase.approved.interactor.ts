@@ -1,16 +1,16 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  IPurchaseApprovedGateway,
-  IPurchaseApprovedInteractorDependencies,
-  CaktoWebhookPayload
-} from '../interfaces/purchase.approved.interfaces';
-import { IPresenter } from '@protocols/presenter';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
+import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { UserStatus } from '@domains/api/users/interfaces';
-import { Utils } from '@shared/utils/utils';
 import { CreateSettingCriteria, WEBHOOK_STATUS } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { Utils } from '@shared/utils/utils';
+import {
+  CaktoWebhookPayload,
+  IPurchaseApprovedGateway,
+  IPurchaseApprovedInteractorDependencies
+} from '../interfaces/purchase.approved.interfaces';
 
 export class PurchaseApprovedInteractor {
   protected gateway: IPurchaseApprovedGateway;
@@ -31,7 +31,6 @@ export class PurchaseApprovedInteractor {
         amount: payload.data.amount
       });
 
-      // 1. Processar apenas eventos de compra aprovada
       if (payload.event !== 'purchase_approved') {
         this.gateway.saveWebhook({
           source: 'cakto',
@@ -44,7 +43,6 @@ export class PurchaseApprovedInteractor {
         return this.presenter.ok('Evento ignorado');
       }
 
-      // 1. Verificar se o plano existe
       const plan = await this.gateway.findPlan({ secret: payload.secret });
       if (!plan) {
         this.gateway.loggerError('Plano não encontrado para o secret', {
@@ -86,7 +84,6 @@ export class PurchaseApprovedInteractor {
         company_name: company.name
       });
 
-      // 5. Criar usuário
       const userData = {
         name: customer.name,
         email: customer.email,
@@ -103,7 +100,6 @@ export class PurchaseApprovedInteractor {
         email: user.email
       });
 
-      // Criar configurações padrão para a empresa
       const dataSettings: CreateSettingCriteria = {
         id_company: company.id as number,
         block_okr_creation: true,
@@ -135,7 +131,6 @@ export class PurchaseApprovedInteractor {
       const newSubscription =
         await this.gateway.createSubscription(subscriptionData);
 
-      // Registrar criação no histórico
       await this.gateway.createSubscriptionHistory({
         subscription_id: newSubscription.id as number,
         action: 'created',
@@ -153,7 +148,6 @@ export class PurchaseApprovedInteractor {
         subscription_id: newSubscription.id
       });
 
-      // 9. Enviar email de ativação se usuário ainda não está ativo
       await this.sendActivationEmail(user, company, plan);
 
       this.gateway.saveWebhook({

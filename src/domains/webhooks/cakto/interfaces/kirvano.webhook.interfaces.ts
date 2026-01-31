@@ -1,31 +1,32 @@
-import { KirvanoWebhookInteractor } from '../usecases/kirvano.webhook.interactor';
-import { IPresenter } from '@protocols/presenter';
-import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
+import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
+import { IPresenter } from '@protocols/presenter';
+import { KirvanoWebhookInteractor } from '../usecases/kirvano.webhook.interactor';
 
-import {
-  FindCompanyCriteria,
-  ICompanyRepository
-} from '@domains/api/companies/interfaces';
+import { DataLogOutput } from '@adapters/services';
+import { CreateCompanyData } from '@domains/api/authentication/interfaces';
 import {
   FindPlansCriteria,
   IPlanRepository
 } from '@domains/api/backoffice/interfaces/default.interfaces';
-import { DataLogOutput } from '@adapters/services';
 import {
-  CreateSettingCriteria,
-  CreateWebhookCriteria,
-  IWebhookRepository,
-  WebhookEntity
-} from '@domains/common';
-import { CreateCompanyData } from '@domains/api/authentication/interfaces';
+  FindCompanyCriteria,
+  ICompanyRepository
+} from '@domains/api/companies/interfaces';
+import { ISettingRepository, SettingEntity } from '@domains/api/settings';
 import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   CreateUserCriteria,
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
-import { ISettingRepository, SettingEntity } from '@domains/api/settings';
+import {
+  CreateSettingCriteria,
+  CreateWebhookCriteria,
+  IWebhookRepository,
+  WebhookEntity
+} from '@domains/common';
+import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
 import {
   CreateSubscriptionCriteria,
   CreateSubscriptionHistoryCriteria,
@@ -34,7 +35,6 @@ import {
   ISubscriptionRepository,
   UpdateSubscriptionCriteria
 } from '@domains/common/subscriptions/interfaces';
-import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
 import { Resend } from 'resend';
 
 export enum EventsKirvanoWebhook {
@@ -124,7 +124,6 @@ export interface IKirvanoWebhookGateway {
     criteria: CreateSettingCriteria
   ): Promise<SettingEntity>;
 
-  // subscription
   createSubscription(
     criteria: CreateSubscriptionCriteria
   ): Promise<SubscriptionEntity>;
@@ -139,7 +138,6 @@ export interface IKirvanoWebhookGateway {
     criteria: UpdateSubscriptionCriteria
   ): Promise<boolean>;
 
-  // Email operations
   generateActivationToken(userId: number): Promise<string>;
   signToken(data: {
     name: string;
@@ -148,7 +146,7 @@ export interface IKirvanoWebhookGateway {
     id_company: number;
   }): string;
   sendInviteEmail(email: string, activationLink: string): Promise<boolean>;
-  // Logs methods
+
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

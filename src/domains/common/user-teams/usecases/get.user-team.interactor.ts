@@ -1,11 +1,11 @@
 import { HttpResponse } from '@protocols/http';
-import {
-  GetUserTeamInteractorDependencies,
-  InputGetUserTeam,
-  IGetUserTeamGateway,
-  FindUserTeamCriteria
-} from '../interfaces';
 import { IPresenter } from '@protocols/presenter';
+import {
+  FindUserTeamCriteria,
+  GetUserTeamInteractorDependencies,
+  IGetUserTeamGateway,
+  InputGetUserTeam
+} from '../interfaces';
 
 export class GetUserTeamInteractor {
   protected gateway: IGetUserTeamGateway;
@@ -24,7 +24,6 @@ export class GetUserTeamInteractor {
 
       const { id_user, id_team, id_user_to_find, role_in_team } = input;
 
-      // Construir critérios de busca
       const criteria: FindUserTeamCriteria = {};
 
       if (id_team) {
@@ -34,8 +33,6 @@ export class GetUserTeamInteractor {
       if (id_user_to_find) {
         criteria.id_user = id_user_to_find;
       } else if (id_user && !id_team) {
-        // Se não especificou time e não especificou usuário para buscar,
-        // buscar os times do usuário requisitante
         criteria.id_user = id_user;
       }
 
@@ -43,7 +40,6 @@ export class GetUserTeamInteractor {
         criteria.role_in_team = role_in_team;
       }
 
-      // Buscar os relacionamentos user-team
       const userTeams = await this.gateway.findUserTeams(criteria);
 
       if (!userTeams || userTeams.length === 0) {
@@ -51,7 +47,6 @@ export class GetUserTeamInteractor {
         return this.presenter.ok([]);
       }
 
-      // Serializar os dados
       const serializedUserTeams = userTeams.map((userTeam) =>
         userTeam.toJSON()
       );

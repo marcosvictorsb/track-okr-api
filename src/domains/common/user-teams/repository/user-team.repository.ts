@@ -66,7 +66,6 @@ export class UserTeamRepository implements IUserTeamRepository {
     criteria: FindUserTeamCriteria
   ): Promise<UserTeamEntity | undefined> {
     const whereConditions = this.getConditions(criteria);
-    // Por padrão, filtra apenas relacionamentos ativos (não deletados)
     whereConditions['deleted_at'] = { [Op.is]: null };
 
     const userTeam = await this.model.findOne({

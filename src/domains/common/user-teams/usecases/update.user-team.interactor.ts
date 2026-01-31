@@ -1,11 +1,11 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  UpdateUserTeamInteractorDependencies,
-  InputUpdateUserTeam,
-  IUpdateUserTeamGateway
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  InputUpdateUserTeam,
+  IUpdateUserTeamGateway,
+  UpdateUserTeamInteractorDependencies
+} from '../interfaces';
 
 export class UpdateUserTeamInteractor {
   protected gateway: IUpdateUserTeamGateway;
@@ -36,7 +36,6 @@ export class UpdateUserTeamInteractor {
         id_user
       } = input;
 
-      // Validar se o usuário requisitante pertence à empresa
       const validationResult = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -54,7 +53,6 @@ export class UpdateUserTeamInteractor {
 
       const requestingUser = validationResult.user!;
 
-      // Buscar o relacionamento user-team a ser atualizado
       let userTeamToUpdate;
 
       if (id) {
@@ -80,7 +78,6 @@ export class UpdateUserTeamInteractor {
         );
       }
 
-      // Buscar o time para verificar se pertence à empresa
       const team = await this.gateway.findTeam({
         id: userTeamToUpdate.id_team,
         id_company
@@ -96,7 +93,6 @@ export class UpdateUserTeamInteractor {
         return this.presenter.notFound('Time não encontrado');
       }
 
-      // Verificar permissões
       const canUpdate = await this.gateway.canUpdateUserTeam(
         userTeamToUpdate,
         requestingUser,
@@ -116,20 +112,17 @@ export class UpdateUserTeamInteractor {
         );
       }
 
-      // Preparar dados para atualização
       const updateData: Partial<InputUpdateUserTeam> = {};
 
       if (role_in_team !== undefined) {
         updateData.role_in_team = role_in_team;
       }
 
-      // Se não há dados para atualizar
       if (Object.keys(updateData).length === 0) {
         this.gateway.loggerInfo('Nenhum dado para atualizar');
         return this.presenter.badRequest('Nenhum dado para atualizar');
       }
 
-      // Realizar a atualização
       const success = await this.gateway.updateUserTeam(updateData, {
         id: userTeamToUpdate.id
       });
@@ -141,7 +134,6 @@ export class UpdateUserTeamInteractor {
         );
       }
 
-      // Buscar o relacionamento atualizado
       const updatedUserTeam = await this.gateway.findUserTeam({
         id: userTeamToUpdate.id
       });

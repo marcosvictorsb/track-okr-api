@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { SubscriptionEntity } from '@domains/common/subscriptions/entity/subscription.entity';
 
 import {
@@ -88,13 +89,11 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     data: Partial<UpdateSubscriptionCriteria>,
     criteria: UpdateSubscriptionCriteria
   ): Promise<boolean> {
-    // Transform data to match Sequelize model expectations
     const updateData: any = {
       ...data,
       updated_at: new Date()
     };
 
-    // Type assertion for status field
     if (data.status) {
       updateData.status = data.status;
     }
@@ -123,120 +122,4 @@ export class SubscriptionRepository implements ISubscriptionRepository {
     });
     return count;
   }
-
-  // Métodos específicos do domínio subscription
-  // public async findByCompany(
-  //   companyId: number
-  // ): Promise<SubscriptionEntity | undefined> {
-  //   return this.find({ company_id: companyId });
-  // }
-
-  // public async findActiveByCompany(
-  //   companyId: number
-  // ): Promise<SubscriptionEntity | undefined> {
-  //   return this.find({
-  //     company_id: companyId,
-  //     status: 'active'
-  //   });
-  // }
-
-  // public async findTrialByCompany(
-  //   companyId: number
-  // ): Promise<SubscriptionEntity | undefined> {
-  //   return this.find({
-  //     company_id: companyId,
-  //     status: 'trial'
-  //   });
-  // }
-
-  // public async findExpiring(days: number = 7): Promise<SubscriptionEntity[]> {
-  //   const futureDate = new Date();
-  //   futureDate.setDate(futureDate.getDate() + days);
-
-  //   const subscriptions = await this.model.findAll({
-  //     where: {
-  //       status: ['active', 'trial'],
-  //       expires_at: {
-  //         [this.model.sequelize?.Op.lte || '$lte']: futureDate
-  //       }
-  //     },
-  //     order: [['expires_at', 'ASC']],
-  //     raw: true
-  //   });
-
-  //   return subscriptions.map(
-  //     (subscription) =>
-  //       new SubscriptionEntity(this.transformToEntityData(subscription))
-  //   );
-  // }
-
-  // public async findExpired(): Promise<SubscriptionEntity[]> {
-  //   const now = new Date();
-
-  //   const subscriptions = await this.model.findAll({
-  //     where: {
-  //       status: ['active', 'trial'],
-  //       expires_at: {
-  //         [this.model.sequelize?.Op.lt || '$lt']: now
-  //       }
-  //     },
-  //     order: [['expires_at', 'ASC']],
-  //     raw: true
-  //   });
-
-  //   return subscriptions.map(
-  //     (subscription) =>
-  //       new SubscriptionEntity(this.transformToEntityData(subscription))
-  //   );
-  // }
-
-  // public async cancel(
-  //   id: number,
-  //   reason?: string
-  // ): Promise<SubscriptionEntity> {
-  //   return this.update({
-  //     id,
-  //     status: 'canceled',
-  //     canceled_at: new Date(),
-  //     cancellation_reason: reason
-  //   });
-  // }
-
-  // public async suspend(
-  //   id: number,
-  //   gracePeriodDays: number = 7
-  // ): Promise<SubscriptionEntity> {
-  //   const gracePeriodEnd = new Date();
-  //   gracePeriodEnd.setDate(gracePeriodEnd.getDate() + gracePeriodDays);
-
-  //   return this.update({
-  //     id,
-  //     status: 'suspended',
-  //     suspended_at: new Date(),
-  //     grace_period_ends_at: gracePeriodEnd
-  //   });
-  // }
-
-  // public async reactivate(id: number): Promise<SubscriptionEntity> {
-  //   // Calcular nova data de expiração baseada no plano
-  //   const subscription = await this.find({ id });
-  //   if (!subscription) {
-  //     throw new Error(`Subscription with id ${id} not found`);
-  //   }
-
-  //   // Aqui você poderia adicionar lógica para calcular nova expires_at
-  //   // baseado no plano (mensal/anual)
-  //   const newExpiresAt = new Date();
-  //   newExpiresAt.setMonth(newExpiresAt.getMonth() + 1); // Exemplo: +1 mês
-
-  //   return this.update({
-  //     id,
-  //     status: 'active',
-  //     canceled_at: null,
-  //     suspended_at: null,
-  //     grace_period_ends_at: null,
-  //     expires_at: newExpiresAt,
-  //     cancellation_reason: null
-  //   });
-  // }
 }

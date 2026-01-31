@@ -1,2 +1,2 @@
-export * from './purchase.approved.gateway';
 export * from './kirvano.webhook.gateway';
+export * from './purchase.approved.gateway';

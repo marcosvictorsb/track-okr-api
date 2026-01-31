@@ -1,10 +1,10 @@
-import {
-  UpsertUserTeamInteractorDependencies,
-  InputUpsertUserTeam,
-  IUpsertUserTeamGateway
-} from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { IPresenter } from '@protocols/presenter';
+import {
+  InputUpsertUserTeam,
+  IUpsertUserTeamGateway,
+  UpsertUserTeamInteractorDependencies
+} from '../interfaces';
 
 export class UpsertUserTeamInteractor {
   protected gateway: IUpsertUserTeamGateway;
@@ -24,7 +24,6 @@ export class UpsertUserTeamInteractor {
 
     const { id_team, id_user } = input;
 
-    // Criar o relacionamento ou atualizar se ja existir atualizar
     await this.gateway.upsertUserTeam({
       id_user,
       id_team,

@@ -16,7 +16,6 @@ import {
   ISubscriptionRepository
 } from '@domains/common/subscriptions/interfaces';
 
-// Tipos possíveis de feature para validação de limite
 export enum FeatureType {
   MAX_USER = 'max_users',
   MAX_PLANNERS = 'max_planners',
@@ -24,7 +23,7 @@ export enum FeatureType {
   MAX_OBJECTIVES_PER_QUARTER = 'max_objectives_per_quarter',
   MAX_KEY_RESULTS_PER_OBJECTIVE = 'max_key_results_per_objective'
 }
-// Input esperado pelo interactor
+
 export interface CheckCompanyFeatureLimitsInput {
   id_company: number;
   feature: FeatureType;

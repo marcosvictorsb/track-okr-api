@@ -1,16 +1,15 @@
-import { IPresenter } from '@protocols/presenter';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
-import {
-  IUserTeamRepository,
-  FindUserTeamCriteria
-} from './default.interfaces';
 import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
 import { logger } from '@configs/logger';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { IUserRepository } from '@domains/api/users/interfaces';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  FindUserTeamCriteria,
+  IUserTeamRepository
+} from './default.interfaces';
 
-// CREATE USER TEAM
 export type InputUpsertUserTeam = {
   id_user: number;
   id_team: number;

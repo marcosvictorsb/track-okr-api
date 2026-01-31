@@ -1,15 +1,15 @@
-import { Presenter } from '@protocols/presenter';
-import { UpsertUserTeamGateway } from '../gateways/upsert.user.team.gateway';
-import { UpsertUserTeamInteractor } from '../usecases/upsert.user.team.interactor';
+import { logger } from '@configs/logger';
+import TeamModel from '@domains/api/teams/model/team.model';
+import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import UserModel from '@domains/api/users/model/user.model';
+import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { UserCompanyValidationInteractor } from '@domains/common';
 import { UserCompanyValidationGateway } from '@domains/common/validations/gateways/user.company.validation.gateway';
-import { logger } from '@configs/logger';
-import { UserTeamRepository } from '../repository/user-team.repository';
-import { UserRepository } from '@domains/api/users/repository/user.repository';
-import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import { Presenter } from '@protocols/presenter';
+import { UpsertUserTeamGateway } from '../gateways/upsert.user.team.gateway';
 import UserTeamModel from '../model/user-team.model';
-import UserModel from '@domains/api/users/model/user.model';
-import TeamModel from '@domains/api/teams/model/team.model';
+import { UserTeamRepository } from '../repository/user-team.repository';
+import { UpsertUserTeamInteractor } from '../usecases/upsert.user.team.interactor';
 
 export const makeUpsertUserTeamInteractor = (): UpsertUserTeamInteractor => {
   const userTeamRepository = new UserTeamRepository({ model: UserTeamModel });

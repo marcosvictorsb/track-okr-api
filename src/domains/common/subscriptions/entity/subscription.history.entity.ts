@@ -51,17 +51,14 @@ export class SubscriptionHistoryEntity {
     this.created_at = data.created_at;
   }
 
-  // Método para verificar se foi uma ação automatizada
   public isAutomated(): boolean {
     return this.automated;
   }
 
-  // Método para verificar se foi uma ação manual (feita por usuário)
   public isManual(): boolean {
     return !this.automated && this.created_by !== undefined;
   }
 
-  // Método para verificar se é uma mudança de plano
   public isPlanChange(): boolean {
     return (
       this.action === 'plan_changed' ||
@@ -70,7 +67,6 @@ export class SubscriptionHistoryEntity {
     );
   }
 
-  // Método para verificar se é uma mudança de status
   public isStatusChange(): boolean {
     return (
       this.previous_status !== undefined &&
@@ -79,7 +75,6 @@ export class SubscriptionHistoryEntity {
     );
   }
 
-  // Método para verificar se é uma ação relacionada a trial
   public isTrialAction(): boolean {
     return (
       this.action === 'trial_started' ||
@@ -88,7 +83,6 @@ export class SubscriptionHistoryEntity {
     );
   }
 
-  // Método para verificar se é uma ação de cancelamento/suspensão
   public isCancellationAction(): boolean {
     return (
       this.action === 'canceled' ||
@@ -97,7 +91,6 @@ export class SubscriptionHistoryEntity {
     );
   }
 
-  // Método para verificar se é uma ação de ativação/reativação
   public isActivationAction(): boolean {
     return (
       this.action === 'activated' ||
@@ -106,7 +99,6 @@ export class SubscriptionHistoryEntity {
     );
   }
 
-  // Método para obter informações de contexto da ação
   public getActionContext(): {
     isAutomated: boolean;
     hasUser: boolean;
@@ -124,7 +116,6 @@ export class SubscriptionHistoryEntity {
     };
   }
 
-  // Método para serialização
   public toJSON(): Record<string, unknown> {
     return {
       id: this.id,

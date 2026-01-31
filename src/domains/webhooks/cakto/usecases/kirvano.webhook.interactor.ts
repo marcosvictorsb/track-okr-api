@@ -118,7 +118,6 @@ export class KirvanoWebhookInteractor {
   private async handleSaleApproved(
     payload: KirvanoWebhookPayload
   ): Promise<HttpResponse> {
-    // 1. Verificar se o plano existe
     const plan = await this.gateway.findPlan({
       name: payload.products[0].offer_name as string
     });
@@ -193,7 +192,6 @@ export class KirvanoWebhookInteractor {
       email: user.email
     });
 
-    // Criar configurações padrão para a empresa
     const dataSettings: CreateSettingCriteria = {
       id_company: companyCreated.id as number,
       block_okr_creation: true,
@@ -221,7 +219,6 @@ export class KirvanoWebhookInteractor {
     const newSubscription =
       await this.gateway.createSubscription(subscriptionData);
 
-    // Registrar criação no histórico
     await this.gateway.createSubscriptionHistory({
       subscription_id: newSubscription.id as number,
       action: 'created',
@@ -239,7 +236,6 @@ export class KirvanoWebhookInteractor {
       subscription_id: newSubscription.id
     });
 
-    // 9. Enviar email de ativação se usuário ainda não está ativo
     await this.sendActivationEmail(user, companyCreated, plan);
 
     this.gateway.saveWebhook({

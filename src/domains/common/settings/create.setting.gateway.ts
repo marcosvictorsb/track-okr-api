@@ -1,10 +1,10 @@
-import { ISettingRepository } from '@domains/api/settings/interfaces/default.interfaces';
-import { SettingEntity } from '@domains/api/settings/entity/setting.entity';
 import { LoggerMixin } from '@adapters/services';
 import { logger } from '@configs/logger';
+import { SettingEntity } from '@domains/api/settings/entity/setting.entity';
+import { ISettingRepository } from '@domains/api/settings/interfaces/default.interfaces';
 import {
-  ICreateSettingGateway,
-  CreateSettingCriteria
+  CreateSettingCriteria,
+  ICreateSettingGateway
 } from './interfaces/create.setting.interface';
 
 export class CreateSettingGateway

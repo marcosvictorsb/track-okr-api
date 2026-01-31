@@ -1,5 +1,5 @@
-import { SettingEntity } from '@domains/api/settings/entity/setting.entity';
 import { DataLogOutput } from '@adapters/services';
+import { SettingEntity } from '@domains/api/settings/entity/setting.entity';
 
 export type InputCreateSetting = {
   block_okr_creation?: boolean;

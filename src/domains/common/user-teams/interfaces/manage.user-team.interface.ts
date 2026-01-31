@@ -1,18 +1,18 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { UserTeamEntity } from '../entity/user-team.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
 import {
-  IUserTeamRepository,
+  CreateUserTeamCriteria,
   FindUserTeamCriteria,
-  CreateUserTeamCriteria
+  IUserTeamRepository
 } from './default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export enum ActionUserTeam {
   USER_ADD_TEAM = 'user_add_team',
@@ -22,7 +22,6 @@ export enum ActionUserTeam {
   REMOVED_USER_FROM_CURRENT_TEAM = 'removed_user_from_current_team'
 }
 
-// MANAGE USER TEAM
 export type InputManageUserTeam = {
   id_user_to_manage: number;
   id_team?: number;
@@ -42,7 +41,6 @@ export type ManageUserTeamControllerDependencies = {
 };
 
 export interface IManageUserTeamGateway {
-  // Métodos para buscar entidades
   findUser(criteria: {
     id?: number;
     id_company?: number;
@@ -55,12 +53,10 @@ export interface IManageUserTeamGateway {
     criteria: FindUserTeamCriteria
   ): Promise<UserTeamEntity | undefined>;
 
-  // Métodos específicos para gerenciamento
   findCurrentUserTeam(userId: number): Promise<UserTeamEntity | undefined>;
   createUserTeam(criteria: CreateUserTeamCriteria): Promise<UserTeamEntity>;
   leaveCurrentTeam(userId: number, teamId?: number): Promise<boolean>;
 
-  // Métodos de log
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
 }

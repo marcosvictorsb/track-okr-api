@@ -1,17 +1,17 @@
-import { UserTeamEntity } from '../entity/user-team.entity';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import {
-  IManageUserTeamGateway,
-  IManageUserTeamGatewayDependencies,
-  FindUserTeamCriteria,
-  CreateUserTeamCriteria,
-  IUserTeamRepository
-} from '../interfaces';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
 import { MixManageUserTeam } from '@adapters/gateways/api/user-teams';
 import { logger } from '@configs/logger';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { UserTeamEntity } from '../entity/user-team.entity';
+import {
+  CreateUserTeamCriteria,
+  FindUserTeamCriteria,
+  IManageUserTeamGateway,
+  IManageUserTeamGatewayDependencies,
+  IUserTeamRepository
+} from '../interfaces';
 
 export class ManageUserTeamGateway
   extends MixManageUserTeam
@@ -67,7 +67,6 @@ export class ManageUserTeamGateway
   ): Promise<UserTeamEntity> {
     this.logging.info('Criando relacionamento user-team', { criteria });
 
-    // Verificar se já existe uma relação ativa
     const existingUserTeam = await this.userTeamRepository.find({
       id_user: criteria.id_user,
       id_team: criteria.id_team
@@ -100,7 +99,6 @@ export class ManageUserTeamGateway
         id_user: userId
       });
     } else {
-      // Se não foi fornecido o ID do time, buscar o time atual do usuário
       const currentUserTeam = await this.findCurrentUserTeam(userId);
       if (!currentUserTeam) {
         this.logging.warn('Usuário não está em nenhum time', { userId });

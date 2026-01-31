@@ -1,5 +1,5 @@
-import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 import SubscriptionModel from './subscription.model';
 
 export type SubscriptionHistoryAction =
@@ -180,7 +180,7 @@ SubscriptionHistoryModel.init(
     sequelize,
     modelName: 'SubscriptionHistoryModel',
     tableName: 'subscription_history',
-    timestamps: false, // Só temos created_at, não updated_at
+    timestamps: false,
     createdAt: 'created_at',
     updatedAt: false,
     paranoid: false,

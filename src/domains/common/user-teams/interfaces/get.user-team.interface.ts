@@ -1,23 +1,22 @@
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import { UserTeamEntity } from '../entity/user-team.entity';
-import { IUserRepository } from '@domains/api/users/interfaces';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
 import {
-  IUserTeamRepository,
-  FindUserTeamCriteria
+  FindUserTeamCriteria,
+  IUserTeamRepository
 } from './default.interfaces';
-import { DataLogOutput } from '@adapters/services';
-import { HttpResponse } from '@protocols/http';
-import { logger } from '@configs/logger';
 
-// GET USER TEAM
 export type InputGetUserTeam = {
   id_company: number;
-  id_user?: number; // usuário que está fazendo a requisição
+  id_user?: number;
   id_team?: number;
-  id_user_to_find?: number; // usuário específico para buscar
+  id_user_to_find?: number;
   role_in_team?: string;
-  include_left?: boolean; // incluir usuários que saíram do time
+  include_left?: boolean;
 };
 
 export type GetUserTeamInteractorDependencies = {

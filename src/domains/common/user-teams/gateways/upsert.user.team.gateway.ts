@@ -29,7 +29,6 @@ export class UpsertUserTeamGateway
   async upsertUserTeam(criteria: FindUserTeamCriteria): Promise<void> {
     const { id_user, id_team, role_in_team } = criteria;
 
-    // Primeiro, verificar se existe um relacionamento específico para este user+team (incluindo soft deleted)
     const existingUserTeam =
       await this.userTeamRepository.findIncludingSoftDeleted({
         id_user,
@@ -37,7 +36,6 @@ export class UpsertUserTeamGateway
       });
 
     if (existingUserTeam) {
-      // Se existe mas está deletado, reativar
       if (existingUserTeam.deleted_at) {
         this.logging.info(
           'Reativando relacionamento user-team previamente removido',
@@ -57,7 +55,6 @@ export class UpsertUserTeamGateway
           { id: existingUserTeam.id }
         );
       } else {
-        // Se existe e está ativo, apenas atualizar role se necessário
         if (role_in_team && role_in_team !== existingUserTeam.role_in_team) {
           this.logging.info(
             'Atualizando role do relacionamento user-team existente',
@@ -82,7 +79,6 @@ export class UpsertUserTeamGateway
         }
       }
     } else {
-      // Verificar se usuário tem relacionamento ativo com outro time
       const currentUserTeam = await this.userTeamRepository.find({
         id_user
       });
@@ -95,14 +91,12 @@ export class UpsertUserTeamGateway
           role_in_team: role_in_team || 'member'
         });
 
-        // Remover do time atual (soft delete)
         await this.userTeamRepository.update(
           { deleted_at: new Date() },
           { id: currentUserTeam.id }
         );
       }
 
-      // Criar novo relacionamento
       this.logging.info('Criando novo relacionamento de usuário com time', {
         id_user,
         id_team,

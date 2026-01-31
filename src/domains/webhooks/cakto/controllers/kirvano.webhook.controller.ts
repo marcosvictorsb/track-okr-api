@@ -1,4 +1,4 @@
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { KirvanoWebhookControllerDependencies } from '../interfaces/kirvano.webhook.interfaces';
 import { KirvanoWebhookInteractor } from '../usecases/kirvano.webhook.interactor';
 
