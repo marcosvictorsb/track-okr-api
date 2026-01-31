@@ -9,7 +9,6 @@ export interface ICheckinsEntity {
   updated_at?: Date;
   deleted_at?: Date;
 
-  // Campos relacionados/calculados
   user_name?: string;
   result_key_name?: string;
 }
@@ -25,7 +24,6 @@ export class CheckinsEntity implements ICheckinsEntity {
   readonly updated_at?: Date;
   readonly deleted_at?: Date;
 
-  // Campos relacionados/calculados
   user_name?: string;
   result_key_name?: string;
 

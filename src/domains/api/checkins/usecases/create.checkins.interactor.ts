@@ -1,11 +1,11 @@
+import { UserCompanyValidationInteractor } from '@domains/common';
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   CreateCheckinsInteractorDependencies,
-  InputCreateCheckins,
-  ICreateCheckinsGateway
+  ICreateCheckinsGateway,
+  InputCreateCheckins
 } from '../interfaces/create.checkins.interface';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 
 export class CreateCheckinsInteractor {
   protected gateway: ICreateCheckinsGateway;
@@ -29,7 +29,6 @@ export class CreateCheckinsInteractor {
         }
       );
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -43,7 +42,6 @@ export class CreateCheckinsInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // // Buscar o resultado-chave e validar se pertence à empresa
       const resultKey = await this.gateway.findResultKey({ id: id_result_key });
       if (!resultKey) {
         this.gateway.loggerInfo('Resultado-chave não encontrado', {
@@ -52,7 +50,6 @@ export class CreateCheckinsInteractor {
         return this.presenter.notFound('Resultado-chave não encontrado');
       }
 
-      // Validar o novo valor
       if (new_value < 0) {
         this.gateway.loggerInfo('Valor inválido', { id_company });
         return this.presenter.badRequest(
@@ -60,7 +57,6 @@ export class CreateCheckinsInteractor {
         );
       }
 
-      // Criar o registro de atualização
       const updateData = {
         id_result_key,
         previous_value: resultKey.current_value,
@@ -78,7 +74,6 @@ export class CreateCheckinsInteractor {
         return this.presenter.serverError('Erro ao criar atualização');
       }
 
-      // Atualizar o valor atual do resultado-chave
       const updated = await this.gateway.updateResultKeyCurrentValue(
         id_result_key,
         new_value

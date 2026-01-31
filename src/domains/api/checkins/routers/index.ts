@@ -1,8 +1,8 @@
-import { Response, Router } from 'express';
-import * as factories from '../factories/';
+import { keyResultUpdateLimiter } from '@configs/rate-limit';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import { keyResultUpdateLimiter } from '@configs/rate-limit';
+import { Response, Router } from 'express';
+import * as factories from '../factories/';
 import { createCheckinsSchema } from '../schemas';
 
 const { makeCreateCheckinsFactory, makeGetCheckinsFactory } = factories;

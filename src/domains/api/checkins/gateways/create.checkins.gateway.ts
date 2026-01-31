@@ -1,16 +1,16 @@
-import {
-  ICreateCheckinsGateway,
-  ICreateCheckinsGatewayDependencies
-} from '../interfaces/create.checkins.interface';
-import { CheckinsEntity } from '../entity/checkins.entity';
+import { MixCreateObjectives } from '@adapters/gateways/api/objectives';
+import { logger } from '@configs/logger';
 import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
 } from '../../results-keys/interfaces/default.interface';
+import { CheckinsEntity } from '../entity/checkins.entity';
+import {
+  ICreateCheckinsGateway,
+  ICreateCheckinsGatewayDependencies
+} from '../interfaces/create.checkins.interface';
 import { ICheckinsRepository } from '../interfaces/default.interface';
-import { MixCreateObjectives } from '@adapters/gateways/api/objectives';
-import { logger } from '@configs/logger';
 
 export class CreateCheckinsGateway
   extends MixCreateObjectives

@@ -1,14 +1,14 @@
-import { CheckinsEntity } from '../entity/checkins.entity';
+import { DataLogOutput } from '@adapters/services';
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { Response } from 'express';
 import { ResultKeyEntity } from '../../results-keys/entity/result-key.entity';
 import {
   FindResultKeyCriteria,
   IResultKeyRepository
 } from '../../results-keys/interfaces/default.interface';
-import { Response } from 'express';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { IPresenter } from '@protocols/presenter';
-import { HttpResponse } from '@protocols/http';
-import { DataLogOutput } from '@adapters/services';
+import { CheckinsEntity } from '../entity/checkins.entity';
 import { FindCheckinsCriteria, ICheckinsRepository } from './default.interface';
 
 export interface InputGetCheckins {
@@ -19,7 +19,7 @@ export interface InputGetCheckins {
 
 export interface GetCheckinsResponse {
   value: number;
-  date: string; // ISO string
+  date: string;
   user: string;
   comment: string | null;
 }
@@ -44,7 +44,6 @@ export interface IGetCheckinsGateway {
 export interface IGetCheckinsInteractorDependencies {
   gateway: IGetCheckinsGateway;
   presenter: IPresenter;
-  // userCompanyValidator: UserCompanyValidationInteractor;
 }
 
 export interface IGetCheckinsInteractor {

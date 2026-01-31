@@ -1,3 +1,5 @@
+import { MixGetCheckinsHistory } from '@adapters/gateways/api/result-key';
+import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import {
   IGetCheckinsGateway,
@@ -5,9 +7,6 @@ import {
   IGetCheckinsInteractorDependencies,
   InputGetCheckins
 } from '../interfaces/get.checkins.interface';
-// import { UserCompanyValidationInteractor } from '@domains/common';
-import { MixGetCheckinsHistory } from '@adapters/gateways/api/result-key';
-import { HttpResponse } from '@protocols/http';
 
 export class GetCheckinsInteractor
   extends MixGetCheckinsHistory
@@ -15,7 +14,6 @@ export class GetCheckinsInteractor
 {
   protected gateway: IGetCheckinsGateway;
   protected presenter: IPresenter;
-  // protected userCompanyValidator: UserCompanyValidationInteractor;
 
   constructor(params: IGetCheckinsInteractorDependencies) {
     super(params);
@@ -57,10 +55,13 @@ export class GetCheckinsInteractor
 
       return this.presenter.ok(historyUpdates);
     } catch (error) {
-      this.loggerError('Erro ao buscar atualizações do resultado-chave', {
-        error: error instanceof Error ? error.message : 'Erro desconhecido',
-        requestTxt: JSON.stringify(input)
-      });
+      this.gateway.loggerError(
+        'Erro ao buscar atualizações do resultado-chave',
+        {
+          error: error instanceof Error ? error.message : 'Erro desconhecido',
+          requestTxt: JSON.stringify(input)
+        }
+      );
 
       return this.presenter.serverError(
         'Erro ao buscar atualizações do resultado-chave'

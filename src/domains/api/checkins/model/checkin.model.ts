@@ -1,7 +1,7 @@
-import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '@infra/database/connection/mysql';
-import ResultKeyModel from '../../results-keys/model/result-key.model';
 import UserModel from '@domains/api/users/model/user.model';
+import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
+import ResultKeyModel from '../../results-keys/model/result-key.model';
 
 interface CheckinModelAttributes {
   id?: number;
@@ -86,7 +86,6 @@ CheckinModel.init(
   }
 );
 
-// Definindo associações
 CheckinModel.belongsTo(ResultKeyModel, {
   foreignKey: 'id_result_key',
   as: 'result_key'
@@ -97,7 +96,6 @@ CheckinModel.belongsTo(UserModel, {
   as: 'user'
 });
 
-// Associação inversa no ResultKeyModel
 ResultKeyModel.hasMany(CheckinModel, {
   foreignKey: 'id_result_key',
   as: 'updates'
