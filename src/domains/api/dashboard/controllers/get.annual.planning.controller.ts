@@ -1,14 +1,12 @@
-import { Response } from 'express';
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import {
   GetAnnualPlanningControllerDependencies,
   IGetAnnualPlanningController,
   InputGetAnnualPlanning
 } from '../interfaces/get.annual.planning.interface';
 
-export class GetAnnualPlanningController
-  implements IGetAnnualPlanningController
-{
+export class GetAnnualPlanningController implements IGetAnnualPlanningController {
   protected interactor: GetAnnualPlanningControllerDependencies['interactor'];
 
   constructor(dependencies: GetAnnualPlanningControllerDependencies) {
@@ -26,7 +24,7 @@ export class GetAnnualPlanningController
       id_company,
       id_user,
       year: year ? Number(year) : new Date().getFullYear(),
-      quarter: Number(quarter) // Quarter é obrigatório, validado pelo schema
+      quarter: Number(quarter)
     };
 
     const httpResponse = await this.interactor.execute(input);

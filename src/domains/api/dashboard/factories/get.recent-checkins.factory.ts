@@ -1,29 +1,28 @@
-import { GetRecentCheckInsGateway } from '../gateways/get.recent-checkins.gateway';
-import { GetRecentCheckInsInteractor } from '../usecases/get.recent-checkins.interactor';
-import { GetRecentCheckInsController } from '../controllers/get.recent-checkins.controller';
+import { logger } from '@configs/logger';
+import { CheckinsRepository } from '@domains/api/checkins/repository/checkins.repository';
 import { ObjectiveRepository } from '@domains/api/objectives/repository/objective.repository';
 import { ResultKeyRepository } from '@domains/api/results-keys/repository/result-key.repository';
-import { CheckinsRepository } from '@domains/api/checkins/repository/checkins.repository';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
 import { UserCompanyValidationInteractor } from '@domains/common';
-import { Presenter } from '@protocols/presenter';
 import { UserCompanyValidationGateway } from '@domains/common/validations/gateways/user.company.validation.gateway';
-import { logger } from '@configs/logger';
+import { Presenter } from '@protocols/presenter';
+import { GetRecentCheckInsController } from '../controllers/get.recent-checkins.controller';
+import { GetRecentCheckInsGateway } from '../gateways/get.recent-checkins.gateway';
+import { GetRecentCheckInsInteractor } from '../usecases/get.recent-checkins.interactor';
 
 // Models
+import CheckinsModel from '@domains/api/checkins/model/checkin.model';
 import ObjectiveModel from '@domains/api/objectives/model/objective.model';
-import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
-import UserModel from '@domains/api/users/model/user.model';
-import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
 import { ProfileModel } from '@domains/api/profile/model';
+import { ProfileRepository } from '@domains/api/profile/repository/profile.repository';
+import ResultKeyModel from '@domains/api/results-keys/model/result-key.model';
 import TeamModel from '@domains/api/teams/model/team.model';
 import { TeamRepository } from '@domains/api/teams/repository/team.repository';
+import UserModel from '@domains/api/users/model/user.model';
 import UserTeamModel from '@domains/common/user-teams/model/user-team.model';
 import { UserTeamRepository } from '@domains/common/user-teams/repository/user-team.repository';
-import CheckinsModel from '@domains/api/checkins/model/checkin.model';
 
 export function getRecentCheckInsFactory() {
-  // Repositories
   const objectiveRepository = new ObjectiveRepository({
     model: ObjectiveModel
   });
@@ -38,14 +37,13 @@ export function getRecentCheckInsFactory() {
     model: ProfileModel
   });
   const teamRepository = new TeamRepository({
-    model: TeamModel // Assuming a TeamModel exists
+    model: TeamModel
   });
 
   const userTeamRepository = new UserTeamRepository({
-    model: UserTeamModel // Assuming a UserTeamModel exists
+    model: UserTeamModel
   });
 
-  // Gateway and Presenter
   const gateway = new GetRecentCheckInsGateway({
     objectiveRepository,
     resultKeyRepository,
@@ -58,7 +56,6 @@ export function getRecentCheckInsFactory() {
   });
   const presenter = new Presenter();
 
-  // User Company Validation
   const userCompanyValidationGateway = new UserCompanyValidationGateway({
     userRepository,
     logging: logger
@@ -67,7 +64,6 @@ export function getRecentCheckInsFactory() {
     gateway: userCompanyValidationGateway
   });
 
-  // Interactor and Controller
   const interactor = new GetRecentCheckInsInteractor({
     gateway,
     presenter,

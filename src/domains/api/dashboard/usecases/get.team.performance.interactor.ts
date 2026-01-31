@@ -1,22 +1,22 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  GetTeamPerformanceInteractorDependencies,
-  InputGetTeamPerformance,
-  IGetTeamPerformanceGateway,
-  FindTeamsWithObjectivesCriteria,
-  FindTeamObjectivesCriteria
-} from '../interfaces/get.team.performance.interface';
-import { IPresenter } from '@protocols/presenter';
+import { logger } from '@configs/logger';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import { TeamEntity } from '@domains/api/teams/entity/team.entity';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { OverviewEntity } from '../entity/overview.entity';
 import {
   TeamPerformanceEntity,
   TeamPerformanceItem,
   TrendDirection
 } from '../entity/team.performance.entity';
-import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { OverviewEntity } from '../entity/overview.entity';
-import { logger } from '@configs/logger';
+import {
+  FindTeamObjectivesCriteria,
+  FindTeamsWithObjectivesCriteria,
+  GetTeamPerformanceInteractorDependencies,
+  IGetTeamPerformanceGateway,
+  InputGetTeamPerformance
+} from '../interfaces/get.team.performance.interface';
 
 export class GetTeamPerformanceInteractor {
   protected gateway: IGetTeamPerformanceGateway;
@@ -37,7 +37,6 @@ export class GetTeamPerformanceInteractor {
 
       const { id_company, id_user, year, quarter } = input;
 
-      // Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
         id_user,
         id_company
@@ -46,10 +45,8 @@ export class GetTeamPerformanceInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Buscar times da empresa
       const teams = await this.getCompanyTeams(id_company);
 
-      // Calcular performance de cada time
       const teamsPerformance = await this.calculateTeamsPerformance(
         teams,
         id_company,
@@ -133,12 +130,10 @@ export class GetTeamPerformanceInteractor {
     year: number,
     quarter: number
   ): Promise<TeamPerformanceItem> {
-    // Validar se o team tem ID válido
     if (!team.id) {
       throw new Error(`Team ${team.name} não possui ID válido`);
     }
 
-    // Buscar objetivos do time
     const objectives = await this.getTeamObjectives(
       team.id,
       id_company,
@@ -153,20 +148,14 @@ export class GetTeamPerformanceInteractor {
       const resultKeys =
         await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
 
-      // Agrupar result-keys por objetivo
       objectives.forEach((objective: ObjectiveEntity) => {
         objective.result_keys = resultKeys.filter(
           (resultKey) => resultKey.id_okr === objective.id
         );
       });
     }
-    // Calcular métricas do time
     const teamMetrics = this.calculateTeamMetrics(objectives);
 
-    // Buscar número de membros
-    // const membersCount = await this.getTeamMembersCount(team.id);
-
-    // Determinar status e trend
     const status = TeamPerformanceEntity.calculateTeamStatus(
       teamMetrics.progress
     );
@@ -233,45 +222,9 @@ export class GetTeamPerformanceInteractor {
     };
   }
 
-  private async getTeamMembersCount(teamId: number): Promise<number> {
-    return await this.gateway.findTeamMembersCount(teamId);
-  }
-
   private calculateTeamTrend(currentProgress: number): TrendDirection {
-    // TODO: Implementar comparação com período anterior quando disponível
-    // Por enquanto, simular trend baseado no progresso atual
     if (currentProgress >= 80) return 'up';
     if (currentProgress >= 60) return 'stable';
     return 'down';
-  }
-
-  private getLastUpdateTime(objectives: ObjectiveEntity[]): string {
-    if (objectives.length === 0) {
-      return new Date().toISOString();
-    }
-
-    // Encontrar a data de atualização mais recente entre todos os objectives
-    let lastUpdate = new Date(0); // Data muito antiga como fallback
-
-    for (const objective of objectives) {
-      const resultKeys = objective.result_keys || [];
-      for (const kr of resultKeys) {
-        if (kr.updated_at) {
-          const updateDate = new Date(kr.updated_at);
-          if (updateDate > lastUpdate) {
-            lastUpdate = updateDate;
-          }
-        }
-      }
-
-      if (objective.updated_at) {
-        const updateDate = new Date(objective.updated_at);
-        if (updateDate > lastUpdate) {
-          lastUpdate = updateDate;
-        }
-      }
-    }
-
-    return lastUpdate.toISOString();
   }
 }

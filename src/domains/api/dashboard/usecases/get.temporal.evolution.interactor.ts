@@ -37,7 +37,6 @@ export class GetTemporalEvolutionInteractor {
         period: _period = 'monthly'
       } = input;
 
-      // Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
         id_user,
         id_company
@@ -47,7 +46,6 @@ export class GetTemporalEvolutionInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Se quarter = 5, usar lógica específica para ano todo
       if (quarter === 5) {
         return await this.handleYearlyEvolution(id_company, year);
       }
@@ -173,7 +171,6 @@ export class GetTemporalEvolutionInteractor {
         )
       ];
 
-      // Calcular progresso acumulado baseado no progresso real das OKRs
       const cumulativeQuarter = await this.calculateCumulativeProgress(
         resultKeys,
         checkins,
@@ -198,7 +195,6 @@ export class GetTemporalEvolutionInteractor {
     }
   }
 
-  // Método específico para lidar com quarter 5 (ano todo)
   private async handleYearlyEvolution(
     id_company: number,
     year: number
@@ -208,7 +204,6 @@ export class GetTemporalEvolutionInteractor {
       year
     });
 
-    // Buscar todos os objetivos do ano
     const allObjectives = await this.gateway.findObjectivesByCompanyAndQuarter({
       id_company,
       year,
@@ -238,7 +233,6 @@ export class GetTemporalEvolutionInteractor {
     const resultKeyIds = this.getResultKeyIds(resultKeys);
     const checkins = await this.gateway.findCheckinsByIds({ resultKeyIds });
 
-    // Calcular evolução mensal para o ano todo
     const monthlyEvolution = await this.calculateYearlyMonthlyEvolution(
       resultKeys,
       checkins,
@@ -246,7 +240,6 @@ export class GetTemporalEvolutionInteractor {
       id_company
     );
 
-    // Calcular progresso acumulado mensal
     const cumulativeMonthly = await this.calculateYearlyCumulativeProgress(
       resultKeys,
       checkins,
@@ -261,7 +254,6 @@ export class GetTemporalEvolutionInteractor {
   }
 
   private getLastDayOfMonth(year: number, month: number): Date {
-    // Criar data do primeiro dia do próximo mês e subtrair 1 dia
     return new Date(year, month + 1, 0);
   }
 
@@ -293,19 +285,16 @@ export class GetTemporalEvolutionInteractor {
     let totalWeeklyProgress = 0;
     let resultKeysWithProgress = 0;
 
-    // 2. Para cada result key, calcular o progresso semanal
     resultKeyIds.forEach((resultKeyId) => {
       const resultKey = resultKeys.find((rk) => rk.id === resultKeyId);
       if (!resultKey) return;
 
-      // 3. Pegar checkins desta result key na semana
       const resultKeyCheckins = checkinsInWeek.filter(
         (checkin) => checkin.id_result_key === resultKeyId
       );
 
       if (resultKeyCheckins.length === 0) return;
 
-      // 4. Encontrar menor previous_value e maior new_value da semana
       const minPreviousValue = Math.min(
         ...resultKeyCheckins.map((checkin) =>
           parseFloat(checkin.previous_value?.toString() || '0')
@@ -318,21 +307,17 @@ export class GetTemporalEvolutionInteractor {
         )
       );
 
-      // 5. Calcular evolução semanal desta result key
       const weeklyEvolution = maxNewValue - minPreviousValue;
 
-      // 6. Calcular porcentagem baseada no target_value
       const targetValue = parseFloat(resultKey.target_value?.toString() || '0');
       const initialValue = parseFloat(
         resultKey.initial_value?.toString() || '0'
       );
 
       if (targetValue > initialValue) {
-        // Calcular quanto % da meta foi evoluído nesta semana
         const totalGoal = targetValue - initialValue;
         const weeklyProgressPercentage = (weeklyEvolution / totalGoal) * 100;
 
-        // Garantir que não seja negativo
         const validProgress = Math.max(weeklyProgressPercentage, 0);
 
         totalWeeklyProgress += validProgress;
@@ -350,7 +335,6 @@ export class GetTemporalEvolutionInteractor {
       }
     });
 
-    // 7. Retornar média do progresso semanal
     const averageWeeklyProgress =
       resultKeysWithProgress > 0
         ? totalWeeklyProgress / resultKeysWithProgress
@@ -387,7 +371,6 @@ export class GetTemporalEvolutionInteractor {
       year: year as number
     };
 
-    // Se quarter não for 5, adicionar filtro de quarter
     if (quarter !== 5) {
       criteria.quarter = quarter as number;
     }
@@ -423,19 +406,6 @@ export class GetTemporalEvolutionInteractor {
     return true;
   }
 
-  private getWeekNumber(date: Date) {
-    const d = new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-    );
-    const dayNum = d.getUTCDay() || 7; // domingo = 7
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    const weekNum = Math.ceil(
-      ((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
-    );
-    return weekNum;
-  }
-
   private async calculateCumulativeProgress(
     resultKeys: ResultKeyEntity[],
     checkins: CheckinsEntity[],
@@ -446,35 +416,29 @@ export class GetTemporalEvolutionInteractor {
     const months = this.getQuarterMonths(quarter);
     const cumulativeProgress = new Array(12).fill(0);
 
-    // Buscar TODOS os objetivos do quarter (incluindo os sem result keys)
     const allObjectives = await this.gateway.findObjectivesByCompanyAndQuarter({
       id_company,
       quarter,
       year
     });
 
-    // Agrupar result keys por objetivo
     const resultKeysByObjective = new Map<number, ResultKeyEntity[]>();
 
-    // Primeiro, inicializar TODOS os objetivos com array vazio
     allObjectives.forEach((objective) => {
       if (objective.id) {
         resultKeysByObjective.set(objective.id, []);
       }
     });
 
-    // Depois, adicionar as result keys aos objetivos correspondentes
     resultKeys.forEach((rk) => {
       if (rk.id_okr && resultKeysByObjective.has(rk.id_okr)) {
         resultKeysByObjective.get(rk.id_okr)!.push(rk);
       }
     });
 
-    // Para cada semana, calcular o progresso acumulado real até aquela data
     for (let monthIndex = 0; monthIndex < 3; monthIndex++) {
       const month = months[monthIndex];
 
-      // Definir as 4 semanas do mês
       const weeks = [
         { start: new Date(year, month, 1), end: new Date(year, month, 7) },
         { start: new Date(year, month, 8), end: new Date(year, month, 14) },
@@ -489,13 +453,10 @@ export class GetTemporalEvolutionInteractor {
         const globalWeekIndex = monthIndex * 4 + weekIndex;
         const currentDate = new Date();
 
-        // Para a última semana do quarter, SEMPRE usar o current_value das result keys
-        // independentemente de ser passada ou não, pois representa o estado final
         const isLastWeekOfQuarter = globalWeekIndex === 11;
         const isCurrentOrFutureWeek =
           week.end >= currentDate || isLastWeekOfQuarter;
 
-        // Calcular progresso por objetivo
         let totalObjectivesProgress = 0;
         let validObjectivesCount = 0;
 
@@ -503,7 +464,6 @@ export class GetTemporalEvolutionInteractor {
           let totalResultKeyProgress = 0;
           let validResultKeysCount = 0;
 
-          // Para cada result key do objetivo
           objectiveResultKeys.forEach((resultKey) => {
             const targetValue = parseFloat(
               resultKey.target_value?.toString() || '0'
@@ -512,12 +472,10 @@ export class GetTemporalEvolutionInteractor {
               resultKey.initial_value?.toString() || '0'
             );
 
-            // Incluir TODAS as result keys válidas (com target definido)
             if (targetValue !== 0 && resultKey.id) {
               let currentValue = initialValue;
 
               if (isCurrentOrFutureWeek || isLastWeekOfQuarter) {
-                // Para semanas atuais/futuras OU última semana, usar o current_value da result key
                 currentValue = parseFloat(
                   resultKey.current_value?.toString() || initialValue.toString()
                 );
@@ -526,7 +484,6 @@ export class GetTemporalEvolutionInteractor {
                   data: `Semana ${globalWeekIndex} - RK ${resultKey.id}: usando current_value ${currentValue} (isLastWeek: ${isLastWeekOfQuarter})`
                 });
               } else {
-                // Para semanas passadas (exceto a última), buscar o valor baseado nos checkins até aquela data
                 const relevantCheckins = checkins
                   .filter(
                     (checkin) =>
@@ -540,7 +497,6 @@ export class GetTemporalEvolutionInteractor {
                   );
 
                 if (relevantCheckins.length > 0) {
-                  // Usar o new_value do checkin mais recente até essa data
                   const latestCheckin = relevantCheckins[0];
                   currentValue = parseFloat(
                     latestCheckin.new_value?.toString() ||
@@ -554,19 +510,15 @@ export class GetTemporalEvolutionInteractor {
                     }
                   );
                 }
-                // Se não tem checkins até essa data, currentValue fica como initialValue
               }
 
-              // Calcular progresso percentual desta result key até esta semana
               let progress = 0;
               if (targetValue > initialValue) {
-                // Meta crescente (ex: 0 -> 100)
                 progress =
                   ((currentValue - initialValue) /
                     (targetValue - initialValue)) *
                   100;
               } else if (targetValue < initialValue) {
-                // Meta decrescente (ex: 100 -> 0)
                 progress =
                   ((initialValue - currentValue) /
                     (initialValue - targetValue)) *
@@ -575,7 +527,6 @@ export class GetTemporalEvolutionInteractor {
                 targetValue === initialValue &&
                 currentValue >= targetValue
               ) {
-                // Meta binária atingida (ex: 0 -> 1 e atual = 1)
                 progress = 100;
               }
 
@@ -589,7 +540,6 @@ export class GetTemporalEvolutionInteractor {
             }
           });
 
-          // Calcular média do objetivo (SEMPRE incluir o objetivo, mesmo sem RKs)
           if (validResultKeysCount > 0) {
             const objectiveAverage =
               totalResultKeyProgress / validResultKeysCount;
@@ -599,7 +549,6 @@ export class GetTemporalEvolutionInteractor {
               data: `Semana ${globalWeekIndex} - Objetivo ${objectiveId}: ${objectiveAverage.toFixed(1)}% (${validResultKeysCount} RKs)`
             });
           } else {
-            // Objetivo sem result keys válidas = 0%
             totalObjectivesProgress += 0;
 
             this.gateway.loggerInfo('Objetivo sem result keys válidas', {
@@ -607,11 +556,9 @@ export class GetTemporalEvolutionInteractor {
             });
           }
 
-          // SEMPRE contar o objetivo, mesmo sem RKs
           validObjectivesCount++;
         });
 
-        // Calcular média geral dos objetivos
         const averageProgress =
           validObjectivesCount > 0
             ? totalObjectivesProgress / validObjectivesCount
@@ -645,7 +592,6 @@ export class GetTemporalEvolutionInteractor {
     }
   }
 
-  // Calcular evolução mensal para o ano todo (quarter 5)
   private async calculateYearlyMonthlyEvolution(
     resultKeys: ResultKeyEntity[],
     checkins: CheckinsEntity[],
@@ -655,12 +601,10 @@ export class GetTemporalEvolutionInteractor {
     const monthlyEvolution = new Array(12).fill(0);
     const resultKeyIds = this.getResultKeyIds(resultKeys);
 
-    // Para cada mês do ano
     for (let month = 0; month < 12; month++) {
       const startDate = new Date(year, month, 1);
       const endDate = this.getLastDayOfMonth(year, month);
 
-      // Calcular progresso do mês usando a lógica existente
       const monthProgress = this.getPercetualEvolutionWeekly(
         resultKeys,
         resultKeyIds,
@@ -679,7 +623,6 @@ export class GetTemporalEvolutionInteractor {
     return monthlyEvolution;
   }
 
-  // Calcular progresso acumulado mensal para o ano todo (quarter 5)
   private async calculateYearlyCumulativeProgress(
     resultKeys: ResultKeyEntity[],
     checkins: CheckinsEntity[],
@@ -688,7 +631,6 @@ export class GetTemporalEvolutionInteractor {
   ): Promise<number[]> {
     const cumulativeProgress = new Array(12).fill(0);
 
-    // Buscar TODOS os objetivos do ano
     const allObjectives = await this.gateway.findObjectivesByCompanyAndQuarter({
       id_company,
       year,
@@ -697,24 +639,20 @@ export class GetTemporalEvolutionInteractor {
       typeof this.gateway.findObjectivesByCompanyAndQuarter
     >[0]);
 
-    // Agrupar result keys por objetivo
     const resultKeysByObjective = new Map<number, ResultKeyEntity[]>();
 
-    // Inicializar TODOS os objetivos com array vazio
     allObjectives.forEach((objective) => {
       if (objective.id) {
         resultKeysByObjective.set(objective.id, []);
       }
     });
 
-    // Adicionar as result keys aos objetivos correspondentes
     resultKeys.forEach((rk) => {
       if (rk.id_okr && resultKeysByObjective.has(rk.id_okr)) {
         resultKeysByObjective.get(rk.id_okr)!.push(rk);
       }
     });
 
-    // Para cada mês, calcular o progresso acumulado
     for (let month = 0; month < 12; month++) {
       const endOfMonth = this.getLastDayOfMonth(year, month);
       const currentDate = new Date();
@@ -739,12 +677,10 @@ export class GetTemporalEvolutionInteractor {
             let currentValue = initialValue;
 
             if (isCurrentOrFutureMonth) {
-              // Para mêses atuais/futuros, usar current_value
               currentValue = parseFloat(
                 resultKey.current_value?.toString() || initialValue.toString()
               );
             } else {
-              // Para mêses passados, buscar checkins até o final do mês
               const relevantCheckins = checkins
                 .filter(
                   (checkin) =>
@@ -765,7 +701,6 @@ export class GetTemporalEvolutionInteractor {
               }
             }
 
-            // Calcular progresso percentual
             let progress = 0;
             if (targetValue > initialValue) {
               progress =
@@ -788,7 +723,6 @@ export class GetTemporalEvolutionInteractor {
           }
         });
 
-        // Calcular média do objetivo
         if (validResultKeysCount > 0) {
           const objectiveAverage =
             totalResultKeyProgress / validResultKeysCount;
@@ -800,7 +734,6 @@ export class GetTemporalEvolutionInteractor {
         validObjectivesCount++;
       });
 
-      // Calcular média geral dos objetivos
       const averageProgress =
         validObjectivesCount > 0
           ? totalObjectivesProgress / validObjectivesCount

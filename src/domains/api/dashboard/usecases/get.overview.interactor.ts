@@ -46,7 +46,6 @@ export class GetOverviewInteractor {
         id_user
       } = input;
 
-      // Validar usuário e empresa
       const validation = await this.userCompanyValidator.execute({
         id_user,
         id_company
@@ -60,13 +59,11 @@ export class GetOverviewInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Definir trimestre e ano atuais se não informados
       const currentDate = new Date();
       const targetYear = year || currentDate.getFullYear();
       const targetQuarter =
         quarter || Math.ceil((currentDate.getMonth() + 1) / 3);
 
-      // Buscar time se filtro foi informado
       let teamId: number | undefined;
       if (team) {
         const teamCriteria: FindTeamCriteria = {
@@ -77,7 +74,6 @@ export class GetOverviewInteractor {
         teamId = teamEntity?.id;
       }
 
-      // Buscar objetivos do período atual
       const objectiveCriteria: FindObjectiveCriteria = {
         id_company,
         quarter: targetQuarter,
@@ -95,7 +91,6 @@ export class GetOverviewInteractor {
         const resultKeys =
           await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
 
-        // Agrupar result-keys por objetivo
         objectives.forEach((objective: ObjectiveEntity) => {
           objective.result_keys = resultKeys.filter(
             (resultKey) => resultKey.id_okr === objective.id
@@ -170,7 +165,6 @@ export class GetOverviewInteractor {
       completedKeyResults += objectiveMetrics.completedKeys;
       totalProgress += objectiveMetrics.progress;
 
-      // Calcular datas de início e fim do quarter do objetivo
       const { startDate, endDate } = this.getQuarterDates(
         objective.quarter,
         objective.year
@@ -183,10 +177,9 @@ export class GetOverviewInteractor {
         0,
         (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
       );
-      const quarterProgress = Math.min((daysPassed / totalDays) * 100, 100); // % esperado baseado no tempo
-      const tolerance = 20; // margem de tolerância
+      const quarterProgress = Math.min((daysPassed / totalDays) * 100, 100);
+      const tolerance = 20;
 
-      // Debug log para acompanhar o cálculo
       logger.info(
         `Objetivo ${objective.id} - Quarter ${objective.quarter}/${objective.year}`,
         {
@@ -199,7 +192,6 @@ export class GetOverviewInteractor {
         }
       );
 
-      // Categorizar por status baseado no progresso
       if (objectiveMetrics.progress >= quarterProgress) {
         onTrack++;
       } else if (objectiveMetrics.progress >= quarterProgress - tolerance) {
@@ -230,7 +222,6 @@ export class GetOverviewInteractor {
     let startMonth: number;
     let endMonth: number;
 
-    // Definir meses de início e fim baseado no quarter
     switch (quarter) {
       case 1: // Q1: Janeiro - Março
         startMonth = 0; // Janeiro (0-indexed)
@@ -249,43 +240,18 @@ export class GetOverviewInteractor {
         endMonth = 11; // Dezembro
         break;
       case 5:
-        startMonth = 0; // Outubro
-        endMonth = 11;
+        startMonth = 0; // Janeiro
+        endMonth = 11; // Dezembro
         break;
       default:
-        throw new Error(`Quarter inválido: ${quarter}. Deve ser entre 1 e 4.`);
+        throw new Error(`Quarter inválido: ${quarter}. Deve ser entre 1 e 5.`);
     }
 
-    // Data de início: primeiro dia do primeiro mês do quarter
     const startDate = new Date(year, startMonth, 1);
 
-    // Data de fim: último dia do último mês do quarter
-    const endDate = new Date(year, endMonth + 1, 0); // +1 no mês e dia 0 = último dia do mês anterior
+    const endDate = new Date(year, endMonth + 1, 0);
 
     return { startDate, endDate };
-  }
-
-  // Método auxiliar para testar o cálculo de datas do quarter
-  public testQuarterCalculation(quarter: number, year: number): void {
-    const { startDate, endDate } = this.getQuarterDates(quarter, year);
-    const now = new Date();
-    const totalDays =
-      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-    const daysPassed = Math.max(
-      0,
-      (now.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
-    const quarterProgress = Math.min((daysPassed / totalDays) * 100, 100);
-
-    console.log(`=== Teste Quarter ${quarter}/${year} ===`);
-    console.log(`Data início: ${startDate.toLocaleDateString('pt-BR')}`);
-    console.log(`Data fim: ${endDate.toLocaleDateString('pt-BR')}`);
-    console.log(`Total de dias no quarter: ${Math.round(totalDays)}`);
-    console.log(`Dias passados: ${Math.round(daysPassed)}`);
-    console.log(
-      `Progresso esperado no quarter: ${Math.round(quarterProgress)}%`
-    );
-    console.log(`Data atual: ${now.toLocaleDateString('pt-BR')}`);
   }
 
   private calculateObjectiveProgress(objective: ObjectiveEntity) {
@@ -350,7 +316,7 @@ export class GetOverviewInteractor {
   }
 
   private buildTrendsComparison(avgProgress: number): TrendsComparison {
-    const previousProgress = 0; // TODO: implementar busca do período anterior
+    const previousProgress = 0;
 
     return {
       lastQuarter: previousProgress,
@@ -362,7 +328,7 @@ export class GetOverviewInteractor {
     objectivesMetrics: ReturnType<typeof this.calculateObjectivesMetrics>,
     _teamPerformance: number
   ): OverviewStatistics {
-    const previousProgress = 0; // TODO: implementar busca do período anterior
+    const previousProgress = 0;
 
     return {
       generalProgress: {
@@ -403,7 +369,7 @@ export class GetOverviewInteractor {
     const baseEngagement =
       (metrics.completedKeyResults / Math.max(metrics.totalKeyResults, 1)) *
       100;
-    return Math.min(100, Math.round(baseEngagement + 20)); // Simulado com boost
+    return Math.min(100, Math.round(baseEngagement + 20));
   }
 
   private calculateAverageRisk(

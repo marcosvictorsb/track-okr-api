@@ -1,13 +1,13 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  GetTopContributorsInteractorDependencies,
-  InputGetTopContributors,
-  IGetTopContributorsGateway,
-  FindObjectivesByCompanyCriteria
-} from '../interfaces/get.top.contributors.interface';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  FindObjectivesByCompanyCriteria,
+  GetTopContributorsInteractorDependencies,
+  IGetTopContributorsGateway,
+  InputGetTopContributors
+} from '../interfaces/get.top.contributors.interface';
 
 interface CheckinData {
   id: number;
@@ -54,7 +54,6 @@ export class GetTopContributorsInteractor {
 
       const { id_company, id_user, quarter, year } = input;
 
-      // 1. Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
         id_user,
         id_company
@@ -63,7 +62,6 @@ export class GetTopContributorsInteractor {
         return this.presenter.badRequest('O usuário ou empresa não é válido');
       }
 
-      // 2. Buscar objetivos da empresa
       const objectives = await this.getCompanyObjectives(
         id_company,
         quarter,
@@ -76,7 +74,6 @@ export class GetTopContributorsInteractor {
         );
       }
 
-      // 3. Buscar result keys dos objetivos
       const resultKeys = await this.getResultKeysFromObjectives(objectives);
       if (!resultKeys || resultKeys.length === 0) {
         return this.getEmptyResponse(
@@ -88,27 +85,22 @@ export class GetTopContributorsInteractor {
         );
       }
 
-      // Agrupar result-keys por objetivo
       objectives.forEach((objective: ObjectiveEntity) => {
         objective.result_keys = resultKeys.filter(
           (resultKey) => resultKey.id_okr === objective.id
         );
       });
 
-      // 4. Calcular quantos result keys cada usuário tem
       const userResultKeysCount = this.calculateUserResultKeysCount(objectives);
 
-      // 5. Buscar informações dos usuários
       const userIds = Array.from(userResultKeysCount.keys());
       const users = await this.gateway.findUsersProfileByIds(userIds);
 
-      // 6. Calcular porcentagem de progresso de cada usuário
       const userProgressPercentages = this.calculateUserProgressPercentages(
         objectives,
         Array.from(userResultKeysCount.keys())
       );
 
-      // 7. Montar o ranking dos usuários com porcentagem e quantidade de result keys
       const topUsersByResultKeys = this.buildUserResultKeysRanking(
         userResultKeysCount,
         userProgressPercentages,
@@ -131,10 +123,8 @@ export class GetTopContributorsInteractor {
 
     const users = await this.gateway.findUsersProfileByIds(unique_user_ids);
 
-    // Criar um mapa para acesso rápido aos usuários
     const userMap = new Map(users.map((user) => [user.id, user]));
 
-    // Enriquecer cada checkin com os dados do usuário
     return checkins.map((checkin) => ({
       ...checkin,
       user: userMap.get(checkin.id_user) || null
@@ -209,7 +199,6 @@ export class GetTopContributorsInteractor {
     );
   }
 
-  // Método para calcular quantos result keys cada usuário tem
   private calculateUserResultKeysCount(
     objectives: ObjectiveEntity[]
   ): Map<number, number> {
@@ -218,7 +207,6 @@ export class GetTopContributorsInteractor {
     objectives.forEach((objective) => {
       objective.result_keys?.forEach((resultKey) => {
         if (resultKey.responsible_users) {
-          // Normalizar responsible_users para array
           const responsibleUsersArray = this.parseResponsibleUsers(
             resultKey.responsible_users
           );
@@ -234,7 +222,6 @@ export class GetTopContributorsInteractor {
     return userResultKeysCount;
   }
 
-  // Método para calcular porcentagem de progresso de cada usuário
   private calculateUserProgressPercentages(
     objectives: ObjectiveEntity[],
     userIds: number[]
@@ -252,7 +239,6 @@ export class GetTopContributorsInteractor {
           );
 
           if (responsibleUsers.includes(userId)) {
-            // Calcular progresso deste result key
             const currentValue = parseFloat(
               resultKey.current_value?.toString() || '0'
             );
@@ -267,7 +253,7 @@ export class GetTopContributorsInteractor {
               const progress =
                 ((currentValue - initialValue) / (targetValue - initialValue)) *
                 100;
-              const clampedProgress = Math.min(Math.max(progress, 0), 100); // Entre 0 e 100%
+              const clampedProgress = Math.min(Math.max(progress, 0), 100);
               totalProgress += clampedProgress;
               resultKeysCount++;
             }
@@ -275,7 +261,6 @@ export class GetTopContributorsInteractor {
         });
       });
 
-      // Calcular média de progresso do usuário
       const averageProgress =
         resultKeysCount > 0 ? totalProgress / resultKeysCount : 0;
       userProgressMap.set(userId, Math.round(averageProgress));
@@ -284,7 +269,6 @@ export class GetTopContributorsInteractor {
     return userProgressMap;
   }
 
-  // Método para montar o ranking com informações dos usuários
   private buildUserResultKeysRanking(
     userResultKeysCount: Map<number, number>,
     userProgressPercentages: Map<number, number>,
@@ -295,7 +279,6 @@ export class GetTopContributorsInteractor {
     resultKeysCount: number;
     progressPercentage: number;
   }> {
-    // Criar mapa dos usuários para acesso rápido
     const userMap = new Map<number, SimpleUser>();
     users.forEach((user) => {
       userMap.set(user.id, user);
@@ -313,11 +296,11 @@ export class GetTopContributorsInteractor {
         resultKeysCount: count,
         progressPercentage: userProgressPercentages.get(userId) || 0
       }))
-      .sort((a, b) => b.progressPercentage - a.progressPercentage); // Ordenar por progresso
+      .sort((a, b) => b.progressPercentage - a.progressPercentage);
 
     return ranking;
   }
-  // Método auxiliar para normalizar responsible_users
+
   private parseResponsibleUsers(responsibleUsers: unknown): number[] {
     if (!responsibleUsers) {
       return [];

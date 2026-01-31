@@ -1,15 +1,14 @@
-import { Response } from 'express';
-import { HttpResponse } from '@protocols/http';
-import { IPresenter } from '@protocols/presenter';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { UserCompanyValidationInteractor } from '@domains/common';
 import { DataLogOutput } from '@adapters/services';
 import { logger } from '@configs/logger';
-import { IPlannerRepository } from '@domains/api/planners/interfaces';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
+import { IPlannerRepository } from '@domains/api/planners/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { Response } from 'express';
 
-// Input types
 export interface InputGetAnnualPlanning {
   id_company: number;
   id_user: number;
@@ -17,7 +16,6 @@ export interface InputGetAnnualPlanning {
   quarter: number;
 }
 
-// Response types
 export interface AnnualPlanningItem {
   id: number;
   title: string;
@@ -34,7 +32,6 @@ export interface OutputGetAnnualPlanning {
   quarter: number;
 }
 
-// Gateway interface
 export interface IGetAnnualPlanningGateway {
   getAnnualPlannings(
     year: number,
@@ -45,7 +42,6 @@ export interface IGetAnnualPlanningGateway {
   loggerError(message: string, data?: DataLogOutput): void;
 }
 
-// Dependencies
 export interface GetAnnualPlanningGatewayDependencies {
   plannerRepository: IPlannerRepository;
   objectiveRepository: IObjectiveRepository;

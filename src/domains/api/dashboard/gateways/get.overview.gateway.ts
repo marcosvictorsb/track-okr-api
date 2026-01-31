@@ -1,12 +1,6 @@
-import {
-  GetOverviewGatewayDependencies,
-  IGetOverviewGateway
-} from '../interfaces/get.overview.interface';
 import { MixGetOverviewGateway } from '@adapters/gateways/api/dashboard';
-import {
-  FindTeamCriteria,
-  ITeamRepository
-} from '@domains/api/teams/interfaces';
+import { logger } from '@configs/logger';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import {
   FindObjectiveCriteria,
   IObjectiveRepository
@@ -16,8 +10,14 @@ import {
   ResultKeyEntity
 } from '@domains/api/results-keys';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { logger } from '@configs/logger';
+import {
+  FindTeamCriteria,
+  ITeamRepository
+} from '@domains/api/teams/interfaces';
+import {
+  GetOverviewGatewayDependencies,
+  IGetOverviewGateway
+} from '../interfaces/get.overview.interface';
 
 export class GetOverviewGateway
   extends MixGetOverviewGateway
@@ -40,7 +40,6 @@ export class GetOverviewGateway
     this.logging.info('Iniciando busca do time', { criteria });
 
     if (criteria.name) {
-      // Buscar por nome usando LIKE
       const teams = await this.teamRepository.findAll({
         id_company: criteria.id_company
       });

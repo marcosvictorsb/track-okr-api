@@ -1,19 +1,19 @@
-import {
-  GetTeamPerformanceGatewayDependencies,
-  IGetTeamPerformanceGateway,
-  FindTeamsWithObjectivesCriteria,
-  FindTeamObjectivesCriteria
-} from '../interfaces/get.team.performance.interface';
 import { MixGetOverviewGateway } from '@adapters/gateways/api/dashboard';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { logger } from '@configs/logger';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import {
   IResultKeyRepository,
   ResultKeyEntity
 } from '@domains/api/results-keys';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
-import { logger } from '@configs/logger';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import {
+  FindTeamObjectivesCriteria,
+  FindTeamsWithObjectivesCriteria,
+  GetTeamPerformanceGatewayDependencies,
+  IGetTeamPerformanceGateway
+} from '../interfaces/get.team.performance.interface';
 
 export class GetTeamPerformanceGateway
   extends MixGetOverviewGateway
@@ -60,8 +60,6 @@ export class GetTeamPerformanceGateway
   async findTeamMembersCount(teamId: number): Promise<number> {
     this.logging.info('Contando membros do time', { teamId });
 
-    // TODO: Implementar busca real de membros quando houver relação team-user
-    // Por enquanto retornando um valor simulado baseado no id do time
     const mockCounts = [12, 8, 6, 5, 4, 7, 9, 10, 3, 11];
     return mockCounts[teamId % mockCounts.length] || 5;
   }

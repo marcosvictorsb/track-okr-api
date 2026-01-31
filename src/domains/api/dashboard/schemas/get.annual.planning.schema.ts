@@ -7,7 +7,7 @@ export const getAnnualPlanningSchema = z.object({
       .optional()
       .refine(
         (value) => {
-          if (!value) return true; // Optional field
+          if (!value) return true;
           const yearNumber = Number(value);
           return !isNaN(yearNumber) && yearNumber >= 2020 && yearNumber <= 2030;
         },

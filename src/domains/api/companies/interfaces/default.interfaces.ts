@@ -29,7 +29,6 @@ export type UpdateCompanyCriteria = {
 export interface ICompanyRepository {
   create(criteria: CreateCompanyCriteria): Promise<CompanyEntity>;
   find(criteria: FindCompanyCriteria): Promise<CompanyEntity | undefined>;
-  // findAll(criteria: FindCompanyCriteria): Promise<CompanyEntity[]>;
   update(
     criteria: UpdateCompanyCriteria,
     data: Partial<CompanyEntity>

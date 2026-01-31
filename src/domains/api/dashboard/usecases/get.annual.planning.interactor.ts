@@ -1,12 +1,12 @@
-import { IPresenter } from '@protocols/presenter';
 import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
-  InputGetAnnualPlanning,
-  IGetAnnualPlanningGateway,
   GetAnnualPlanningInteractorDependencies,
+  IGetAnnualPlanningGateway,
+  InputGetAnnualPlanning,
   OutputGetAnnualPlanning
 } from '../interfaces/get.annual.planning.interface';
-import { HttpResponse } from '@protocols/http';
 
 export class GetAnnualPlanningInteractor {
   private gateway: IGetAnnualPlanningGateway;
@@ -30,7 +30,6 @@ export class GetAnnualPlanningInteractor {
         quarter
       });
 
-      // Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
         id_user,
         id_company
@@ -43,7 +42,6 @@ export class GetAnnualPlanningInteractor {
         return this.presenter.badRequest('Usuário ou empresa inválidos');
       }
 
-      // Buscar planejamentos anuais com estatísticas
       const plannings = await this.gateway.getAnnualPlannings(
         year,
         quarter,

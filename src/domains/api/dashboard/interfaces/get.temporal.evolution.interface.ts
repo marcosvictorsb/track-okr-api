@@ -1,17 +1,16 @@
-import { HttpResponse } from '@protocols/http';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
-import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
+import { ICheckinsRepository } from '@domains/api/checkins/interfaces/default.interface';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { IObjectiveRepository } from '@domains/api/objectives/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys';
-import { ICheckinsRepository } from '@domains/api/checkins/interfaces/default.interface';
-import { logger } from '@configs/logger';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import { ResultKeyEntity } from '@domains/api/results-keys/entity/result-key.entity';
-import { CheckinsEntity } from '@domains/api/checkins/entity/checkins.entity';
-import { DataLogOutput } from '@adapters/services';
+import { ITeamRepository } from '@domains/api/teams/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 
-// Input types
 export type InputGetTemporalEvolution = {
   id_company: number;
   id_user: number;
@@ -20,7 +19,6 @@ export type InputGetTemporalEvolution = {
   period?: 'monthly' | 'weekly';
 };
 
-// Gateway dependencies
 export type GetTemporalEvolutionGatewayDependencies = {
   teamRepository: ITeamRepository;
   objectiveRepository: IObjectiveRepository;
@@ -29,19 +27,16 @@ export type GetTemporalEvolutionGatewayDependencies = {
   logging: typeof logger;
 };
 
-// Interactor dependencies
 export type GetTemporalEvolutionInteractorDependencies = {
   gateway: IGetTemporalEvolutionGateway;
   presenter: IPresenter;
   userCompanyValidator: UserCompanyValidationInteractor;
 };
 
-// Controller dependencies
 export type GetTemporalEvolutionControllerDependencies = {
   interactor: GetTemporalEvolutionInteractor;
 };
 
-// Gateway criteria
 export interface FindObjectivesByCompanyAndQuarterCriteria {
   id_company: number;
   quarter: number;
@@ -54,7 +49,6 @@ export interface FindCheckinsByCriteria {
   endDate?: Date;
 }
 
-// Gateway interface
 export interface IGetTemporalEvolutionGateway {
   findObjectivesByCompanyAndQuarter(
     criteria: FindObjectivesByCompanyAndQuarterCriteria
@@ -69,7 +63,6 @@ export interface IGetTemporalEvolutionGateway {
   loggerError(message: string, data?: DataLogOutput): void;
 }
 
-// Forward declarations for circular dependency
 export declare class GetTemporalEvolutionInteractor {
   execute(input: InputGetTemporalEvolution): Promise<HttpResponse>;
 }

@@ -1,18 +1,18 @@
 import { MixGetAnnualPlanningGateway } from '@adapters/gateways/api/dashboard';
 import { logger } from '@configs/logger';
 import {
-  IPlannerRepository,
-  FindPlannerCriteria
-} from '@domains/api/planners/interfaces';
-import {
-  IObjectiveRepository,
-  FindObjectiveCriteria
+  FindObjectiveCriteria,
+  IObjectiveRepository
 } from '@domains/api/objectives/interfaces';
+import {
+  FindPlannerCriteria,
+  IPlannerRepository
+} from '@domains/api/planners/interfaces';
 import { IResultKeyRepository } from '@domains/api/results-keys/interfaces';
 import {
-  IGetAnnualPlanningGateway,
+  AnnualPlanningItem,
   GetAnnualPlanningGatewayDependencies,
-  AnnualPlanningItem
+  IGetAnnualPlanningGateway
 } from '../interfaces/get.annual.planning.interface';
 
 export class GetAnnualPlanningGateway
@@ -44,7 +44,6 @@ export class GetAnnualPlanningGateway
     });
 
     try {
-      // 1. Buscar todos os planejamentos do ano e empresa
       const plannerCriteria: FindPlannerCriteria = {
         year,
         id_company: companyId
@@ -61,7 +60,6 @@ export class GetAnnualPlanningGateway
         return [];
       }
 
-      // 2. Buscar todos os objetivos do quarter especificado
       const objectiveCriteria: FindObjectiveCriteria = {
         id_company: companyId,
         quarter,
@@ -87,14 +85,12 @@ export class GetAnnualPlanningGateway
         }));
       }
 
-      // 3. Buscar result keys dos objetivos
       const objectiveIds = objectives
         .map((obj) => obj.id!)
         .filter((id) => id !== undefined);
       const resultKeys =
         await this.resultKeyRepository.findByObjectiveIds(objectiveIds);
 
-      // 4. Calcular progresso dos objetivos baseado em result keys
       const objectivesWithProgress = objectives.map((objective) => {
         const objectiveResultKeys = resultKeys.filter(
           (rk) => rk.id_okr === objective.id
@@ -107,7 +103,6 @@ export class GetAnnualPlanningGateway
           };
         }
 
-        // Calcular progresso médio das result keys do objetivo
         const totalProgress = objectiveResultKeys.reduce((sum, rk) => {
           const targetValue = parseFloat(rk.target_value?.toString() || '0');
           const initialValue = parseFloat(rk.initial_value?.toString() || '0');
@@ -130,7 +125,6 @@ export class GetAnnualPlanningGateway
         };
       });
 
-      // 5. Mapear planejamentos com estatísticas
       const planningsWithStats = planners.map((planner) => {
         const plannerObjectives = objectivesWithProgress.filter(
           (obj) => obj.id_planner === planner.id
@@ -141,7 +135,6 @@ export class GetAnnualPlanningGateway
           (obj) => obj.progress >= 100
         ).length;
 
-        // Calcular progresso geral do planejamento
         const totalProgress = plannerObjectives.reduce(
           (sum, obj) => sum + obj.progress,
           0

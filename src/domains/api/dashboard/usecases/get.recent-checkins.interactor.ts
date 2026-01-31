@@ -1,17 +1,17 @@
-import { HttpResponse } from '@protocols/http';
-import {
-  GetRecentCheckInsInteractorDependencies,
-  InputGetRecentCheckIns,
-  IGetRecentCheckInsGateway,
-  FindObjectivesByCompanyAndQuarterCriteria
-} from '../interfaces/get.recent-checkins.interface';
-import { IPresenter } from '@protocols/presenter';
-import { UserCompanyValidationInteractor } from '@domains/common';
-import {
-  RecentCheckInsEntity,
-  RecentCheckInData
-} from '../entity/recent-checkins.entity';
 import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import {
+  RecentCheckInData,
+  RecentCheckInsEntity
+} from '../entity/recent-checkins.entity';
+import {
+  FindObjectivesByCompanyAndQuarterCriteria,
+  GetRecentCheckInsInteractorDependencies,
+  IGetRecentCheckInsGateway,
+  InputGetRecentCheckIns
+} from '../interfaces/get.recent-checkins.interface';
 
 export class GetRecentCheckInsInteractor {
   protected gateway: IGetRecentCheckInsGateway;
@@ -32,7 +32,6 @@ export class GetRecentCheckInsInteractor {
 
       const { id_company, id_user, quarter, year } = input;
 
-      // Validar usuário e empresa
       const isValidUser = await this.validateUserAndCompany(
         id_user,
         id_company
@@ -46,25 +45,21 @@ export class GetRecentCheckInsInteractor {
         quarter || Math.ceil((currentDate.getMonth() + 1) / 3);
       const currentYear = year || currentDate.getFullYear();
 
-      // Buscar objetivos do trimestre
       const objectives = await this.getQuarterObjectives(
         id_company,
         currentQuarter,
         currentYear
       );
 
-      // Buscar e associar result keys aos objetivos
       const objectivesWithResultKeys =
         await this.associateResultKeysToObjectives(objectives);
 
-      // Coletar todos os IDs de result keys
       const resultKeyIds = this.collectResultKeyIds(objectivesWithResultKeys);
 
       if (resultKeyIds.length === 0) {
         return this.presenter.ok({ currentQuarter: [] });
       }
 
-      // Buscar as últimas 20 atualizações
       const recentUpdates = await this.gateway.findRecentCheckins({
         resultKeyIds,
         limit: 20
@@ -74,7 +69,6 @@ export class GetRecentCheckInsInteractor {
         requestTxt: `Found ${recentUpdates.length} updates for ${resultKeyIds.length} result keys`
       });
 
-      // Construir os dados dos check-ins
       const checkInsData = await this.buildCheckInsData(
         recentUpdates,
         objectivesWithResultKeys
@@ -143,7 +137,6 @@ export class GetRecentCheckInsInteractor {
       const resultKeys =
         await this.gateway.findResultKeysByObjectiveIds(objectiveIds);
 
-      // Agrupar result-keys por objetivo
       objectives.forEach((objective: ObjectiveEntity) => {
         objective.result_keys = resultKeys.filter(
           (resultKey) => resultKey.id_okr === objective.id
@@ -183,7 +176,6 @@ export class GetRecentCheckInsInteractor {
   ): Promise<RecentCheckInData[]> {
     const checkInsData: RecentCheckInData[] = [];
 
-    // Criar um mapa de result keys para busca rápida
     const resultKeyMap = new Map<
       number,
       { name: string; objective?: string }
@@ -207,12 +199,10 @@ export class GetRecentCheckInsInteractor {
 
       if (!resultKeyInfo) continue;
 
-      // Buscar dados do usuário
       const user = update.id_user
         ? await this.gateway.findUserById(update.id_user)
         : null;
 
-      // Buscar time do usuário
       const team = user?.id ? await this.gateway.findUserTeam(user.id) : null;
 
       const checkInData = RecentCheckInsEntity.formatCheckIn(

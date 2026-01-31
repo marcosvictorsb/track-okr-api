@@ -43,7 +43,6 @@ export class TopContributorsEntity implements ITopContributorsEntity {
     keyResultsCount: number,
     contributions: number
   ): number {
-    // Fórmula para calcular impact score baseado em progresso, quantidade de KRs e contribuições
     const progressWeight = 0.4;
     const keyResultsWeight = 0.3;
     const contributionsWeight = 0.3;
@@ -65,7 +64,6 @@ export class TopContributorsEntity implements ITopContributorsEntity {
     keyResultsUpdated: number,
     checkIns: number
   ): number {
-    // Cada key result atualizada vale 2 pontos, cada check-in vale 1 ponto
     return keyResultsUpdated * 2 + checkIns;
   }
 }

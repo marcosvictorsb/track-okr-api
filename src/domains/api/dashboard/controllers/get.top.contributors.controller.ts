@@ -1,9 +1,9 @@
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { Response } from 'express';
 import {
   GetTopContributorsControllerDependencies,
   InputGetTopContributors
 } from '../interfaces/get.top.contributors.interface';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
 
 export class GetTopContributorsController {
   protected interactor: GetTopContributorsControllerDependencies['interactor'];

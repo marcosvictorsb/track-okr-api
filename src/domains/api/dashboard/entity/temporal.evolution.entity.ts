@@ -64,7 +64,6 @@ export class TemporalEvolutionEntity implements ITemporalEvolutionEntity {
       (((currentAvg - previousAvg) / previousAvg) * 100).toFixed(2)
     );
 
-    // Encontrar melhor e pior mês do trimestre atual
     const maxIndex = currentData.indexOf(Math.max(...currentData));
     const minIndex = currentData.indexOf(Math.min(...currentData));
 
@@ -88,23 +87,21 @@ export class TemporalEvolutionEntity implements ITemporalEvolutionEntity {
     const monthlyProgress = new Array(12).fill(0);
     const monthlyCount = new Array(12).fill(0);
 
-    // Determinar os meses do trimestre
     const quarterMonths = TemporalEvolutionEntity.getQuarterMonths(quarter);
 
     checkins.forEach((update) => {
       const updateDate = new Date(update.created_at);
       if (updateDate.getFullYear() === year) {
-        const month = updateDate.getMonth(); // 0-11
+        const month = updateDate.getMonth();
 
         if (quarterMonths.includes(month)) {
           const progress = (update.new_value / update.target_value) * 100;
-          monthlyProgress[month] += Math.min(progress, 100); // Cap at 100%
+          monthlyProgress[month] += Math.min(progress, 100);
           monthlyCount[month] += 1;
         }
       }
     });
 
-    // Calcular médias por mês
     return monthlyProgress.map((total, index) =>
       monthlyCount[index] > 0 ? Math.round(total / monthlyCount[index]) : 0
     );

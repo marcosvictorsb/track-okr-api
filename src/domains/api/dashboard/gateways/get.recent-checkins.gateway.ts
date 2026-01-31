@@ -92,7 +92,6 @@ export class GetRecentCheckInsGateway
     });
 
     if (checkIns.length) {
-      // Ordenar por data de criação (mais recente primeiro) e limitar
       const sortedCheckIns = checkIns
         .sort((a, b) => {
           const dateA = a.created_at ? new Date(a.created_at).getTime() : 0;

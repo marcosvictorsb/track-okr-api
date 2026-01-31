@@ -14,9 +14,7 @@ import {
   IGetTemporalEvolutionGateway
 } from '../interfaces/get.temporal.evolution.interface';
 
-export class GetTemporalEvolutionGateway
-  implements IGetTemporalEvolutionGateway
-{
+export class GetTemporalEvolutionGateway implements IGetTemporalEvolutionGateway {
   teamRepository: ITeamRepository;
   objectiveRepository: IObjectiveRepository;
   resultKeyRepository: IResultKeyRepository;
@@ -75,7 +73,6 @@ export class GetTemporalEvolutionGateway
       ids_result_key: resultKeyIds
     });
 
-    // Filtrar por período se especificado
     let filteredUpdates = updates;
     if (criteria.startDate && criteria.endDate) {
       filteredUpdates = updates.filter((update) => {

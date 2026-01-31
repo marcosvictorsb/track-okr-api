@@ -1,12 +1,6 @@
-import { Response } from 'express';
-import { HttpResponse } from '@protocols/http';
-import { IPresenter } from '@protocols/presenter';
-import { UserPayload } from '@middlewares/auth.jwt.middlewares';
-import { UserCompanyValidationInteractor } from '@domains/common';
-import {
-  FindTeamCriteria,
-  ITeamRepository
-} from '@domains/api/teams/interfaces';
+import { DataLogOutput } from '@adapters/services';
+import { logger } from '@configs/logger';
+import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
 import {
   FindObjectiveCriteria,
   IObjectiveRepository
@@ -15,10 +9,16 @@ import {
   IResultKeyRepository,
   ResultKeyEntity
 } from '@domains/api/results-keys';
-import { DataLogOutput } from '@adapters/services';
-import { logger } from '@configs/logger';
 import { TeamEntity } from '@domains/api/teams/entity/team.entity';
-import { ObjectiveEntity } from '@domains/api/objectives/entity/objective.entity';
+import {
+  FindTeamCriteria,
+  ITeamRepository
+} from '@domains/api/teams/interfaces';
+import { UserCompanyValidationInteractor } from '@domains/common';
+import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { Response } from 'express';
 
 export interface InputGetOverview {
   quarter?: number;
@@ -28,21 +28,6 @@ export interface InputGetOverview {
   id_company: number;
   id_user: number;
 }
-
-// export interface Find
-// TeamCriteria {
-//   name?: string;
-//   id_company: number;
-// }
-
-// export interface Find
-// ObjectiveCriteria {
-//   id_company: number;
-//   quarter: number;
-//   year: number;
-//   id_team?: number;
-//   status?: string;
-// }
 
 export type GetOverviewGatewayDependencies = {
   teamRepository: ITeamRepository;
