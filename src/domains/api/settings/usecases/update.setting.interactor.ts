@@ -3,8 +3,8 @@ import { IPresenter } from '@protocols/presenter';
 import {
   InputUpdateSetting,
   IUpdateSettingGateway,
-  UpdateSettingInteractorDependencies,
-  UpdateSettingCriteria
+  UpdateSettingCriteria,
+  UpdateSettingInteractorDependencies
 } from '../interfaces/update.setting.interface';
 
 export class UpdateSettingInteractor {
@@ -37,7 +37,6 @@ export class UpdateSettingInteractor {
         requestTxt: JSON.stringify(input)
       });
 
-      // 1. Validar usuário
       const user = await this.gateway.findUser({ id: id_user });
       if (!user) {
         this.gateway.loggerError('Usuário não encontrado', {
@@ -47,7 +46,6 @@ export class UpdateSettingInteractor {
         return this.presenter.badRequest('Usuário não encontrado');
       }
 
-      // 2. Validar se usuário pertence à empresa
       if (user.id_company !== id_company) {
         this.gateway.loggerError('Usuário não pertence à empresa informada', {
           id_user,
@@ -60,7 +58,6 @@ export class UpdateSettingInteractor {
         );
       }
 
-      // 3. Verificar se configuração existe
       const existingSetting = await this.gateway.findSetting({ id });
       if (!existingSetting) {
         this.gateway.loggerError('Configuração não encontrada', {
@@ -70,7 +67,6 @@ export class UpdateSettingInteractor {
         return this.presenter.notFound('Configuração não encontrada');
       }
 
-      // 4. Verificar se configuração pertence à empresa do usuário
       if (existingSetting.id_company !== id_company) {
         this.gateway.loggerError(
           'Configuração não pertence à empresa do usuário',
@@ -84,7 +80,6 @@ export class UpdateSettingInteractor {
         );
       }
 
-      // 5. Preparar dados para atualização (apenas campos fornecidos)
       const updateData: UpdateSettingCriteria = { id };
 
       if (block_okr_creation !== undefined)
@@ -100,7 +95,6 @@ export class UpdateSettingInteractor {
       if (current_quarter_only !== undefined)
         updateData.current_quarter_only = current_quarter_only;
 
-      // 6. Atualizar configuração
       const updatedSetting = await this.gateway.updateSetting(updateData);
 
       this.gateway.loggerInfo('Configuração atualizada com sucesso', {

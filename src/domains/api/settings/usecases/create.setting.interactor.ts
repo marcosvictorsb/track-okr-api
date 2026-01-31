@@ -1,10 +1,10 @@
 import { HttpResponse } from '@protocols/http';
 import { IPresenter } from '@protocols/presenter';
 import {
-  InputCreateSetting,
-  ICreateSettingGateway,
-  CreateSettingInteractorDependencies,
   CreateSettingCriteria,
+  CreateSettingInteractorDependencies,
+  ICreateSettingGateway,
+  InputCreateSetting,
   UpdateSettingCriteria
 } from '../interfaces/create.setting.interface';
 
@@ -39,7 +39,6 @@ export class CreateSettingInteractor {
         }
       );
 
-      // 1. Validar usuário
       const user = await this.gateway.findUser({ id: id_user });
       if (!user) {
         this.gateway.loggerError('Usuário não encontrado', {
@@ -48,7 +47,6 @@ export class CreateSettingInteractor {
         return this.presenter.badRequest('Usuário não encontrado');
       }
 
-      // 2. Validar se usuário pertence à empresa
       if (user.id_company !== id_company) {
         this.gateway.loggerError('Usuário não pertence à empresa informada', {
           id_user,
@@ -60,7 +58,6 @@ export class CreateSettingInteractor {
         );
       }
 
-      // 3. Verificar se já existe configuração para a empresa
       const existingSetting = await this.gateway.findSettingByCompany({
         id_company
       });
@@ -68,7 +65,6 @@ export class CreateSettingInteractor {
       let resultSetting;
 
       if (existingSetting) {
-        // 4a. Se existe, fazer update
         this.gateway.loggerInfo(
           'Configuração existente encontrada, atualizando',
           {
@@ -100,7 +96,6 @@ export class CreateSettingInteractor {
           id_user
         });
       } else {
-        // 4b. Se não existe, criar nova
         this.gateway.loggerInfo('Criando nova configuração para a empresa', {
           id_company
         });

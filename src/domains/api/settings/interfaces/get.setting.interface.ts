@@ -1,9 +1,9 @@
-import { IPresenter } from '@protocols/presenter';
-import { FindSettingCriteria, ISettingRepository } from './default.interfaces';
 import { DataLogOutput } from '@adapters/services';
-import { SettingEntity } from '../entity/setting.entity';
-import { IUserRepository } from '@domains/api/users/interfaces';
 import { logger } from '@configs/logger';
+import { IUserRepository } from '@domains/api/users/interfaces';
+import { IPresenter } from '@protocols/presenter';
+import { SettingEntity } from '../entity/setting.entity';
+import { FindSettingCriteria, ISettingRepository } from './default.interfaces';
 
 export type InputGetSetting = {
   id_company: number;

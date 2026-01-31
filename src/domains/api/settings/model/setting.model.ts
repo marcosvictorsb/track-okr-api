@@ -1,6 +1,6 @@
-import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '@infra/database/connection/mysql';
 import Company from '@domains/api/companies/model/company.model';
+import { sequelize } from '@infra/database/connection/mysql';
+import { DataTypes, Model } from 'sequelize';
 
 export interface SettingModelAttributes {
   id?: number;
@@ -93,7 +93,6 @@ SettingModel.init(
   }
 );
 
-// Definindo associações
 SettingModel.belongsTo(Company, {
   foreignKey: 'id_company',
   as: 'company'

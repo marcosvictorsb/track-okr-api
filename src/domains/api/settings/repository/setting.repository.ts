@@ -1,14 +1,14 @@
-import SettingModel, { SettingModelAttributes } from '../model/setting.model';
-import { SettingEntity } from '../entity/setting.entity';
 import { ModelStatic } from 'sequelize';
+import { SettingEntity } from '../entity/setting.entity';
 import {
   CreateSettingCriteria,
   DeleteSettingCriteria,
   FindSettingCriteria,
   ISettingRepository,
-  UpdateSettingCriteria,
-  SettingRepositoryDependencies
+  SettingRepositoryDependencies,
+  UpdateSettingCriteria
 } from '../interfaces/default.interfaces';
+import SettingModel, { SettingModelAttributes } from '../model/setting.model';
 
 export class SettingRepository implements ISettingRepository {
   protected model: ModelStatic<SettingModel>;

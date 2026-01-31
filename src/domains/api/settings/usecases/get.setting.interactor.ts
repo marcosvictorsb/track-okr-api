@@ -1,11 +1,11 @@
 import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
 import {
   FindSettingCriteria,
   GetSettingInteractorDependencies,
-  InputGetSetting,
-  IGetSettingGateway
+  IGetSettingGateway,
+  InputGetSetting
 } from '../interfaces';
-import { IPresenter } from '@protocols/presenter';
 
 export class GetSettingInteractor {
   protected gateway: IGetSettingGateway;
@@ -43,7 +43,7 @@ export class GetSettingInteractor {
         this.gateway.loggerInfo(
           'Nenhuma configuração encontrada para a empresa'
         );
-        // Retornar configuração padrão se não existir
+
         const defaultSetting = {
           block_okr_creation: false,
           block_key_result_creation: false,

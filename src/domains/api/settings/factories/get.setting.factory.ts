@@ -1,12 +1,12 @@
 import { logger } from '@configs/logger';
+import UserModel from '@domains/api/users/model/user.model';
+import { UserRepository } from '@domains/api/users/repository/user.repository';
+import { Presenter } from '@protocols/presenter';
+import { GetSettingController } from '../controllers';
 import { GetSettingGateway } from '../gateways/';
 import SettingModel from '../model/setting.model';
 import { SettingRepository } from '../repository/setting.repository';
 import { GetSettingInteractor } from '../usecases';
-import { Presenter } from '@protocols/presenter';
-import { GetSettingController } from '../controllers';
-import UserModel from '@domains/api/users/model/user.model';
-import { UserRepository } from '@domains/api/users/repository/user.repository';
 
 const settingRepository = new SettingRepository({
   model: SettingModel

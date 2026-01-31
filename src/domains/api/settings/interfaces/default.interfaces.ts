@@ -1,6 +1,6 @@
 import { SettingEntity } from '@domains/api/settings/entity/setting.entity';
-import { ModelStatic } from 'sequelize';
 import SettingModel from '@domains/api/settings/model/setting.model';
+import { ModelStatic } from 'sequelize';
 
 export type CreateSettingCriteria = {
   block_okr_creation?: boolean;

@@ -1,12 +1,12 @@
-import { Response, Router } from 'express';
 import { authMiddleware, UserPayload } from '@middlewares/auth.jwt.middlewares';
 import { validateSchema } from '@middlewares/validate.schema';
-import {
-  getSettingSchema,
-  updateSettingSchema,
-  createSettingSchema
-} from '../schemas';
+import { Response, Router } from 'express';
 import * as factories from '../factories';
+import {
+  createSettingSchema,
+  getSettingSchema,
+  updateSettingSchema
+} from '../schemas';
 
 const {
   getSettingController,
@@ -16,11 +16,6 @@ const {
 
 const router = Router();
 
-/**
- * @route GET /api/settings
- * @description Busca as configurações da empresa
- * @access Private
- */
 router.get(
   '/',
   authMiddleware,
@@ -29,11 +24,6 @@ router.get(
     getSettingController.getSetting(request, response)
 );
 
-/**
- * @route POST /api/settings
- * @description Cria ou atualiza as configurações da empresa
- * @access Private
- */
 router.post(
   '/',
   authMiddleware,
@@ -42,11 +32,6 @@ router.post(
     createSettingController.handle(request, response)
 );
 
-/**
- * @route PUT /api/settings/:id
- * @description Atualiza as configurações da empresa
- * @access Private
- */
 router.put(
   '/:id',
   authMiddleware,

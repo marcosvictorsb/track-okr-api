@@ -1,17 +1,17 @@
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { SettingEntity } from '../entity/setting.entity';
-import {
-  IGetSettingGateway,
-  IGetSettingGatewayDependencies,
-  FindSettingCriteria,
-  ISettingRepository
-} from '../interfaces';
 import { MixGetSetting } from '@adapters/gateways/api/settings';
+import { logger } from '@configs/logger';
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import {
   FindUserCriteria,
   IUserRepository
 } from '@domains/api/users/interfaces';
-import { logger } from '@configs/logger';
+import { SettingEntity } from '../entity/setting.entity';
+import {
+  FindSettingCriteria,
+  IGetSettingGateway,
+  IGetSettingGatewayDependencies,
+  ISettingRepository
+} from '../interfaces';
 
 export class GetSettingGateway
   extends MixGetSetting

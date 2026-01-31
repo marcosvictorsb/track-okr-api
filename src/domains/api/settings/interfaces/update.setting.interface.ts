@@ -1,7 +1,7 @@
-import { IPresenter } from '@protocols/presenter';
-import { HttpResponse } from '@protocols/http';
-import { SettingEntity } from '../entity/setting.entity';
 import { DataLogOutput } from '@adapters/services';
+import { HttpResponse } from '@protocols/http';
+import { IPresenter } from '@protocols/presenter';
+import { SettingEntity } from '../entity/setting.entity';
 
 export type InputUpdateSetting = {
   id: number;

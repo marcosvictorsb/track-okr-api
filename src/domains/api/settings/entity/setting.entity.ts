@@ -36,7 +36,6 @@ export class SettingEntity implements ISettingEntity {
     this.updated_at = params.updated_at;
   }
 
-  // Métodos auxiliares
   public isOkrCreationBlocked(): boolean {
     return this.block_okr_creation;
   }

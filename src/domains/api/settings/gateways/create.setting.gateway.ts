@@ -1,13 +1,13 @@
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
-import { SettingRepository } from '../repository/setting.repository';
+import { SettingEntity } from '../entity/setting.entity';
 import {
-  ICreateSettingGateway,
-  FindUserCriteria,
   CreateSettingCriteria,
+  FindUserCriteria,
+  ICreateSettingGateway,
   UpdateSettingCriteria
 } from '../interfaces/create.setting.interface';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { SettingEntity } from '../entity/setting.entity';
+import { SettingRepository } from '../repository/setting.repository';
 
 export class CreateSettingGateway implements ICreateSettingGateway {
   protected userRepository: UserRepository;

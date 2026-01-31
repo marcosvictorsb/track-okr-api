@@ -1,12 +1,12 @@
+import { UserEntity } from '@domains/api/users/entity/user.entity';
 import { UserRepository } from '@domains/api/users/repository/user.repository';
-import { SettingRepository } from '../repository/setting.repository';
+import { SettingEntity } from '../entity/setting.entity';
 import {
-  IUpdateSettingGateway,
   FindUserCriteria,
+  IUpdateSettingGateway,
   UpdateSettingCriteria
 } from '../interfaces/update.setting.interface';
-import { UserEntity } from '@domains/api/users/entity/user.entity';
-import { SettingEntity } from '../entity/setting.entity';
+import { SettingRepository } from '../repository/setting.repository';
 
 export class UpdateSettingGateway implements IUpdateSettingGateway {
   protected userRepository: UserRepository;

@@ -1,10 +1,10 @@
 import { UserPayload } from '@middlewares/auth.jwt.middlewares';
+import { Response } from 'express';
 import {
   GetSettingControllerDependencies,
   InputGetSetting
 } from '../interfaces';
 import { GetSettingInteractor } from '../usecases';
-import { Response } from 'express';
 
 export class GetSettingController {
   protected interactor: GetSettingInteractor;

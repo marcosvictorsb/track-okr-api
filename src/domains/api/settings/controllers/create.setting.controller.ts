@@ -1,9 +1,9 @@
+import { UserPayload } from '@middlewares/index';
 import { Response } from 'express';
 import {
-  InputCreateSetting,
-  CreateSettingControllerDependencies
+  CreateSettingControllerDependencies,
+  InputCreateSetting
 } from '../interfaces/create.setting.interface';
-import { UserPayload } from '@middlewares/index';
 
 export class CreateSettingController {
   private interactor: CreateSettingControllerDependencies['interactor'];
