@@ -19,7 +19,7 @@ export default defineConfig({
 
     coverage: {
       provider: 'v8',
-      enabled: true,
+      //enabled: true,
 
       // Relatórios
       reporter: ['text', 'json', 'html', 'lcov'],
