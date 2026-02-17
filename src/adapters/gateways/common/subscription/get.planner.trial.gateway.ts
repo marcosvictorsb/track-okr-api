@@ -5,5 +5,4 @@ class BaseGateway {
   constructor(...args: unknown[]) {}
 }
 
-export const MixGetCurrentSubscription = LoggerMixin(BaseGateway);
-
+export const MixGetPlannerTrial = LoggerMixin(BaseGateway);

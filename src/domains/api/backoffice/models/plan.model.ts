@@ -87,7 +87,11 @@ PlanModel.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
-      field: 'isTrial'
+      field: 'isTrial',
+      get() {
+        const value = this.getDataValue('isTrial');
+        return Boolean(value);
+      }
     },
     secret: {
       type: DataTypes.STRING(255),
