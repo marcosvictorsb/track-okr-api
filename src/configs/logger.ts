@@ -152,18 +152,42 @@ class OpenSearchTransport extends transports.Stream {
   constructor(options: Record<string, unknown>) {
     super({ stream: process.stdout, ...options });
 
+    // Validar variáveis de ambiente obrigatórias
+    const opensearchUrl = process.env.OPENSEARCH_URL;
+    const opensearchUsername = process.env.OPENSEARCH_USERNAME;
+    const opensearchPassword = process.env.OPENSEARCH_PASSWORD;
+    const opensearchIndex = process.env.OPENSEARCH_INDEX;
+
+    if (!opensearchUrl) {
+      throw new Error(
+        'OPENSEARCH_URL não configurado. Configure a variável de ambiente OPENSEARCH_URL'
+      );
+    }
+
+    if (!opensearchUsername || !opensearchPassword) {
+      throw new Error(
+        'OPENSEARCH_USERNAME ou OPENSEARCH_PASSWORD não configurados'
+      );
+    }
+
+    if (!opensearchIndex) {
+      throw new Error(
+        'OPENSEARCH_INDEX não configurado. Configure a variável de ambiente OPENSEARCH_INDEX'
+      );
+    }
+
     this.client = new Client({
-      node: process.env.OPENSEARCH_URL,
+      node: opensearchUrl,
       auth: {
-        username: process.env.OPENSEARCH_USERNAME as string,
-        password: process.env.OPENSEARCH_PASSWORD as string
+        username: opensearchUsername,
+        password: opensearchPassword
       },
       ssl: {
         rejectUnauthorized: false
       }
     });
 
-    this.index = process.env.OPENSEARCH_INDEX as string;
+    this.index = opensearchIndex;
   }
 
   private sanitizeFieldForOpenSearch(
@@ -328,14 +352,44 @@ const createDiscordTransport = () => {
 };
 
 const createOpenSearchTransport = () => {
-  if (!isProduction) return null;
+  if (!isProduction) {
+    console.log(
+      '📝 OpenSearch logging desabilitado em ambiente de desenvolvimento'
+    );
+    return null;
+  }
+
+  // Verificar se as variáveis de ambiente estão configuradas
+  const opensearchUrl = process.env.OPENSEARCH_URL;
+  const opensearchUsername = process.env.OPENSEARCH_USERNAME;
+  const opensearchPassword = process.env.OPENSEARCH_PASSWORD;
+  const opensearchIndex = process.env.OPENSEARCH_INDEX;
+
+  if (
+    !opensearchUrl ||
+    !opensearchUsername ||
+    !opensearchPassword ||
+    !opensearchIndex
+  ) {
+    console.warn(
+      '⚠️ Variáveis de ambiente do OpenSearch não configuradas completamente.'
+    );
+    console.warn(
+      '   Configure: OPENSEARCH_URL, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD, OPENSEARCH_INDEX'
+    );
+    return null;
+  }
 
   try {
+    console.log('📊 OpenSearch logging ativado para ambiente de produção');
     return new OpenSearchTransport({
       level: 'info'
     });
   } catch (error) {
     console.error('❌ Erro ao configurar OpenSearch transport:', error);
+    if (error instanceof Error) {
+      console.error('📝 Detalhes:', error.message);
+    }
     return null;
   }
 };
