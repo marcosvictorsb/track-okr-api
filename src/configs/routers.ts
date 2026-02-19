@@ -3,6 +3,7 @@ import { backofficeRouter } from '@domains/api/backoffice/routes/backoffice.rout
 import checkInsRouters from '@domains/api/checkins/routers';
 import { dashboardRouter } from '@domains/api/dashboard/routers';
 import evolutionRouter from '@domains/api/evolution/routers';
+import { exportRequestsRouter } from '@domains/api/exports';
 import healthRouter from '@domains/api/health/routers';
 import informationRouter from '@domains/api/information/routers';
 import leadRouter from '@domains/api/landing-page-leads/routers';
@@ -42,6 +43,7 @@ routers.use('/settings', settingRouter);
 routers.use('/permissions', permissionsRouter);
 routers.use('/subscription', subscriptionRoutes);
 routers.use('/support-contact', supportContactRoutes);
+routers.use('/exports', exportRequestsRouter);
 routers.use('/backoffice', backofficeRouter);
 
 const notFound = (request: Request, response: Response) => {

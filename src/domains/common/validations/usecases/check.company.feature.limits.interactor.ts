@@ -28,6 +28,7 @@ export class CheckCompanyFeatureLimitsInteractor implements ICheckCompanyFeature
     const subscription = await this.gateway.findActiveSubscriptionByCompany({
       company_id: id_company
     });
+
     if (!subscription) {
       throw 'Empresa sem assinatura ativa';
     }
@@ -35,6 +36,16 @@ export class CheckCompanyFeatureLimitsInteractor implements ICheckCompanyFeature
     const plan = await this.gateway.findPlan({ id: subscription.plan_id });
     if (!plan) {
       throw 'Plano não encontrado';
+    }
+    if (!plan.isTrial) {
+      this.gateway.loggerInfo(
+        'Plano encontrado para a empresa com assinatura ativa'
+      );
+      return {
+        limit: Infinity,
+        currentUsage: 0,
+        isWithinLimit: true
+      };
     }
 
     const limit = plan[feature];
