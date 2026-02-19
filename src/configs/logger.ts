@@ -375,7 +375,7 @@ const createOpenSearchTransport = () => {
       '⚠️ Variáveis de ambiente do OpenSearch não configuradas completamente.'
     );
     console.warn(
-      '   Configure: OPENSEARCH_URL, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD, OPENSEARCH_INDEX'
+      '   Configure no .env: OPENSEARCH_URL, OPENSEARCH_USERNAME, OPENSEARCH_PASSWORD, OPENSEARCH_INDEX'
     );
     return null;
   }

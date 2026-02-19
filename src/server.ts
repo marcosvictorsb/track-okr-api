@@ -1,6 +1,7 @@
+import 'dotenv/config';
+
 import { MemoryOptimizationService } from '@adapters/services';
 import { logger } from '@configs/logger';
-import 'dotenv/config';
 import app from './app';
 
 const PORT: number | string = process.env.PORT || 3000;
