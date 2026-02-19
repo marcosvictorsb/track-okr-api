@@ -170,28 +170,45 @@ class OpenSearchTransport extends transports.Stream {
     key: string,
     value: unknown
   ): [string, string] {
+    // Campos que conflitam com tipos esperados no mapping
     const problematicFields = [
       'data',
       'criteria',
       'original',
       'parent',
       'updateData',
-      'requestTxt'
+      'requestTxt',
+      'input'
     ];
 
-    const finalKey = problematicFields.includes(key) ? `raw_${key}` : key;
-
+    let finalKey = key;
     let finalValue: string;
 
+    // Se for campo problemático, adicionar prefixo raw_
+    if (problematicFields.includes(key)) {
+      finalKey = `raw_${key}`;
+    }
+
+    // Processar o valor
     if (value === null || value === undefined) {
       finalValue = '';
+    } else if (Array.isArray(value)) {
+      // Arrays: converter para JSON string delimitado
+      // Se são números, manter como array JSON; se são strings, também
+      try {
+        finalValue = JSON.stringify(value);
+      } catch {
+        finalValue = String(value);
+      }
     } else if (typeof value === 'object') {
+      // Objetos complexos: serializar como JSON
       try {
         finalValue = JSON.stringify(value);
       } catch {
         finalValue = String(value);
       }
     } else {
+      // Valores primitivos: converter para string
       finalValue = String(value);
     }
 
@@ -246,26 +263,29 @@ class OpenSearchTransport extends transports.Stream {
 
         performanceResponseTime: store?.responseTime,
         performanceRequestSize: store?.requestSize,
-        performanceResponseSize: store?.responseSize,
-
-        ...Object.keys(info).reduce(
-          (acc, key) => {
-            if (!['timestamp', 'level', 'message'].includes(key)) {
-              const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
-                key,
-                info[key]
-              );
-              acc[finalKey] = finalValue;
-            }
-            return acc;
-          },
-          {} as Record<string, unknown>
-        )
+        performanceResponseSize: store?.responseSize
       };
+
+      // Processar metadados adicionais
+      const metadata: Record<string, unknown> = {};
+      const fieldsToIgnore = ['timestamp', 'level', 'message'];
+
+      Object.keys(info).forEach((key) => {
+        if (!fieldsToIgnore.includes(key)) {
+          const [finalKey, finalValue] = this.sanitizeFieldForOpenSearch(
+            key,
+            info[key]
+          );
+          metadata[finalKey] = finalValue;
+        }
+      });
+
+      // Mesclar document com metadata sanitizado
+      const finalDocument = { ...document, ...metadata };
 
       await this.client.index({
         index: this.index,
-        body: document
+        body: finalDocument
       });
 
       console.log(
@@ -273,6 +293,9 @@ class OpenSearchTransport extends transports.Stream {
       );
     } catch (error) {
       console.error('❌ Erro ao enviar log para OpenSearch:', error.message);
+      if (error instanceof Error && error.message) {
+        console.error('📝 Detalhes do erro:', error.message);
+      }
     }
   }
 }

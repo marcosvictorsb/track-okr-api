@@ -43,7 +43,11 @@ export type DataLogOutput = {
   // objective
   id_objective?: number;
   ids_objectives?: number[];
+  objectiveIds?: number[];
   quarter?: number;
+
+  // result key
+  resultKeyIds?: number[];
 
   // company
   id_company?: number;
@@ -57,6 +61,8 @@ export type DataLogOutput = {
 
   // teams
   id_team?: number;
+  ids_users?: number[];
+  ids?: number[];
 
   // user-teams
   id_user_to_add?: number;
