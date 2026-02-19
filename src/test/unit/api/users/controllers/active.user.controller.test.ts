@@ -1,7 +1,7 @@
 // tests/controllers/activateUser.controller.spec.ts
 import { ActivateUserController } from '@domains/api/users/controllers';
-import { makeResponseMock } from '@test/mocks/response.mocks.ts';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { makeResponseMock } from '../../../../mocks/response.mocks';
 
 export const activateUserInteractorMock = {
   execute: vi.fn()
