@@ -31,7 +31,7 @@ export class KirvanoWebhookInteractor {
   async execute(payload: KirvanoWebhookPayload): Promise<HttpResponse> {
     try {
       this.gateway.loggerInfo('Processando webhook da Kirvano', {
-        event: payload.event
+        data: JSON.stringify(payload)
       });
 
       switch (payload.event) {
