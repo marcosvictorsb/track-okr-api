@@ -3,7 +3,7 @@ import { CompanyEntity } from '@domains/api/companies/entity/company.entity';
 import { IPresenter } from '@protocols/presenter';
 import { KirvanoWebhookInteractor } from '../usecases/kirvano.webhook.interactor';
 
-import { DataLogOutput } from '@adapters/services';
+import { DataLogOutput, DiscordNotificationService } from '@adapters/services';
 import { CreateCompanyData } from '@domains/api/authentication/interfaces';
 import {
   FindPlansCriteria,
@@ -149,6 +149,26 @@ export interface IKirvanoWebhookGateway {
 
   loggerInfo(message: string, data?: DataLogOutput): void;
   loggerError(message: string, data?: DataLogOutput): void;
+
+  sendDiscordNotification(webhookData: {
+    event?: string;
+    status?: string;
+    customer_email?: string;
+    customer_document?: string;
+    payment?: {
+      method?: string;
+      brand?: string;
+      installments?: number;
+      finished_at?: string;
+    };
+    products?: Array<{
+      id: string;
+      name: string;
+      offer_id?: string;
+      offer_name?: string;
+      price?: string;
+    }>;
+  }): Promise<void>;
 }
 
 export type IKirvanoWebhookInteractorDependencies = {
@@ -166,6 +186,7 @@ export type KirvanoWebhookGatewayDependencies = {
   settingRepository: ISettingRepository;
   webhookRepository: IWebhookRepository;
   resendService: Resend;
+  discordNotificationService: DiscordNotificationService;
 };
 
 export type KirvanoWebhookControllerDependencies = {

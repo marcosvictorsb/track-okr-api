@@ -1,3 +1,4 @@
+import { DiscordNotificationService } from '@adapters/services';
 import { logger } from '@configs/logger';
 import { PlanModel } from '@domains/api/backoffice/models/plan.model';
 import { PlanRepository } from '@domains/api/backoffice/repository/plan.repository';
@@ -23,6 +24,11 @@ import { KirvanoWebhookInteractor } from '../usecases';
 dotenv.config();
 
 export const makeKirvanoWebhookController = () => {
+  const discordWebhookUrl = process.env.DISCORD_NOTIFICATION_WEBHOOK;
+  const discordNotificationService = discordWebhookUrl
+    ? new DiscordNotificationService(discordWebhookUrl)
+    : new DiscordNotificationService('');
+
   const gateway: KirvanoWebhookGatewayDependencies = {
     logging: logger,
     userRepository: new UserRepository({ model: UserModel }),
@@ -36,7 +42,8 @@ export const makeKirvanoWebhookController = () => {
     }),
     settingRepository: new SettingRepository({ model: SettingModel }),
     webhookRepository: new WebhookRepository({ model: WebhookModel }),
-    resendService: new Resend(process.env.API_KEY_RESEND as string)
+    resendService: new Resend(process.env.API_KEY_RESEND as string),
+    discordNotificationService
   };
 
   const kirvanoWebhookGateway = new KirvanoWebhookGateway(gateway);

@@ -1,4 +1,5 @@
 import { MixKirvanoWebhookGateway } from '@adapters/gateways/webhook/cakto/kirvano.webhook.gateway';
+import { DiscordNotificationService } from '@adapters/services';
 import { logger } from '@configs/logger';
 import { PlanEntity } from '@domains/api/backoffice/entities/plan.entity';
 import {
@@ -52,6 +53,7 @@ export class KirvanoWebhookGateway
   private subscriptionHistoryRepository: ISubscriptionHistoryRepository;
   private settingRepository: ISettingRepository;
   private webhookRepository: IWebhookRepository;
+  private discordNotificationService: DiscordNotificationService;
 
   constructor(params: KirvanoWebhookGatewayDependencies) {
     super(params);
@@ -63,6 +65,7 @@ export class KirvanoWebhookGateway
     this.subscriptionHistoryRepository = params.subscriptionHistoryRepository;
     this.settingRepository = params.settingRepository;
     this.webhookRepository = params.webhookRepository;
+    this.discordNotificationService = params.discordNotificationService;
   }
 
   async findUser(criteria: FindUserCriteria): Promise<UserEntity | undefined> {
@@ -182,5 +185,34 @@ export class KirvanoWebhookGateway
     };
 
     return await this.webhookRepository.create(createWebhookCriteria);
+  }
+
+  async sendDiscordNotification(webhookData: {
+    event?: string;
+    status?: string;
+    customer_email?: string;
+    customer_document?: string;
+    payment?: {
+      method?: string;
+      brand?: string;
+      installments?: number;
+      finished_at?: string;
+    };
+    products?: Array<{
+      id: string;
+      name: string;
+      offer_id?: string;
+      offer_name?: string;
+      price?: string;
+    }>;
+  }): Promise<void> {
+    this.logging.info('Enviando notificação para Discord', {
+      event: webhookData.event,
+      status: webhookData.status
+    });
+
+    await this.discordNotificationService.sendKirvanoWebhookNotification(
+      webhookData
+    );
   }
 }
