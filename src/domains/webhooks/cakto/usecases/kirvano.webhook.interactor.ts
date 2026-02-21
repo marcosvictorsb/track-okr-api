@@ -34,6 +34,15 @@ export class KirvanoWebhookInteractor {
         data: JSON.stringify(payload)
       });
 
+      await this.gateway.sendDiscordNotification({
+        event: payload.event,
+        status: payload.status,
+        customer_email: payload.customer?.email,
+        customer_document: payload.customer?.document,
+        payment: payload.payment,
+        products: payload.products
+      });
+
       switch (payload.event) {
         case EventsKirvanoWebhook.SALE_APPROVED:
           this.gateway.loggerInfo('Evento de venda aprovada recebido', {
@@ -135,20 +144,6 @@ export class KirvanoWebhookInteractor {
       });
       this.gateway.loggerInfo('Evento ignorado', { event: payload.event });
 
-      // Enviar notificação ao Discord sem esperar
-      await this.gateway
-        .sendDiscordNotification({
-          event: payload.event,
-          status: payload.status,
-          customer_email: payload.customer?.email,
-          customer_document: payload.customer?.document,
-          payment: payload.payment,
-          products: payload.products
-        })
-        .catch((error) => {
-          console.error('Erro ao enviar notificação Discord:', error);
-        });
-
       return this.presenter.ok('Evento ignorado');
     }
 
@@ -169,20 +164,6 @@ export class KirvanoWebhookInteractor {
         status: KirvanoWebhookStatus.COMPANY_ALREADY_EXISTS,
         created: new Date()
       });
-
-      // Enviar notificação ao Discord sem esperar
-      await this.gateway
-        .sendDiscordNotification({
-          event: payload.event,
-          status: payload.status,
-          customer_email: payload.customer?.email,
-          customer_document: payload.customer?.document,
-          payment: payload.payment,
-          products: payload.products
-        })
-        .catch((error) => {
-          console.error('Erro ao enviar notificação Discord:', error);
-        });
 
       return this.presenter.ok(
         'Empresa já possui cadastro e está tentando comprar novamente, analisar manualmente'
@@ -277,20 +258,6 @@ export class KirvanoWebhookInteractor {
     });
     this.gateway.loggerInfo('Webhook salvo', { event: payload.event });
 
-    // Enviar notificação ao Discord sem esperar
-    this.gateway
-      .sendDiscordNotification({
-        event: payload.event,
-        status: payload.status,
-        customer_email: payload.customer?.email,
-        customer_document: payload.customer?.document,
-        payment: payload.payment,
-        products: payload.products
-      })
-      .catch((error) => {
-        console.error('Erro ao enviar notificação Discord:', error);
-      });
-
     return this.presenter.ok({
       message: 'Pagamento processado com sucesso'
     });
@@ -333,20 +300,6 @@ export class KirvanoWebhookInteractor {
       created: new Date()
     });
     this.gateway.loggerInfo('Webhook salvo', { event: payload.event });
-
-    // Enviar notificação ao Discord sem esperar
-    this.gateway
-      .sendDiscordNotification({
-        event: payload.event,
-        status: payload.status,
-        customer_email: payload.customer?.email,
-        customer_document: payload.customer?.document,
-        payment: payload.payment,
-        products: payload.products
-      })
-      .catch((error) => {
-        console.error('Erro ao enviar notificação Discord:', error);
-      });
 
     return this.presenter.ok({
       message: 'Renovação de assinatura processada com sucesso'
